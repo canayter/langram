@@ -40,6 +40,9 @@ takes precedence over habit.
     alembic upgrade head                      # LANGRAM_DATABASE_URL sets the target
     python -m langram.db.seed --database-url sqlite:///langram.db --create-tables
 
+    uvicorn langram.api.main:app --reload      # API on :8000
+    cd web && npm run dev                      # UI on :5173, proxies /api
+
 Dependencies live in a project venv, not in the system or conda environment.
 
 ## Where things are
@@ -56,6 +59,13 @@ Dependencies live in a project venv, not in the system or conda environment.
                        projection of content/; learner state is not.
     alembic/           migrations. Postgres is the target, SQLite is a local
                        convenience.
+    src/langram/api/   FastAPI. HTTP only; the teaching logic is outside it.
+    src/langram/tutor.py
+                       what to serve next: due reviews first, then the earliest
+                       unfinished concept, interleaved.
+    src/langram/diagnosis.py
+                       why an answer was wrong, and what to say about it.
+    web/               React and Vite. VITE_BASE sets the deployment subpath.
     tests/             known-forms oracle, property tests, unit tests.
     docs/provenance.md where every linguistic claim in content/ came from.
 
@@ -74,11 +84,15 @@ fails CI rather than reaching a learner.
 
 ## Phase status
 
-Phase 1 (morphology engine) and Phase 2 (content schema, validator in CI,
-seeding) are complete. Phase 3 is the FastAPI backend and React frontend with
-one exercise type end to end.
+Phases 1 to 3 are complete: the morphology engine, the content pipeline, and
+the core web app with one exercise type end to end.
 
-Exercise generators are declared in `src/langram/generators.py` and none are
-implemented yet; that is Phase 4. The curriculum already specifies which
-generator each exercise needs, and the validator refuses a name that is not
-registered.
+Phase 4 is exercise variety. Six of the seven generators in
+`src/langram/generators/` are still declared but not built, and the three
+structured input types are the ones that matter: until they exist, the tutor
+serves guided output first because there is nothing earlier to serve. The
+selector already prefers structured input, so building those generators changes
+what learners get without changing the tutor.
+
+Secrets: set LANGRAM_SECRET_KEY in any deployment. Without it a new signing key
+is generated per process, which logs every learner out on restart.
