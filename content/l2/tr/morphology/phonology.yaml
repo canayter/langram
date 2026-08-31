@@ -1,0 +1,67 @@
+# Turkish phonology for the morphology engine.
+#
+# The engine hardcodes no Turkish facts. Everything it needs about the sound
+# system is declared here, so a linguist can correct the language without
+# reading Python, and so a second language (Tatar, Azerbaijani) is a new file
+# rather than a new engine.
+
+vowels:
+  # front/back and rounded/unrounded drive both harmony systems.
+  # high is listed for completeness; the engine does not use it yet.
+  a: { back: true,  rounded: false, high: false }
+  e: { back: false, rounded: false, high: false }
+  i: { back: false, rounded: false, high: true  }
+  "ı": { back: true,  rounded: false, high: true  }   # dotless i
+  o: { back: true,  rounded: true,  high: false }
+  "ö": { back: false, rounded: true,  high: false }
+  u: { back: true,  rounded: true,  high: true  }
+  "ü": { back: false, rounded: true,  high: true  }
+
+# "fistikci sahap": the eight voiceless consonants. A following D or C
+# archiphoneme surfaces voiceless after any of these.
+voiceless: [f, s, t, k, "ç", "ş", h, p]
+
+archiphonemes:
+
+  # Twofold harmony. Backness only.
+  A:
+    type: vowel
+    resolves:
+      back:  a
+      front: e
+
+  # Fourfold harmony. Backness plus rounding.
+  I:
+    type: vowel
+    resolves:
+      back_unrounded:  "ı"
+      back_rounded:    u
+      front_unrounded: i
+      front_rounded:   "ü"
+
+  # Suffix-initial stop, assimilates in voicing to whatever precedes it.
+  D:
+    type: consonant
+    resolves: { voiceless: t, voiced: d }
+
+  # Same mechanism for the affricate. Not used by the Phase 1 suffix set
+  # (-CI, -CA arrive with derivation), but the rule is identical.
+  C:
+    type: consonant
+    resolves: { voiceless: "ç", voiced: c }
+
+# Stem-final voiceless obstruents that voice before a vowel-initial suffix,
+# for those lexemes that alternate. Whether a given lexeme alternates is a
+# property of the lexeme, never derivable from its surface form:
+# kitap -> kitabi, but sepet -> sepeti.
+final_voicing:
+  p: b
+  "ç": c
+  t: d
+  k: "ğ"
+
+# k after n surfaces as g, not the soft g: renk -> rengi, ahenk -> ahengi.
+final_voicing_exceptions:
+  - when_stem_ends_with: nk
+    replace: k
+    with: g

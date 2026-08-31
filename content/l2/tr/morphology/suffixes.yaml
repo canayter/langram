@@ -1,0 +1,139 @@
+# Nominal suffixes, Phase 1 scope: number, possessive, case, predicative.
+#
+# Written in archiphoneme notation. A suffix is defined once and the engine
+# generates every allomorph. No surface form appears in this file.
+#
+# Notation
+#   A, I      harmonizing vowels (twofold, fourfold)
+#   D, C      voicing-assimilating consonants
+#   (x)       segment present only when needed:
+#             a consonant appears after a vowel-final stem   -(y)I  araba-yi
+#             a vowel appears after a consonant-final stem   -(I)m  ev-im
+#
+# slot ordering on the noun is: PL < POSS < CASE < PRED
+# ev-ler-im-de-yim  "I am in my houses"
+
+- id: PL
+  surface: "-lAr"
+  category: number
+  slot: 1
+  glosses: [plural]
+
+- id: POSS1SG
+  surface: "-(I)m"
+  category: possessive
+  slot: 2
+  glosses: [my]
+
+- id: POSS2SG
+  surface: "-(I)n"
+  category: possessive
+  slot: 2
+  glosses: [your]
+
+- id: POSS3SG
+  surface: "-(s)I"
+  category: possessive
+  slot: 2
+  glosses: [his, her, its]
+  # A case suffix after 3rd person possessive is separated by n:
+  # ev-i -> ev-i-n-de, araba-si -> araba-si-nda
+  triggers_pronominal_n: true
+
+- id: POSS1PL
+  surface: "-(I)mIz"
+  category: possessive
+  slot: 2
+  glosses: [our]
+
+- id: POSS2PL
+  surface: "-(I)nIz"
+  category: possessive
+  slot: 2
+  glosses: [your]
+
+- id: POSS3PL
+  surface: "-lArI"
+  category: possessive
+  slot: 2
+  glosses: [their]
+  triggers_pronominal_n: true
+
+- id: NOM
+  surface: ""
+  category: case
+  slot: 3
+  glosses: [nominative]
+
+- id: ACC
+  surface: "-(y)I"
+  category: case
+  slot: 3
+  glosses: [accusative]
+  # Marks specificity, not objecthood. Section 3.3 of the brief: this is one
+  # of the structures English speakers get wrong most persistently.
+
+- id: DAT
+  surface: "-(y)A"
+  category: case
+  slot: 3
+  glosses: [dative, to]
+
+- id: LOC
+  surface: "-DA"
+  category: case
+  slot: 3
+  glosses: [locative, at, in]
+
+- id: ABL
+  surface: "-DAn"
+  category: case
+  slot: 3
+  glosses: [ablative, from]
+
+- id: GEN
+  surface: "-(n)In"
+  category: case
+  slot: 3
+  glosses: [genitive, of]
+
+- id: INS
+  surface: "-(y)lA"
+  category: case
+  slot: 3
+  glosses: [instrumental, with]
+  # Also written as the free word "ile". Pre-stressing, which the engine does
+  # not model yet: stress falls on the syllable before it.
+  review: [pre_stressing_not_modelled]
+
+- id: PRED1SG
+  surface: "-(y)Im"
+  category: predicative
+  slot: 4
+  glosses: [I am]
+
+- id: PRED2SG
+  surface: "-sIn"
+  category: predicative
+  slot: 4
+  glosses: [you are]
+
+- id: PRED3SG
+  surface: "-DIr"
+  category: predicative
+  slot: 4
+  glosses: [is]
+  # Optional and formal in speech. Bare nominal predication is the neutral
+  # form: "O ogrenci" rather than "O ogrencidir".
+
+- id: PRED1PL
+  surface: "-(y)Iz"
+  category: predicative
+  slot: 4
+  glosses: [we are]
+
+- id: PRED2PL
+  surface: "-sInIz"
+  category: predicative
+  slot: 4
+  glosses: [you are]

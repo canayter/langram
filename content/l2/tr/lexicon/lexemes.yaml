@@ -1,0 +1,201 @@
+# Turkish lexicon, Phase 1.
+#
+# Only stems and their lexically stored properties. No inflected form appears
+# here or anywhere else outside this engine's output.
+#
+# Fields
+#   final_voicing   stem-final p/c/t/k voices before a vowel-initial suffix.
+#                   Required on every stem ending in one of those four, because
+#                   it cannot be predicted from the surface form:
+#                   kitap -> kitabi but sepet -> sepeti.
+#   vowel_deletion  the last stem vowel drops before a vowel-initial suffix:
+#                   burun -> burnu. A closed class, listed explicitly.
+#   harmony_class   overrides the backness derived from the last vowel. Only
+#                   present on disharmonic loans: saat is back on the surface
+#                   and takes front suffixes (saatler).
+#   review          anything a native speaker should confirm before this ships.
+#
+# frequency_band is deliberately absent. Bands come from a corpus list in
+# Phase 2; inventing them here would put unsourced numbers in the curriculum.
+# See docs/provenance.md.
+
+# ── People ───────────────────────────────────────────────────────────────────
+- { id: adam,     lemma: adam,     pos: noun, gloss: man }
+- { id: kadın,    lemma: kadın,    pos: noun, gloss: woman }
+- { id: çocuk,    lemma: çocuk,    pos: noun, gloss: child,    final_voicing: true }
+- { id: kız,      lemma: kız,      pos: noun, gloss: girl }
+- { id: oğlan,    lemma: oğlan,    pos: noun, gloss: boy }
+- { id: anne,     lemma: anne,     pos: noun, gloss: mother }
+- { id: baba,     lemma: baba,     pos: noun, gloss: father }
+- { id: kardeş,   lemma: kardeş,   pos: noun, gloss: sibling }
+- { id: arkadaş,  lemma: arkadaş,  pos: noun, gloss: friend }
+- { id: öğrenci,  lemma: öğrenci,  pos: noun, gloss: student }
+- { id: öğretmen, lemma: öğretmen, pos: noun, gloss: teacher }
+- { id: doktor,   lemma: doktor,   pos: noun, gloss: doctor }
+- { id: insan,    lemma: insan,    pos: noun, gloss: human being }
+- { id: komşu,    lemma: komşu,    pos: noun, gloss: neighbour }
+- { id: müdür,    lemma: müdür,    pos: noun, gloss: manager }
+- { id: asker,    lemma: asker,    pos: noun, gloss: soldier }
+- { id: oğul,     lemma: oğul,     pos: noun, gloss: son, vowel_deletion: true }
+
+# ── Body ─────────────────────────────────────────────────────────────────────
+- { id: göz,      lemma: göz,      pos: noun, gloss: eye }
+- { id: el,       lemma: el,       pos: noun, gloss: hand }
+- { id: ayak,     lemma: ayak,     pos: noun, gloss: foot,     final_voicing: true }
+- { id: baş,      lemma: baş,      pos: noun, gloss: head }
+- { id: kulak,    lemma: kulak,    pos: noun, gloss: ear,      final_voicing: true }
+- { id: burun,    lemma: burun,    pos: noun, gloss: nose,     vowel_deletion: true }
+- { id: ağız,     lemma: ağız,     pos: noun, gloss: mouth,    vowel_deletion: true }
+- { id: karın,    lemma: karın,    pos: noun, gloss: belly,    vowel_deletion: true }
+- { id: alın,     lemma: alın,     pos: noun, gloss: forehead, vowel_deletion: true }
+- { id: boyun,    lemma: boyun,    pos: noun, gloss: neck,     vowel_deletion: true }
+- { id: göğüs,    lemma: göğüs,    pos: noun, gloss: chest,    vowel_deletion: true }
+- { id: parmak,   lemma: parmak,   pos: noun, gloss: finger,   final_voicing: true }
+- { id: bacak,    lemma: bacak,    pos: noun, gloss: leg,      final_voicing: true }
+- { id: dudak,    lemma: dudak,    pos: noun, gloss: lip,      final_voicing: true }
+- { id: yanak,    lemma: yanak,    pos: noun, gloss: cheek,    final_voicing: true }
+- { id: yürek,    lemma: yürek,    pos: noun, gloss: heart,    final_voicing: true }
+- { id: diş,      lemma: diş,      pos: noun, gloss: tooth }
+- { id: saç,      lemma: saç,      pos: noun, gloss: hair,     final_voicing: false }
+
+# ── Home and objects ─────────────────────────────────────────────────────────
+- { id: ev,       lemma: ev,       pos: noun, gloss: house }
+- { id: oda,      lemma: oda,      pos: noun, gloss: room }
+- { id: kapı,     lemma: kapı,     pos: noun, gloss: door }
+- { id: pencere,  lemma: pencere,  pos: noun, gloss: window }
+- { id: masa,     lemma: masa,     pos: noun, gloss: table }
+- { id: sandalye, lemma: sandalye, pos: noun, gloss: chair }
+- { id: yatak,    lemma: yatak,    pos: noun, gloss: bed,      final_voicing: true }
+- { id: dolap,    lemma: dolap,    pos: noun, gloss: cupboard, final_voicing: true }
+- { id: kitap,    lemma: kitap,    pos: noun, gloss: book,     final_voicing: true }
+- { id: kalem,    lemma: kalem,    pos: noun, gloss: pen }
+- { id: kâğıt,    lemma: kâğıt,    pos: noun, gloss: paper,    final_voicing: true, harmony_class: back, review: [circumflex_spelling, harmony_class] }
+- { id: çanta,    lemma: çanta,    pos: noun, gloss: bag }
+- { id: anahtar,  lemma: anahtar,  pos: noun, gloss: key }
+- { id: araba,    lemma: araba,    pos: noun, gloss: car }
+- { id: telefon,  lemma: telefon,  pos: noun, gloss: telephone }
+- { id: bilgisayar, lemma: bilgisayar, pos: noun, gloss: computer }
+- { id: kutu,     lemma: kutu,     pos: noun, gloss: box }
+- { id: bardak,   lemma: bardak,   pos: noun, gloss: drinking glass, final_voicing: true }
+- { id: tabak,    lemma: tabak,    pos: noun, gloss: plate,    final_voicing: true }
+- { id: bıçak,    lemma: bıçak,    pos: noun, gloss: knife,    final_voicing: true }
+- { id: sepet,    lemma: sepet,    pos: noun, gloss: basket,   final_voicing: false }
+- { id: perde,    lemma: perde,    pos: noun, gloss: curtain }
+- { id: ütü,      lemma: ütü,      pos: noun, gloss: "iron (appliance)" }
+- { id: ocak,     lemma: ocak,     pos: noun, gloss: stove,    final_voicing: true }
+- { id: kap,      lemma: kap,      pos: noun, gloss: container, final_voicing: true, review: [final_voicing] }
+
+# ── Food and drink ───────────────────────────────────────────────────────────
+- { id: ekmek,    lemma: ekmek,    pos: noun, gloss: bread,    final_voicing: true }
+- { id: su,       lemma: su,       pos: noun, gloss: water,    review: [irregular_genitive_suyun] }
+- { id: süt,      lemma: süt,      pos: noun, gloss: milk,     final_voicing: false, review: [final_voicing] }
+- { id: çay,      lemma: çay,      pos: noun, gloss: tea }
+- { id: kahve,    lemma: kahve,    pos: noun, gloss: coffee }
+- { id: yemek,    lemma: yemek,    pos: noun, gloss: food,     final_voicing: true }
+- { id: et,       lemma: et,       pos: noun, gloss: meat,     final_voicing: false }
+- { id: balık,    lemma: balık,    pos: noun, gloss: fish,     final_voicing: true }
+- { id: elma,     lemma: elma,     pos: noun, gloss: apple }
+- { id: portakal, lemma: portakal, pos: noun, gloss: orange }
+- { id: armut,    lemma: armut,    pos: noun, gloss: pear,     final_voicing: true }
+- { id: şeker,    lemma: şeker,    pos: noun, gloss: sugar }
+- { id: tuz,      lemma: tuz,      pos: noun, gloss: salt }
+- { id: peynir,   lemma: peynir,   pos: noun, gloss: cheese }
+- { id: tat,      lemma: tat,      pos: noun, gloss: taste,    final_voicing: true }
+
+# ── Places ───────────────────────────────────────────────────────────────────
+- { id: okul,     lemma: okul,     pos: noun, gloss: school }
+- { id: şehir,    lemma: şehir,    pos: noun, gloss: city,     vowel_deletion: true }
+- { id: köy,      lemma: köy,      pos: noun, gloss: village }
+- { id: sokak,    lemma: sokak,    pos: noun, gloss: street,   final_voicing: true }
+- { id: yol,      lemma: yol,      pos: noun, gloss: road }
+- { id: bahçe,    lemma: bahçe,    pos: noun, gloss: garden }
+- { id: deniz,    lemma: deniz,    pos: noun, gloss: sea }
+- { id: dağ,      lemma: dağ,      pos: noun, gloss: mountain }
+- { id: orman,    lemma: orman,    pos: noun, gloss: forest }
+- { id: pazar,    lemma: pazar,    pos: noun, gloss: market }
+- { id: durak,    lemma: durak,    pos: noun, gloss: "stop (bus)", final_voicing: true }
+- { id: park,     lemma: park,     pos: noun, gloss: park,     final_voicing: false, review: [final_voicing] }
+- { id: hastane,  lemma: hastane,  pos: noun, gloss: hospital }
+- { id: lokanta,  lemma: lokanta,  pos: noun, gloss: restaurant }
+- { id: ülke,     lemma: ülke,     pos: noun, gloss: country }
+- { id: konak,    lemma: konak,    pos: noun, gloss: mansion,  final_voicing: true }
+
+# ── Nature and time ──────────────────────────────────────────────────────────
+- { id: ağaç,     lemma: ağaç,     pos: noun, gloss: tree,     final_voicing: true }
+- { id: yaprak,   lemma: yaprak,   pos: noun, gloss: leaf,     final_voicing: true }
+- { id: toprak,   lemma: toprak,   pos: noun, gloss: soil,     final_voicing: true }
+- { id: çiçek,    lemma: çiçek,    pos: noun, gloss: flower,   final_voicing: true }
+- { id: gök,      lemma: gök,      pos: noun, gloss: sky,      final_voicing: true, review: [final_voicing] }
+- { id: bulut,    lemma: bulut,    pos: noun, gloss: cloud,    final_voicing: false, review: [final_voicing] }
+- { id: hava,     lemma: hava,     pos: noun, gloss: "air, weather" }
+- { id: gün,      lemma: gün,      pos: noun, gloss: day }
+- { id: gece,     lemma: gece,     pos: noun, gloss: night }
+- { id: sabah,    lemma: sabah,    pos: noun, gloss: morning }
+- { id: akşam,    lemma: akşam,    pos: noun, gloss: evening }
+- { id: hafta,    lemma: hafta,    pos: noun, gloss: week }
+- { id: yıl,      lemma: yıl,      pos: noun, gloss: year }
+- { id: saat,     lemma: saat,     pos: noun, gloss: "hour, clock", final_voicing: false, harmony_class: front, review: [harmony_class] }
+- { id: vakit,    lemma: vakit,    pos: noun, gloss: time,     final_voicing: false, vowel_deletion: true, harmony_class: front, review: [harmony_class, final_voicing] }
+- { id: kuş,      lemma: kuş,      pos: noun, gloss: bird }
+- { id: köpek,    lemma: köpek,    pos: noun, gloss: dog,      final_voicing: true }
+- { id: kedi,     lemma: kedi,     pos: noun, gloss: cat }
+- { id: at,       lemma: at,       pos: noun, gloss: horse,    final_voicing: false }
+- { id: kanat,    lemma: kanat,    pos: noun, gloss: wing,     final_voicing: true }
+
+# ── Abstract ─────────────────────────────────────────────────────────────────
+- { id: iş,       lemma: iş,       pos: noun, gloss: work }
+- { id: söz,      lemma: söz,      pos: noun, gloss: "word, promise" }
+- { id: dil,      lemma: dil,      pos: noun, gloss: "language, tongue" }
+- { id: ses,      lemma: ses,      pos: noun, gloss: "sound, voice" }
+- { id: ad,       lemma: ad,       pos: noun, gloss: name }
+- { id: yer,      lemma: yer,      pos: noun, gloss: place }
+- { id: şey,      lemma: şey,      pos: noun, gloss: thing }
+- { id: para,     lemma: para,     pos: noun, gloss: money }
+- { id: hayat,    lemma: hayat,    pos: noun, gloss: life,     final_voicing: false, review: [final_voicing] }
+- { id: dünya,    lemma: dünya,    pos: noun, gloss: world }
+- { id: sevgi,    lemma: sevgi,    pos: noun, gloss: love }
+- { id: umut,     lemma: umut,     pos: noun, gloss: hope,     final_voicing: true }
+- { id: dilek,    lemma: dilek,    pos: noun, gloss: wish,     final_voicing: true }
+- { id: gerçek,   lemma: gerçek,   pos: noun, gloss: truth,    final_voicing: true }
+- { id: amaç,     lemma: amaç,     pos: noun, gloss: aim,      final_voicing: true }
+- { id: cevap,    lemma: cevap,    pos: noun, gloss: answer,   final_voicing: true }
+- { id: sebep,    lemma: sebep,    pos: noun, gloss: reason,   final_voicing: true }
+- { id: hesap,    lemma: hesap,    pos: noun, gloss: "account, calculation", final_voicing: true }
+- { id: cep,      lemma: cep,      pos: noun, gloss: pocket,   final_voicing: true }
+- { id: kalp,     lemma: kalp,     pos: noun, gloss: heart,    final_voicing: true, harmony_class: front, review: [harmony_class] }
+- { id: renk,     lemma: renk,     pos: noun, gloss: colour,   final_voicing: true, harmony_class: front, review: [harmony_class] }
+- { id: ahenk,    lemma: ahenk,    pos: noun, gloss: harmony,  final_voicing: true, harmony_class: front, review: [harmony_class] }
+- { id: rol,      lemma: rol,      pos: noun, gloss: role,     harmony_class: front, review: [harmony_class] }
+- { id: güç,      lemma: güç,      pos: noun, gloss: power,    final_voicing: true }
+- { id: uç,       lemma: uç,       pos: noun, gloss: "tip, end", final_voicing: true }
+- { id: borç,     lemma: borç,     pos: noun, gloss: debt,     final_voicing: true }
+- { id: ilaç,     lemma: ilaç,     pos: noun, gloss: medicine, final_voicing: true }
+- { id: kayıp,    lemma: kayıp,    pos: noun, gloss: loss,     final_voicing: true, vowel_deletion: true }
+- { id: fikir,    lemma: fikir,    pos: noun, gloss: idea,     vowel_deletion: true }
+- { id: isim,     lemma: isim,     pos: noun, gloss: name,     vowel_deletion: true }
+- { id: resim,    lemma: resim,    pos: noun, gloss: picture,  vowel_deletion: true }
+- { id: akıl,     lemma: akıl,     pos: noun, gloss: mind,     vowel_deletion: true }
+- { id: sanat,    lemma: sanat,    pos: noun, gloss: art,      final_voicing: false }
+- { id: devlet,   lemma: devlet,   pos: noun, gloss: state,    final_voicing: false }
+- { id: millet,   lemma: millet,   pos: noun, gloss: nation,   final_voicing: false }
+
+# ── Adjectives (they inflect as nominals in predication) ─────────────────────
+- { id: güzel,    lemma: güzel,    pos: adjective, gloss: beautiful }
+- { id: büyük,    lemma: büyük,    pos: adjective, gloss: big,   final_voicing: true, review: [final_voicing] }
+- { id: küçük,    lemma: küçük,    pos: adjective, gloss: small, final_voicing: true, review: [final_voicing] }
+- { id: iyi,      lemma: iyi,      pos: adjective, gloss: good }
+- { id: kötü,     lemma: kötü,     pos: adjective, gloss: bad }
+- { id: yeni,     lemma: yeni,     pos: adjective, gloss: new }
+- { id: eski,     lemma: eski,     pos: adjective, gloss: old }
+- { id: uzun,     lemma: uzun,     pos: adjective, gloss: "long, tall" }
+- { id: kısa,     lemma: kısa,     pos: adjective, gloss: short }
+- { id: sıcak,    lemma: sıcak,    pos: adjective, gloss: hot,   final_voicing: true }
+- { id: soğuk,    lemma: soğuk,    pos: adjective, gloss: cold,  final_voicing: true }
+- { id: zor,      lemma: zor,      pos: adjective, gloss: difficult }
+- { id: kolay,    lemma: kolay,    pos: adjective, gloss: easy }
+- { id: mutlu,    lemma: mutlu,    pos: adjective, gloss: happy }
+- { id: yorgun,   lemma: yorgun,   pos: adjective, gloss: tired }
+- { id: aç,       lemma: aç,       pos: adjective, gloss: hungry, final_voicing: false, review: [final_voicing] }
+- { id: genç,     lemma: genç,     pos: adjective, gloss: young,  final_voicing: true }
+- { id: top,      lemma: top,      pos: noun, gloss: ball,        final_voicing: false }
+- { id: ok,       lemma: ok,       pos: noun, gloss: arrow,       final_voicing: false, review: [final_voicing] }
