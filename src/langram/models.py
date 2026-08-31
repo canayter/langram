@@ -29,6 +29,7 @@ class Suffix:
     slot: int
     glosses: tuple[str, ...] = ()
     triggers_pronominal_n: bool = False
+    cannot_follow: tuple[str, ...] = ()
     review: tuple[str, ...] = ()
 
     @property

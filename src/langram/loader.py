@@ -73,6 +73,7 @@ def load_language(code: str = "tr", root: Path | None = None) -> Language:
             slot=int(raw["slot"]),
             glosses=tuple(raw.get("glosses", ())),
             triggers_pronominal_n=bool(raw.get("triggers_pronominal_n", False)),
+            cannot_follow=tuple(raw.get("cannot_follow", ())),
             review=tuple(raw.get("review", ())),
         )
         if suffix.id in suffixes:

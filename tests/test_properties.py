@@ -27,7 +27,17 @@ def legal_suffix_chains():
         st.one_of(st.none(), st.sampled_from(SUFFIX_BY_SLOT[2])),
         st.one_of(st.none(), st.sampled_from(SUFFIX_BY_SLOT[3])),
         st.one_of(st.none(), st.sampled_from(SUFFIX_BY_SLOT[4])),
-    ).map(lambda t: [s for s in t if s])
+    ).map(lambda t: [s for s in t if s]).filter(_is_legal)
+
+
+def _is_legal(chain):
+    """Drop sequences the language blocks, so the properties below only ever
+    look at words Turkish would actually form."""
+    for i, suffix_id in enumerate(chain):
+        blocked = TR.suffixes[suffix_id].cannot_follow
+        if any(earlier in blocked for earlier in chain[:i]):
+            return False
+    return True
 
 
 SLOW = settings(max_examples=400, suppress_health_check=[HealthCheck.too_slow], deadline=None)

@@ -58,6 +58,10 @@
   slot: 2
   glosses: [their]
   triggers_pronominal_n: true
+  # The plural is already inside this suffix, so Turkish blocks the sequence:
+  # there is no *kitaplarlari. "kitaplari" carries both readings, which is why
+  # "his books" and "their books" are identical on the surface.
+  cannot_follow: [PL]
 
 - id: NOM
   surface: ""

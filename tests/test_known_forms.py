@@ -8,7 +8,7 @@ own cause.
 """
 import pytest
 
-from langram import load_language
+from langram import MorphotacticError, load_language
 
 TR = load_language("tr")
 
@@ -195,6 +195,23 @@ class TestDerivationTrace:
     def test_plain_stem_records_no_voicing(self):
         rules = [s.rule for s in TR.inflect("ev", ["ACC"]).steps]
         assert "final_voicing" not in rules
+
+
+class TestMorphotactics:
+    """Sequences Turkish does not allow are refused, not invented."""
+
+    def test_plural_then_third_person_plural_possessive_is_refused(self):
+        # The plural already sits inside -lArI. There is no *kitaplarları;
+        # "kitapları" is simply ambiguous between his books and their books.
+        with pytest.raises(MorphotacticError, match="POSS3PL cannot follow PL"):
+            TR.inflect("kitap", ["PL", "POSS3PL"])
+
+    def test_third_person_plural_possessive_alone_is_fine(self):
+        assert surface("kitap", "POSS3PL") == "kitapları"
+
+    def test_other_possessives_stack_on_the_plural(self):
+        assert surface("kitap", "PL", "POSS1SG") == "kitaplarım"
+        assert surface("kitap", "PL", "POSS2PL") == "kitaplarınız"
 
 
 class TestKnownGaps:

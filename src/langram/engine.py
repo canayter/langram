@@ -16,6 +16,10 @@ from .phonology import Phonology
 _SURFACE = re.compile(r"^-?(?:\((?P<optional>[^)]+)\))?(?P<body>.*)$")
 
 
+class MorphotacticError(ValueError):
+    """A suffix sequence Turkish does not allow."""
+
+
 def _parse(suffix: Suffix) -> tuple[str | None, str]:
     m = _SURFACE.match(suffix.surface)
     if not m:                                   # pragma: no cover - guarded by schema
@@ -46,8 +50,19 @@ def inflect(
     stem_exposed = True          # the stem's right edge is still adjacent to the suffix
     stem_form = form
     previous: Suffix | None = None
+    applied: list[str] = []
 
     for suffix in suffixes:
+        # Morphotactics before phonology: refuse sequences the language blocks
+        # rather than generating a form no speaker would produce.
+        clash = [s for s in suffix.cannot_follow if s in applied]
+        if clash:
+            raise MorphotacticError(
+                f"{suffix.id} cannot follow {', '.join(clash)}: "
+                f"{lexeme.lemma} + {' + '.join(applied + [suffix.id])} is not a Turkish word"
+            )
+        applied.append(suffix.id)
+
         if not suffix.is_overt:
             steps.append(DerivationStep(
                 "zero_marker",

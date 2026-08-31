@@ -73,6 +73,21 @@ Turkish National Corpus or TS Corpus. Those numbers do not exist in this repo
 yet, and writing plausible-looking bands would be inventing data that later
 drives the scheduler. Bands arrive in Phase 2 with the real list.
 
+## Morphotactics
+
+Only one constraint is declared so far: POSS3PL cannot follow PL. The plural is
+already inside `-lArI`, so there is no *kitaplarlari, and "kitaplari" is
+genuinely ambiguous between "his books" and "their books". The engine raises
+MorphotacticError rather than generating a form no speaker would produce.
+
+**Confirm this.** It is a structural claim, not a lexical one, and it is the
+kind of thing that is easy to be confidently wrong about. Other possessives
+stack on the plural normally (kitaplarim, kitaplariniz).
+
+This was found by inflecting forms that were not in the test table. Before the
+constraint existed the engine produced "kitaplarlarindan" without complaint,
+which is a reminder that a green suite proves only what it asked.
+
 ## Known modelling gaps
 
 - `su` has an irregular genitive (suyun, not the regular form the engine
