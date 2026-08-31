@@ -12,10 +12,13 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event, select
 from sqlalchemy.orm import sessionmaker
 
-from langram.api.deps import get_session
+from langram.api.deps import get_language, get_session
 from langram.api.main import create_app
-from langram.db.models import Base, Response, ReviewCard, User
+from langram.api.security import read_item_token
+from langram.db.models import Base, Concept, Exercise, Response, ReviewCard, User
 from langram.db.seed import seed
+from langram.generators import assemble
+from langram.tutor import ExerciseSpec
 
 
 @pytest.fixture(scope="module")
@@ -66,6 +69,35 @@ def _answer(learner, item, option, attempt=1, latency=None):
     if latency is not None:
         body["latency_ms"] = latency
     return learner.post("/api/session/answer", json=body).json()
+
+
+def _rebuild(factory, item):
+    """The item as the server sees it, so a test can answer any kind correctly.
+
+    Uses the same token and the same generator the endpoint uses, rather than
+    guessing from the payload, which would only work for multiple choice.
+    """
+    token = read_item_token(item["item_token"])
+    with factory() as s:
+        exercise = s.get(Exercise, token["e"])
+        concept = s.get(Concept, token["c"])
+        return assemble(ExerciseSpec.of(exercise, concept), get_language(), token["s"])
+
+
+def _right(factory, item):
+    return _rebuild(factory, item).answer
+
+
+def _wrong(factory, item):
+    """An answer that is definitely not the right one."""
+    correct = _right(factory, item)
+    options = item["payload"].get("options") or []
+    if options and isinstance(options[0], dict):
+        options = [o["id"] for o in options]
+    for option in options:
+        if option != correct:
+            return option
+    return correct + "x"
 
 
 class TestAuth:
@@ -130,47 +162,45 @@ class TestCurriculum:
 class TestTheLoop:
     def test_serves_an_item(self, learner):
         item = _first_item(learner)
-        assert item["payload"]["stem"]
-        assert len(item["payload"]["options"]) >= 2
         assert item["prompt"]
+        assert item["payload"]["kind"]
         assert item["unit_id"] == "unit-01-vowel-harmony"
 
-    def test_answer_never_leaves_the_server(self, learner):
+    def test_comprehension_comes_before_production(self, learner):
+        """Input before output is a commitment, so the first thing a learner
+        meets must not ask them to produce anything."""
+        item = _first_item(learner)
+        assert item["stage"] == "structured_input"
+
+    def test_answer_never_leaves_the_server(self, learner, factory):
         item = _first_item(learner)
         assert "answer" not in item
         assert "derivation" not in item
-        assert "answer" not in item["payload"]
-        # The right option is among them, but nothing says which.
-        assert set(item["payload"]) == {"stem", "gloss", "suffix", "options"}
+        payload = item["payload"]
+        assert "answer" not in payload
+        # The right option is necessarily among them; nothing may say which.
+        assert not any(k in payload for k in ("correct", "correct_index", "is_correct"))
+        assert _right(factory, item), "the server can still work out the answer"
 
-    def test_a_correct_answer_returns_the_derivation(self, learner):
+    def test_a_correct_answer_returns_the_derivation(self, learner, factory):
         item = _first_item(learner)
-        stem = item["payload"]["stem"]
-        rights = [r for r in (_answer(learner, item, o, latency=1500)
-                              for o in item["payload"]["options"]) if r["correct"]]
-        assert len(rights) == 1, "exactly one option should be correct"
-        good = rights[0]
-        assert good["answer"].startswith(stem[:2])
+        good = _answer(learner, item, _right(factory, item), latency=1500)
+        assert good["correct"]
         assert good["derivation"], "the trace is the product, not a debug aid"
         assert good["due_at"], "a correct answer should schedule a review"
         assert 0 < good["mastery"] <= 1
 
-    def test_a_wrong_answer_is_classified_by_cause(self, learner):
+    def test_a_wrong_answer_is_classified_by_cause(self, learner, factory):
         item = _first_item(learner)
-        wrong = next((o for o in item["payload"]["options"]
-                      if not _answer(learner, item, o)["correct"]), None)
-        assert wrong is not None
-        result = _answer(learner, item, wrong, attempt=1)
+        result = _answer(learner, item, _wrong(factory, item), attempt=1)
+        assert not result["correct"]
         assert result["tags"], "a wrong answer should name the rule that was missed"
         assert result["kind"] == "clarification"
 
-    def test_feedback_escalates(self, learner):
+    def test_feedback_escalates(self, learner, factory):
         """Prompts before recasts: three pushes before the answer is handed over."""
         item = _first_item(learner)
-        wrong = next((o for o in item["payload"]["options"]
-                      if not _answer(learner, item, o)["correct"]), None)
-        assert wrong is not None
-
+        wrong = _wrong(factory, item)
         kinds = [_answer(learner, item, wrong, attempt=n)["kind"] for n in (1, 2, 3, 4)]
         assert kinds == ["clarification", "metalinguistic", "elicitation", "explicit"]
 
@@ -180,7 +210,7 @@ class TestTheLoop:
 
     def test_responses_are_persisted_with_latency(self, learner, factory):
         item = _first_item(learner)
-        _answer(learner, item, item["payload"]["options"][0], latency=2750)
+        _answer(learner, item, _right(factory, item), latency=2750)
         with factory() as s:
             row = s.scalars(select(Response).order_by(Response.id.desc())).first()
         assert row.latency_ms == 2750
@@ -188,13 +218,13 @@ class TestTheLoop:
 
     def test_a_settled_item_becomes_a_review_card(self, learner, factory):
         item = _first_item(learner)
-        for option in item["payload"]["options"]:
-            if _answer(learner, item, option)["correct"]:
-                break
+        assert _answer(learner, item, _right(factory, item))["correct"]
         with factory() as s:
             cards = s.scalars(select(ReviewCard)).all()
         assert cards
         assert all(c.fsrs_state.get("stability") is not None for c in cards)
+        # The spec is stored so the same item can come back on review.
+        assert all(c.item_spec.get("lemma") for c in cards)
 
     def test_interleaving_avoids_the_concept_just_seen(self, learner):
         first = _first_item(learner)

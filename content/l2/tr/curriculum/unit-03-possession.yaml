@@ -49,6 +49,7 @@ concepts:
         prompt: "Did you hear my house or your house?"
         difficulty: 3
         params:
+          modality: audio
           contrast: person
           persons: [POSS1SG, POSS2SG]
       - id: build-possessive

@@ -84,15 +84,24 @@ fails CI rather than reaching a learner.
 
 ## Phase status
 
-Phases 1 to 3 are complete: the morphology engine, the content pipeline, and
-the core web app with one exercise type end to end.
+Phases 1 to 4 are complete: the morphology engine, the content pipeline, the
+core web app, and all seven exercise generators.
 
-Phase 4 is exercise variety. Six of the seven generators in
-`src/langram/generators/` are still declared but not built, and the three
-structured input types are the ones that matter: until they exist, the tutor
-serves guided output first because there is nothing earlier to serve. The
-selector already prefers structured input, so building those generators changes
-what learners get without changing the tutor.
+Input before output is now real rather than only enforced in the validator. The
+tutor orders by unit and then by stage, and the structured input generators
+exist, so a learner meets a concept by noticing it before being asked to build
+anything.
+
+Three exercises in the curriculum are deliberately not served yet, and say so
+when asked to build:
+
+- two person contrasts, which are two well formed words differing only in who
+  is being talked about. Readable on paper, so they need Phase 5 audio.
+- one register comparison of bare predication against -DIr, which rests on a
+  claim flagged for native speaker review.
+
+Phase 5 is perception training: recorded talkers, forced choice identification,
+d-prime tracking.
 
 Secrets: set LANGRAM_SECRET_KEY in any deployment. Without it a new signing key
 is generated per process, which logs every learner out on restart.

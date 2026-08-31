@@ -18,8 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .db.models import Concept, Exercise, ReviewCard, Unit, UserConceptMastery
-from .generators import REGISTRY, generate
-from .generators.suffix_builder import assemble
+from .generators import REGISTRY, GenerationError, assemble, generate
 
 # Comprehension before production. A concept's guided output is only reached
 # when its structured input has no generator, which is temporary.
@@ -27,6 +26,30 @@ STAGE_ORDER = {"structured_input": 0, "guided_output": 1, "free_output": 2,
                "perception": 3, "review": 4}
 
 MASTERY_THRESHOLD = 0.85
+
+
+@dataclass(frozen=True)
+class ExerciseSpec:
+    """What a generator needs, without handing it a database row.
+
+    teaches_suffixes comes from the concept, so an exercise that does not narrow
+    the suffix set inherits it rather than repeating it.
+    """
+    id: str
+    concept_id: str
+    generator: str
+    stage: str
+    prompt: str
+    params: dict
+    teaches_suffixes: tuple[str, ...] = ()
+
+    @classmethod
+    def of(cls, exercise: Exercise, concept: Concept) -> "ExerciseSpec":
+        return cls(
+            id=exercise.id, concept_id=exercise.concept_id, generator=exercise.generator,
+            stage=exercise.stage, prompt=exercise.prompt, params=dict(exercise.params or {}),
+            teaches_suffixes=tuple(concept.teaches_suffixes or ()),
+        )
 
 
 @dataclass(frozen=True)
@@ -77,8 +100,13 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         if exercise is not None and _implemented(exercise.generator):
             concept = session.get(Concept, exercise.concept_id)
             unit = session.get(Unit, concept.unit_id)
-            item = assemble(exercise, language, lemma, suffix_ids, rng)
-            return Served(item, "review", unit.id, unit.title, concept.name)
+            spec = dict(due.item_spec or {}) or {"lemma": lemma, "suffixes": suffix_ids}
+            try:
+                item = assemble(ExerciseSpec.of(exercise, concept), language, spec)
+                return Served(item, "review", unit.id, unit.title, concept.name)
+            except (GenerationError, KeyError, ValueError):
+                # The card refers to something the content no longer supports.
+                session.delete(due)
         # The exercise it referred to is gone, so the card is stale.
         session.delete(due)
 
@@ -108,12 +136,23 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         raise LookupError("no exercise has an implemented generator yet")
 
     fresh = [c for c in candidates if c[1].id != avoid_concept] or candidates
-    best = min((u.order, STAGE_ORDER.get(e.stage, 9)) for e, c, u in fresh)
-    tier = [c for c in fresh if (c[2].order, STAGE_ORDER.get(c[0].stage, 9)) == best]
 
-    exercise, concept, unit = rng.choice(tier)
-    item = generate(exercise, language, rng)
-    return Served(item, "new", unit.id, unit.title, concept.name)
+    # Work outwards from the earliest unit and the earliest stage. An exercise
+    # that cannot build an item right now is skipped rather than fatal: one
+    # unbuildable spec should not end a session.
+    ordered = sorted(fresh, key=lambda row: (row[2].order, STAGE_ORDER.get(row[0].stage, 9)))
+    for tier_key in dict.fromkeys((u.order, STAGE_ORDER.get(e.stage, 9)) for e, c, u in ordered):
+        tier = [row for row in ordered
+                if (row[2].order, STAGE_ORDER.get(row[0].stage, 9)) == tier_key]
+        rng.shuffle(tier)
+        for exercise, concept, unit in tier:
+            try:
+                item = generate(ExerciseSpec.of(exercise, concept), language, rng)
+            except (GenerationError, NotImplementedError):
+                continue
+            return Served(item, "new", unit.id, unit.title, concept.name)
+
+    raise LookupError("no exercise can produce an item for this learner yet")
 
 
 def record_mastery(session: Session, user_id: int, concept_id: str, correct: bool) -> float:

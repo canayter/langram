@@ -136,3 +136,65 @@ def feedback(language, lexeme: Lexeme, suffix_ids: Sequence[str], given: str,
             for s in result.steps
         ],
     }
+
+
+# ── feedback per kind of item ────────────────────────────────────────────────
+# A comprehension item is not a production error and should not be told it is
+# one. Each mode escalates the same way: push, explain, elicit, then tell.
+
+_COMPREHENSION_CLUES = {
+    "meaning": "The ending is doing the work here. Read it again and ask what it adds.",
+    "suffix": "Two of these could attach to this word. Only one carries the meaning you were given.",
+}
+
+
+def feedback_for_item(language, item, given: str, attempt: int, *, correct: bool) -> dict:
+    """One rung of the ladder, for any kind of item."""
+    if correct:
+        return {"kind": "correct", "tags": [], "message": "Correct.", "answer": item.answer}
+
+    if item.diagnosis == "morphological" and item.lemma:
+        return feedback(language, language.lexeme(item.lemma), list(item.suffixes),
+                        given, item.answer, attempt)
+
+    if item.diagnosis == "judgement":
+        return _judgement_feedback(item, attempt)
+    return _comprehension_feedback(item, attempt)
+
+
+def _judgement_feedback(item, attempt: int) -> dict:
+    broken = item.extra.get("broken_rule")
+    tags = [broken] if broken else []
+    if attempt <= 1:
+        return {"kind": "clarification", "tags": tags,
+                "message": "Not quite. Look at the ending once more and ask whether it fits."}
+    if attempt == 2:
+        clue = _CLUES.get(broken or "", "Check the suffix against the last vowel of the stem.")
+        return {"kind": "metalinguistic", "tags": tags, "message": clue}
+    if attempt == 3:
+        return {"kind": "elicitation", "tags": tags,
+                "message": "Decide again, and this time say which rule settles it.",
+                "elicitation": item.payload.get("form", "")}
+
+    shown = item.extra.get("shown", item.payload.get("form", ""))
+    if item.extra.get("well_formed"):
+        message = f"{shown} is a possible Turkish word."
+    else:
+        message = f"{shown} is not possible. It should be {item.answer_form()}."
+    return {"kind": "explicit", "tags": tags, "message": message, "answer": item.answer}
+
+
+def _comprehension_feedback(item, attempt: int) -> dict:
+    mode = "suffix" if item.generator == "cloze_suffix_choice" else "meaning"
+    tags = ["form_not_processed"]
+    if attempt <= 1:
+        return {"kind": "clarification", "tags": tags,
+                "message": "Not quite. The ending is the only thing that tells you."}
+    if attempt == 2:
+        return {"kind": "metalinguistic", "tags": tags, "message": _COMPREHENSION_CLUES[mode]}
+    if attempt == 3:
+        return {"kind": "elicitation", "tags": tags,
+                "message": "Try once more, looking only at what comes after the stem.",
+                "elicitation": item.payload.get("form") or item.payload.get("stem", "")}
+    return {"kind": "explicit", "tags": tags,
+            "message": f"The answer is {item.answer}.", "answer": item.answer}

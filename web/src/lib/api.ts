@@ -2,6 +2,20 @@
 
 export type Suffix = { id: string; notation: string; glosses: string[] }
 
+// The payload is generator specific and discriminated by `kind`, which is what
+// lets a new exercise type reach the UI without changing the envelope.
+export type SuffixOption = { id: string; notation: string; gloss: string }
+
+export type Payload =
+  | { kind: 'choose_form'; options: string[]; stem?: string; gloss?: string
+      suffix?: Suffix; option_prefix?: string; modality?: string }
+  | { kind: 'choose_meaning'; form: string; gloss: string; options: string[] }
+  | { kind: 'choose_letter'; form: string; stem: string; gloss: string; options: string[] }
+  | { kind: 'judge'; form: string; gloss: string; suffix: Suffix; options: string[] }
+  | { kind: 'choose_suffix'; stem: string; gloss: string; meaning: string
+      options: SuffixOption[] }
+  | { kind: 'type'; cue: string; stem: string; gloss: string; suffix: Suffix }
+
 export type Item = {
   item_token: string
   exercise_id: string
@@ -13,7 +27,7 @@ export type Item = {
   generator: string
   prompt: string
   source: 'new' | 'review'
-  payload: { stem: string; gloss: string; suffix: Suffix; options: string[] }
+  payload: Payload
 }
 
 export type DerivationStep = { rule: string; condition: string; result: string; form: string }

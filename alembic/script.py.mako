@@ -9,6 +9,9 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+# Autogenerate emits a bare Text() inside JSONB variants, so keep the name
+# in scope rather than discovering it at migration time.
+from sqlalchemy import Text  # noqa: F401
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.

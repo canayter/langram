@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, type AnswerResult, type Item } from '../lib/api'
 import { Derivation } from './Derivation'
+import { ItemBody } from './ItemBody'
 import { WhyPanel } from './WhyPanel'
 
 const TAG_LABELS: Record<string, string> = {
@@ -9,7 +10,15 @@ const TAG_LABELS: Record<string, string> = {
   stem_alternation: 'stem alternation',
   vowel_deletion: 'vowel deletion',
   buffer_missing: 'buffer consonant',
+  form_not_processed: 'the ending was skipped',
   unclassified: 'form',
+}
+
+const STAGE_LABELS: Record<string, string> = {
+  structured_input: 'Notice',
+  guided_output: 'Build',
+  free_output: 'Produce',
+  review: 'Review',
 }
 
 const primaryButton =
@@ -19,20 +28,6 @@ const primaryButton =
 const secondaryButton =
   'mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 ' +
   'hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800'
-
-function optionClass(state: 'idle' | 'correct' | 'wrong', disabled: boolean) {
-  const base =
-    'rounded-lg border px-4 py-2.5 font-mono text-lg transition-colors ' +
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 '
-  if (state === 'correct') {
-    return base + 'border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-100'
-  }
-  if (state === 'wrong') {
-    return base + 'border-red-400 bg-red-50 text-red-900 dark:bg-red-900/30 dark:text-red-100'
-  }
-  return base + 'border-slate-300 text-slate-800 dark:border-slate-600 dark:text-slate-100 ' +
-    (disabled ? 'opacity-50 ' : 'hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 ')
-}
 
 function Shell({ children, onSignOut }: { children: React.ReactNode; onSignOut: () => void }) {
   return (
@@ -84,13 +79,13 @@ export function SessionScreen({ onSignOut }: { onSignOut: () => void }) {
   // ladder has run out of prompts.
   const settled = Boolean(result?.correct || result?.kind === 'explicit')
 
-  async function choose(option: string) {
+  async function submit(value: string) {
     if (!item || settled) return
-    setChosen(option)
+    setChosen(value)
     try {
       const answered = await api.answer({
         item_token: item.item_token,
-        answer: option,
+        answer: value,
         attempt,
         latency_ms: Date.now() - shownAt.current,
       })
@@ -135,47 +130,27 @@ export function SessionScreen({ onSignOut }: { onSignOut: () => void }) {
             {item.concept_name}
           </h1>
         </div>
-        {item.source === 'review' && (
-          <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-            review
+        <div className="flex shrink-0 gap-2">
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            {STAGE_LABELS[item.stage] ?? item.stage}
           </span>
-        )}
+          {item.source === 'review' && (
+            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+              due
+            </span>
+          )}
+        </div>
       </div>
 
       <p className="mt-6 text-slate-700 dark:text-slate-300">{item.prompt}</p>
 
-      <div className="mt-4 flex flex-wrap items-baseline gap-2">
-        <span className="font-mono text-3xl text-slate-900 dark:text-slate-50">{item.payload.stem}</span>
-        <span className="font-mono text-2xl text-slate-400">+</span>
-        <span className="font-mono text-2xl text-indigo-600 dark:text-indigo-400">
-          {item.payload.suffix.notation}
-        </span>
-        {item.payload.gloss && (
-          <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">
-            ({item.payload.gloss}, {item.payload.suffix.glosses[0]})
-          </span>
-        )}
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label="Suffix shapes">
-        {item.payload.options.map((option) => {
-          const isChosen = chosen === option
-          let state: 'idle' | 'correct' | 'wrong' = 'idle'
-          if (isChosen && result) state = result.correct ? 'correct' : 'wrong'
-          return (
-            <button
-              key={option}
-              onClick={() => void choose(option)}
-              disabled={settled}
-              aria-pressed={isChosen}
-              className={optionClass(state, settled)}
-            >
-              {item.payload.stem}
-              <span className="font-semibold">{option}</span>
-            </button>
-          )
-        })}
-      </div>
+      <ItemBody
+        payload={item.payload}
+        chosen={chosen}
+        correct={result ? result.correct : null}
+        settled={settled}
+        onAnswer={(value) => void submit(value)}
+      />
 
       {result && (
         <div className="mt-6" aria-live="polite">
@@ -201,7 +176,10 @@ export function SessionScreen({ onSignOut }: { onSignOut: () => void }) {
             </p>
           )}
 
-          {result.derivation && <Derivation steps={result.derivation} result={result.answer} />}
+          {/* The trace always ends in the Turkish form. Passing result.answer
+              here would print "a" or "yes" for items whose answer is a letter
+              or a verdict rather than a word. */}
+          {result.derivation && <Derivation steps={result.derivation} />}
 
           {settled && (
             <button onClick={() => void load()} className={`${primaryButton} mt-6`} autoFocus>

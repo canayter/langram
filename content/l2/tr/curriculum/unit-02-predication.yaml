@@ -37,9 +37,10 @@ concepts:
       - id: four-way-listen
         stage: structured_input
         generator: minimal_pair_identification
-        prompt: "Which word did you hear?"
+        prompt: "Only one of these is possible Turkish. Which one?"
         difficulty: 2
         params:
+          modality: text
           contrast: suffix_vowel
           suffix: PRED1SG
           distractor: wrong_rounding
@@ -81,9 +82,12 @@ concepts:
       - id: person-contrast
         stage: structured_input
         generator: minimal_pair_identification
+        # Both forms are well formed and differ only in who is being talked
+        # about, so this genuinely needs audio. Waits for Phase 5.
         prompt: "Did you hear I am, or you are?"
         difficulty: 2
         params:
+          modality: audio
           contrast: person
           persons: [PRED1SG, PRED2SG]
       - id: say-what-you-are

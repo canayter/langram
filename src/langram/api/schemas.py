@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import datetime as dt
 
+from typing import Any
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -18,19 +20,6 @@ class TokenOut(BaseModel):
     is_guest: bool
 
 
-class SuffixOut(BaseModel):
-    id: str
-    notation: str
-    glosses: list[str]
-
-
-class ItemPayload(BaseModel):
-    stem: str
-    gloss: str
-    suffix: SuffixOut
-    options: list[str]
-
-
 class ItemOut(BaseModel):
     """What the client renders. The answer is deliberately absent."""
     item_token: str
@@ -42,7 +31,11 @@ class ItemOut(BaseModel):
     stage: str
     generator: str
     prompt: str
-    payload: ItemPayload
+    # Generator specific by design: a judgement shows a form and yes or no, a
+    # cloze shows suffixes, a typing item shows an English cue. Pinning one
+    # shape here would mean every new exercise type edits this file. The
+    # discriminator is payload["kind"].
+    payload: dict[str, Any]
     source: str
 
 

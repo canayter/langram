@@ -2,7 +2,8 @@
 
 The answer never leaves the server before the learner has committed to one. What
 goes out is a signed token carrying the item's specification, which comes back on
-submission and is re-derived by the engine.
+submission and is rebuilt by the generator that made it. Nothing here knows what
+kind of exercise it is handling.
 """
 from __future__ import annotations
 
@@ -15,13 +16,17 @@ from sqlalchemy import select
 
 from ... import tutor
 from ...db.models import Concept, Exercise, Response, ReviewCard
-from ...diagnosis import feedback, normalize
+from ...diagnosis import feedback_for_item, normalize
+from ...generators import GenerationError, assemble
 from ...scheduling import review
 from ..deps import LanguageDep, SessionDep, UserDep
 from ..schemas import AnswerIn, AnswerOut, ItemOut
 from ..security import create_item_token, read_item_token
 
 router = APIRouter(prefix="/api/session", tags=["session"])
+
+# The number of prompts before the form is handed over. Rung four is the recast.
+LAST_RUNG = 4
 
 
 @router.get("/next", response_model=ItemOut)
@@ -37,11 +42,8 @@ def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
 
     item = served.item
     return ItemOut(
-        item_token=create_item_token({
-            "exercise_id": item.exercise_id,
-            "concept_id": item.concept_id,
-            **item.spec,
-        }),
+        item_token=create_item_token({"e": item.exercise_id, "c": item.concept_id,
+                                      "s": item.spec}),
         exercise_id=item.exercise_id,
         concept_id=item.concept_id,
         concept_name=served.concept_name,
@@ -58,34 +60,29 @@ def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
 @router.post("/answer", response_model=AnswerOut)
 def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: UserDep) -> AnswerOut:
     try:
-        spec = read_item_token(body.item_token)
-    except jwt.PyJWTError:
+        token = read_item_token(body.item_token)
+        exercise_id, concept_id, spec = token["e"], token["c"], token["s"]
+    except (jwt.PyJWTError, KeyError, TypeError):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "that item has expired") from None
 
-    lemma, suffix_ids = spec["lemma"], spec["suffixes"]
-    exercise_id, concept_id = spec["exercise_id"], spec["concept_id"]
+    exercise = session.get(Exercise, exercise_id)
+    concept = session.get(Concept, concept_id)
+    if exercise is None or concept is None:
+        raise HTTPException(status.HTTP_410_GONE, "that item no longer exists")
 
     try:
-        lexeme = language.lexeme(lemma)
-        expected = language.inflect(lexeme, suffix_ids).surface
-    except KeyError:
+        item = assemble(tutor.ExerciseSpec.of(exercise, concept), language, spec)
+    except (GenerationError, KeyError, ValueError, NotImplementedError):
         raise HTTPException(status.HTTP_410_GONE, "that item no longer exists") from None
 
-    # The learner may type the whole word or only the suffix they chose.
-    given = normalize(body.answer)
-    if given and not given.startswith(normalize(lexeme.lemma)[:1]):
-        given_full = normalize(language.inflect(lexeme, suffix_ids).stem_form + body.answer)
-    else:
-        given_full = given
-    correct = given_full == normalize(expected)
+    given = _as_answered(language, item, body.answer)
+    correct = item.accepts(given, normalize) or item.accepts(body.answer, normalize)
+    result = feedback_for_item(language, item, given, body.attempt, correct=correct)
 
-    result = feedback(language, lexeme, suffix_ids, given_full, expected, body.attempt)
-
-    exercise = session.get(Exercise, exercise_id)
     session.add(Response(
         user_id=user.id,
-        exercise_id=exercise.id if exercise else None,
-        concept_id=concept_id if session.get(Concept, concept_id) else None,
+        exercise_id=exercise.id,
+        concept_id=concept.id,
         correct=correct,
         latency_ms=body.latency_ms,
         raw_answer=body.answer[:512],
@@ -94,10 +91,9 @@ def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: Use
 
     mastery = due_at = None
     # Rate the card once the item is settled: solved, or given up on.
-    if correct or body.attempt >= 4:
-        mastery = tutor.record_mastery(session, user.id, concept_id, correct)
-        due_at = _reschedule(session, user.id, exercise_id, lemma, suffix_ids,
-                             correct=correct, attempts=body.attempt)
+    if correct or body.attempt >= LAST_RUNG:
+        mastery = tutor.record_mastery(session, user.id, concept.id, correct)
+        due_at = _reschedule(session, user.id, item, correct=correct, attempts=body.attempt)
 
     session.commit()
     return AnswerOut(
@@ -106,25 +102,32 @@ def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: Use
         message=result["message"],
         tags=result.get("tags", []),
         elicitation=result.get("elicitation"),
-        answer=result.get("answer") or (expected if correct else None),
-        derivation=result.get("derivation") or (_derivation(language, lexeme, suffix_ids)
-                                                if correct else None),
+        answer=result.get("answer") or (item.answer if correct else None),
+        derivation=list(item.derivation) if (correct or result["kind"] == "explicit") else None,
         mastery=mastery,
         due_at=due_at,
     )
 
 
-def _derivation(language, lexeme, suffix_ids) -> list[dict]:
-    """Shown on success too. Watching the rule fire is the point of the app."""
-    return [
-        {"rule": s.rule, "condition": s.condition, "result": s.result, "form": s.form}
-        for s in language.inflect(lexeme, suffix_ids).steps
-    ]
+def _as_answered(language, item, given: str) -> str:
+    """What the learner meant, as a full form where there is one.
+
+    Picking the shape of a suffix and typing the whole word are the same answer.
+    The diagnosis works on whole forms, so a bare suffix is completed here.
+    """
+    if not item.lemma or item.diagnosis != "morphological":
+        return given
+    try:
+        stem_form = language.inflect(language.lexeme(item.lemma), list(item.suffixes)).stem_form
+    except Exception:
+        return given
+    if normalize(given).startswith(normalize(stem_form)[:2]):
+        return given
+    return stem_form + given
 
 
-def _reschedule(session, user_id: int, exercise_id: str, lemma: str, suffix_ids,
-                *, correct: bool, attempts: int) -> dt.datetime:
-    ref = f"{exercise_id}|{lemma}|{'+'.join(suffix_ids)}"
+def _reschedule(session, user_id: int, item, *, correct: bool, attempts: int) -> dt.datetime:
+    ref = tutor.card_ref(item)
     card = session.scalars(
         select(ReviewCard).where(ReviewCard.user_id == user_id,
                                  ReviewCard.item_type == "form",
@@ -134,9 +137,10 @@ def _reschedule(session, user_id: int, exercise_id: str, lemma: str, suffix_ids,
                         attempts=attempts, used_hints=attempts > 1)
     if card is None:
         card = ReviewCard(user_id=user_id, item_type="form", item_ref=ref,
-                          fsrs_state=state, due_at=due)
+                          item_spec=dict(item.spec), fsrs_state=state, due_at=due)
         session.add(card)
     else:
+        card.item_spec = dict(item.spec)
         card.fsrs_state = state
         card.due_at = due
     return due

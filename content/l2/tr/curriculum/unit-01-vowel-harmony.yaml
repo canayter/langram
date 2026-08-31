@@ -34,15 +34,18 @@ concepts:
       - id: hear-the-difference
         stage: structured_input
         generator: minimal_pair_identification
-        prompt: "Which word did you hear?"
+        # Reads rather than listens until Phase 5 records the talkers, and the
+        # prompt says so rather than implying audio that is not there.
+        prompt: "Only one of these is possible Turkish. Which one?"
         difficulty: 1
         params:
+          modality: text
           contrast: suffix_vowel
           suffix: PL
           distractor: wrong_harmony
       - id: which-noun-is-it
         stage: structured_input
-        generator: form_meaning_match
+        generator: minimal_pair_identification
         prompt: "One of these is a real Turkish word. Which one?"
         difficulty: 1
         params:

@@ -128,6 +128,11 @@ class ReviewCard(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     item_type: Mapped[str] = mapped_column(String(24))
     item_ref: Mapped[str] = mapped_column(String(96))
+    # Enough to rebuild the exact item on review. item_ref identifies the card;
+    # this says what to show. A judgement item, for instance, has to come back
+    # with the same form and the same well formed or not, which the ref alone
+    # cannot express.
+    item_spec: Mapped[dict] = mapped_column(Json, default=dict)
     fsrs_state: Mapped[dict] = mapped_column(Json, default=dict)
     due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
