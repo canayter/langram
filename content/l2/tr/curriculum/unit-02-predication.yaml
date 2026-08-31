@@ -1,0 +1,128 @@
+id: unit-02-predication
+order: 2
+title: Saying what something is
+rationale: >
+  English speakers arrive looking for the verb "to be" and do not find one.
+  Turkish marks predication with a suffix on the noun or adjective itself:
+  ogrenciyim is one word meaning "I am a student". The structure is not
+  difficult once seen, but it is invisible until it is pointed at, because
+  learners are listening for a separate word that never comes.
+
+  This unit is also where fourfold harmony earns its keep. The predicative
+  suffixes carry the I archiphoneme, so the learner now has to choose between
+  four shapes rather than two, on a structure they want to use immediately.
+
+  The third person is deliberately taught as bare. Textbooks often present
+  -DIr as the third person copula, but in speech the unmarked form is bare
+  nominal predication, and -DIr is formal or generic. Teaching -DIr first
+  produces learners who sound like a public notice.
+research_refs:
+  - vanpatten-input-processing
+  - long-focus-on-form
+  - turkish-reference-grammar
+prerequisites:
+  - unit-01-vowel-harmony
+
+concepts:
+  - id: fourfold-harmony
+    name: Fourfold harmony (the I archiphoneme)
+    type: grammatical_feature
+    why_hard: >
+      Two features have to be tracked at once, backness and rounding, and
+      rounding is the one English speakers drop. The common error is to use the
+      unrounded shape everywhere, giving doktorim for doktorum, because the
+      learner heard backness and stopped there.
+    teaches_suffixes: [PRED1SG, PRED1PL]
+    exercises:
+      - id: four-way-listen
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Which word did you hear?"
+        difficulty: 2
+        params:
+          contrast: suffix_vowel
+          suffix: PRED1SG
+          distractor: wrong_rounding
+      - id: rounding-judgement
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 3
+        params:
+          suffix: PRED1SG
+          distractor: wrong_rounding
+      - id: build-fourfold
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Say that you are this. Watch which of the four vowels the suffix takes."
+        difficulty: 3
+        params:
+          suffix: PRED1SG
+          show_derivation: true
+
+  - id: predication-without-a-verb
+    name: Predication is a suffix, not a verb
+    type: grammatical_feature
+    why_hard: >
+      English requires a separate word for "am", "are" and "is". Turkish puts
+      the person marking on the predicate itself, so learners either look for a
+      missing verb or insert olmak, which is a different verb meaning "to
+      become" and is wrong here.
+    teaches_suffixes: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+    exercises:
+      - id: who-is-being-talked-about
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Who is this sentence about?"
+        difficulty: 2
+        params:
+          cue: person_suffix_only
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+      - id: person-contrast
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Did you hear I am, or you are?"
+        difficulty: 2
+        params:
+          contrast: person
+          persons: [PRED1SG, PRED2SG]
+      - id: say-what-you-are
+        stage: guided_output
+        generator: cloze_suffix_choice
+        prompt: "Complete the sentence."
+        difficulty: 3
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+      - id: predication-production
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+      - id: predication-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+
+  - id: bare-third-person
+    name: The third person is unmarked
+    type: grammatical_feature
+    why_hard: >
+      Learners want a suffix for "is" because English has a word for it, and
+      textbooks hand them -DIr. In ordinary speech the bare form is the neutral
+      one and -DIr sounds official. This is a register problem disguised as a
+      grammar problem.
+    review:
+      - Confirm the register description of -DIr before this is shown to a learner
+    teaches_suffixes: [PRED3SG]
+    exercises:
+      - id: notice-the-absence
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Does this sound like something a person would say?"
+        difficulty: 3
+        params:
+          compare: [bare_predication, PRED3SG]

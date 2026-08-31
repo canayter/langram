@@ -1,0 +1,98 @@
+id: unit-01-vowel-harmony
+order: 1
+title: Vowel harmony and the plural
+rationale: >
+  Vowel harmony comes first because nothing else in Turkish works until it is
+  automatic. Every suffix the learner meets later changes shape according to it,
+  so a learner who has not internalised harmony has to think twice about every
+  word they build. English has no analogue, which means there is nothing to
+  transfer and everything to learn.
+
+  The plural is the vehicle rather than the subject. It is twofold, so the
+  learner is choosing between two shapes rather than four, and it attaches to
+  bare nouns they already know. Fourfold harmony waits for Unit 2, where the
+  predicative suffixes give it a reason to exist.
+
+  The whole unit is comprehension before production, so the first thing a
+  learner does with a suffix is notice it, not produce it.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+  - turkish-reference-grammar
+
+concepts:
+  - id: twofold-harmony
+    name: Twofold harmony (the A archiphoneme)
+    type: grammatical_feature
+    why_hard: >
+      English speakers do not expect a suffix to change its vowel at all. The
+      usual first error is to fix on one shape, normally the one they met first,
+      and use it everywhere: evler and then arabalar becomes arabaler. The rule
+      is not hard to state; making it automatic is the work.
+    teaches_suffixes: [PL]
+    exercises:
+      - id: hear-the-difference
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Which word did you hear?"
+        difficulty: 1
+        params:
+          contrast: suffix_vowel
+          suffix: PL
+          distractor: wrong_harmony
+      - id: which-noun-is-it
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "One of these is a real Turkish word. Which one?"
+        difficulty: 1
+        params:
+          suffix: PL
+          distractor: wrong_harmony
+      - id: judge-the-plural
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 2
+        params:
+          suffix: PL
+      - id: build-the-plural
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add the plural. Watch the suffix change shape as you attach it."
+        difficulty: 2
+        params:
+          suffix: PL
+          show_derivation: true
+      - id: plural-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+        params:
+          suffix: PL
+
+  - id: harmony-is-not-spelling
+    name: Harmony follows the last vowel of the stem
+    type: grammatical_feature
+    why_hard: >
+      Learners often look at the first vowel of a word, or at the whole word as
+      a shape, rather than at the last vowel. Long words expose this: the
+      trigger in bilgisayarlar is the final a, and nothing earlier matters.
+    teaches_suffixes: [PL]
+    exercises:
+      - id: find-the-trigger
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Which vowel decides the shape of the suffix?"
+        difficulty: 2
+        params:
+          highlight: last_stem_vowel
+          min_syllables: 3
+      - id: long-stems
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add the plural to these longer words."
+        difficulty: 3
+        params:
+          suffix: PL
+          min_syllables: 3
+          show_derivation: true

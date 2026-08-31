@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ayter.com/langram/schemas/lexemes.schema.json",
+  "title": "Lexicon",
+  "description": "Stems and the properties that cannot be derived from their spelling.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": ["id", "lemma", "pos"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string", "minLength": 1 },
+      "lemma": { "type": "string", "minLength": 1 },
+      "pos": {
+        "enum": ["noun", "adjective", "verb", "adverb", "pronoun", "postposition", "particle", "numeral"]
+      },
+      "gloss": { "type": "string" },
+      "final_voicing": {
+        "type": "boolean",
+        "description": "Stem-final p/c/t/k voices before a vowel-initial suffix. Required on any stem ending in one of those four; see the semantic checks."
+      },
+      "vowel_deletion": {
+        "type": "boolean",
+        "description": "The last stem vowel drops before a vowel-initial suffix: burun -> burnu."
+      },
+      "harmony_class": {
+        "enum": ["front", "back"],
+        "description": "Only on disharmonic loans, where suffix backness does not follow the last stem vowel."
+      },
+      "frequency_band": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10,
+        "description": "Corpus frequency band. Absent until a real list is loaded; never guessed."
+      },
+      "audio": { "type": "array", "items": { "type": "string" } },
+      "review": {
+        "type": "array",
+        "items": { "type": "string", "minLength": 1 },
+        "minItems": 1,
+        "description": "Anything a native speaker should confirm. Never a placeholder for a guess."
+      }
+    }
+  }
+}

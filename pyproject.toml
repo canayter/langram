@@ -10,10 +10,22 @@ requires-python = ">=3.11"
 dependencies = ["PyYAML>=6.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "hypothesis>=6.100"]
+# The engine itself needs only PyYAML. Everything below is for building on top
+# of it, so the pure library stays cheap to install and to reason about.
+db = ["SQLAlchemy>=2.0", "alembic>=1.13"]
+content = ["jsonschema>=4.20"]
+dev = [
+    "pytest>=8.0",
+    "hypothesis>=6.100",
+    "SQLAlchemy>=2.0",
+    "alembic>=1.13",
+    "jsonschema>=4.20",
+]
 
 [project.scripts]
 inflect = "langram.cli:main"
+langram-validate = "langram.validate:main"
+langram-seed = "langram.db.seed:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

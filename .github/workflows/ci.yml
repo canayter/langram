@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engine:
+    name: Engine and content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+
+      # The engine and the property tests over the whole lexicon.
+      - name: Tests
+        run: pytest
+
+      # Content is validated separately so a content-only change that breaks a
+      # citation or asks for output before input fails loudly and on its own.
+      - name: Validate content
+        run: python -m langram.validate
+
+  database:
+    name: Migrate and seed on Postgres
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: langram
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      LANGRAM_DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/langram
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]" "psycopg[binary]>=3.1"
+
+      # Postgres is the target, so the migrations run against it here rather
+      # than only against the SQLite used for local work.
+      - name: Migrate
+        run: alembic upgrade head
+
+      - name: Seed
+        run: python -m langram.db.seed --database-url "$LANGRAM_DATABASE_URL"
+
+      # Seeding twice must be a no-op. If it is not, content and learner state
+      # are not as separate as the architecture claims.
+      - name: Seed again
+        run: python -m langram.db.seed --database-url "$LANGRAM_DATABASE_URL"
+
+      # Fails if the models have drifted from the migrations.
+      - name: Check for schema drift
+        run: alembic check

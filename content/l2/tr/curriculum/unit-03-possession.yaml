@@ -1,0 +1,146 @@
+id: unit-03-possession
+order: 3
+title: Whose it is
+rationale: >
+  Possession is marked on the thing possessed, not on the possessor, which is
+  the reverse of the English apostrophe s. Learners reach for a separate word
+  and find that the noun itself has changed.
+
+  This unit is placed before case because it introduces two things case will
+  depend on. The first is the buffer segment: a consonant appears after a vowel
+  final stem and a vowel appears after a consonant final stem, which learners
+  meet as two unrelated oddities and which are one rule seen from both sides.
+  The second is stem alternation, since possessive suffixes are vowel initial
+  and therefore expose final voicing: kitap becomes kitabim.
+
+  Case suffixes in Unit 4 will need both, plus the pronominal n that only shows
+  up when a case suffix follows a third person possessive. Meeting all of that
+  at once would be too much, so possession carries the load first.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+  - roediger-karpicke-retrieval
+  - turkish-reference-grammar
+prerequisites:
+  - unit-01-vowel-harmony
+  - unit-02-predication
+
+concepts:
+  - id: possessive-suffixes
+    name: Possession is marked on the possessed noun
+    type: grammatical_feature
+    why_hard: >
+      English marks the owner and Turkish marks the thing owned, so the learner
+      has to relocate the marking to the other noun. The third person is also
+      ambiguous in a way English is not: evi is his house, her house and its
+      house, and context does the rest.
+    teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG, POSS1PL, POSS2PL, POSS3PL]
+    exercises:
+      - id: whose-is-it
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Whose is it?"
+        difficulty: 2
+        params:
+          cue: possessive_suffix_only
+      - id: hear-the-owner
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Did you hear my house or your house?"
+        difficulty: 3
+        params:
+          contrast: person
+          persons: [POSS1SG, POSS2SG]
+      - id: build-possessive
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Make it belong to you."
+        difficulty: 3
+        params:
+          persons: [POSS1SG, POSS2SG, POSS3SG]
+          show_derivation: true
+      - id: possessive-production
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+      - id: possessive-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+
+  - id: buffer-segments
+    name: Buffers, and why they are one rule
+    type: grammatical_feature
+    why_hard: >
+      Learners are usually taught the y in arabayi and the i in evim as two
+      separate facts to memorise. They are the same repair: Turkish avoids two
+      vowels meeting and avoids an awkward cluster, so whichever segment is
+      missing gets supplied. Seeing it as one rule halves what there is to learn
+      and stops the learner inserting a buffer where none is needed.
+    teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG]
+    exercises:
+      - id: spot-the-buffer
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Which of these needed an extra sound, and where?"
+        difficulty: 3
+        params:
+          highlight: buffer_segment
+      - id: buffer-judgement
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 3
+        params:
+          distractor: missing_or_extra_buffer
+      - id: build-across-both
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Attach the suffix. Some of these stems end in a vowel and some do not."
+        difficulty: 4
+        params:
+          persons: [POSS1SG, POSS3SG]
+          stem_mix: [vowel_final, consonant_final]
+          show_derivation: true
+
+  - id: stem-alternation
+    name: Some stems change when a vowel follows
+    type: grammatical_feature
+    why_hard: >
+      kitap becomes kitabim but sepet stays sepetim, and nothing in the spelling
+      tells you which. This is the first point where Turkish requires the
+      learner to store a property of the word rather than apply a rule, so it
+      has to be taught as a property and drilled as one. The engine knows which
+      stems alternate; the learner has to learn them the same way.
+    teaches_suffixes: [POSS1SG, POSS3SG]
+    exercises:
+      - id: notice-the-change
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Which one did you hear?"
+        difficulty: 3
+        params:
+          contrast: stem_final_consonant
+          lexeme_filter: { final_voicing: true }
+      - id: alternating-or-not
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this the right form of the word?"
+        difficulty: 4
+        params:
+          lexeme_filter: { ends_in_obstruent: true }
+      - id: build-alternating
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Attach the suffix. Some of these stems will change."
+        difficulty: 4
+        params:
+          lexeme_filter: { ends_in_obstruent: true }
+          show_derivation: true
+      - id: alternation-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 4
+        params:
+          lexeme_filter: { final_voicing: true }

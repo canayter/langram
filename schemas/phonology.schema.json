@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ayter.com/langram/schemas/phonology.schema.json",
+  "title": "Phonology",
+  "description": "Everything the engine knows about the sound system of one language.",
+  "type": "object",
+  "required": ["vowels", "voiceless", "archiphonemes", "final_voicing"],
+  "additionalProperties": false,
+  "properties": {
+    "vowels": {
+      "type": "object",
+      "minProperties": 2,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["back", "rounded", "high"],
+        "additionalProperties": false,
+        "properties": {
+          "back": { "type": "boolean" },
+          "rounded": { "type": "boolean" },
+          "high": { "type": "boolean" }
+        }
+      }
+    },
+    "voiceless": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 1 }, "minItems": 1 },
+    "archiphonemes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "resolves"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "enum": ["vowel", "consonant"] },
+          "resolves": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      }
+    },
+    "final_voicing": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1, "maxLength": 1 } },
+    "final_voicing_exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["when_stem_ends_with", "replace", "with"],
+        "additionalProperties": false,
+        "properties": {
+          "when_stem_ends_with": { "type": "string" },
+          "replace": { "type": "string" },
+          "with": { "type": "string" }
+        }
+      }
+    }
+  }
+}

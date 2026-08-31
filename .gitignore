@@ -1,8 +1,9 @@
+*.db
+*.egg-info/
+*.py[cod]
+.hypothesis/
+.pytest_cache/
 .venv/
 __pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
-.hypothesis/
 build/
 dist/
