@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from . import bkt
 from .db.models import Concept, Exercise, ReviewCard, Unit, UserConceptMastery
 from .generators import REGISTRY, GenerationError, assemble, generate
 
@@ -25,7 +26,15 @@ from .generators import REGISTRY, GenerationError, assemble, generate
 STAGE_ORDER = {"structured_input": 0, "guided_output": 1, "free_output": 2,
                "perception": 3, "review": 4}
 
+# The probability of knowing a concept at which it stops being served as new
+# material and its unit counts as finished. High enough that a lucky run does
+# not clear it, low enough to be reachable.
 MASTERY_THRESHOLD = 0.85
+
+# Mastery needs evidence as well as probability. Five correct answers on two
+# option items is five coin flips, and BKT will happily call that knowledge
+# without a floor on how much was actually seen.
+MIN_OPPORTUNITIES = 6
 
 
 @dataclass(frozen=True)
@@ -111,7 +120,7 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         session.delete(due)
 
     mastery = {
-        row.concept_id: row.ability_estimate
+        row.concept_id: is_mastered(row)
         for row in session.scalars(
             select(UserConceptMastery).where(UserConceptMastery.user_id == user_id)
         )
@@ -124,10 +133,12 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         .order_by(Unit.order)
     ).all()
 
+    open_units = _open_units(rows, mastery)
     candidates = [
         (exercise, concept, unit) for exercise, concept, unit in rows
         if _implemented(exercise.generator)
-        and mastery.get(concept.id, 0.0) < MASTERY_THRESHOLD
+        and unit.id in open_units
+        and not mastery.get(concept.id, False)
     ]
     if not candidates:
         # Everything available is mastered, so revisit rather than stop.
@@ -155,12 +166,45 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
     raise LookupError("no exercise can produce an item for this learner yet")
 
 
-def record_mastery(session: Session, user_id: int, concept_id: str, correct: bool) -> float:
-    """A running estimate, deliberately simple.
+def is_mastered(row) -> bool:
+    """Known enough to stop teaching, and seen enough to believe it."""
+    seen = int((row.state or {}).get("opportunities", 0))
+    return row.ability_estimate >= MASTERY_THRESHOLD and seen >= MIN_OPPORTUNITIES
 
-    Bayesian Knowledge Tracing per concept is Phase 7. This is a placeholder that
-    is honest about being one: it moves in the right direction and is replaced
-    wholesale rather than tuned.
+
+def _open_units(rows, mastery: dict[str, bool]) -> set[str]:
+    """Units whose prerequisites are finished.
+
+    A unit is finished when every concept in it is above the threshold. Ordering
+    by unit alone would let a learner meet nominalised subordination in their
+    second session; the prerequisites in the content exist to stop that, and
+    this is where they take effect.
+    """
+    concepts_by_unit: dict[str, set[str]] = {}
+    prerequisites: dict[str, list[str]] = {}
+    for _exercise, concept, unit in rows:
+        concepts_by_unit.setdefault(unit.id, set()).add(concept.id)
+        prerequisites[unit.id] = list(unit.prerequisites or [])
+
+    def finished(unit_id: str) -> bool:
+        concepts = concepts_by_unit.get(unit_id, set())
+        return bool(concepts) and all(mastery.get(c, False) for c in concepts)
+
+    return {
+        unit_id for unit_id in concepts_by_unit
+        if all(finished(p) for p in prerequisites.get(unit_id, []))
+    }
+
+
+def record_mastery(session: Session, user_id: int, concept_id: str, correct: bool,
+                   option_count: int | None = None) -> float:
+    """Update the belief that this learner knows this concept.
+
+    Bayesian Knowledge Tracing rather than a running average, so the number
+    means "probably knows this rule" rather than "got the last few right". The
+    guess rate comes from the item: a two option judgement is guessable and a
+    typed answer is not, and treating them alike is the fastest way to believe a
+    learner knows something they do not.
     """
     row = session.scalars(
         select(UserConceptMastery).where(
@@ -169,7 +213,11 @@ def record_mastery(session: Session, user_id: int, concept_id: str, correct: boo
         )
     ).first()
     if row is None:
-        row = UserConceptMastery(user_id=user_id, concept_id=concept_id, ability_estimate=0.0)
+        row = UserConceptMastery(user_id=user_id, concept_id=concept_id,
+                                 ability_estimate=bkt.DEFAULTS.prior, state={})
         session.add(row)
-    row.ability_estimate = round(0.7 * row.ability_estimate + 0.3 * (1.0 if correct else 0.0), 4)
+
+    state = bkt.update(row.state, correct, option_count=option_count)
+    row.state = state.to_dict()
+    row.ability_estimate = round(state.p_known, 6)
     return row.ability_estimate

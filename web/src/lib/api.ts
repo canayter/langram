@@ -52,6 +52,21 @@ export type Unit = {
   research_refs: string[]; prerequisites: string[]; concepts: Concept[]
 }
 
+export type SkillReport = {
+  skill: string; label: string; opportunities: number; errors: number
+  accuracy: number | null; summary: string; confident: boolean
+}
+
+export type ConceptProgress = {
+  id: string; name: string; unit_id: string; unit_title: string; why_hard: string
+  p_known: number; opportunities: number; correct: number; status: string
+}
+
+export type Progress = {
+  answered: number; correct: number; accuracy: number | null; headline: string
+  skills: SkillReport[]; concepts: ConceptProgress[]; note: string
+}
+
 export class ApiError extends Error {
   constructor(readonly status: number, message: string) {
     super(message)
@@ -100,4 +115,5 @@ export const api = {
   answer: (body: { item_token: string; answer: string; attempt: number; latency_ms?: number }) =>
     call<AnswerResult>('/api/session/answer', { method: 'POST', body: JSON.stringify(body) }),
   units: () => call<Unit[]>('/api/units'),
+  progress: () => call<Progress>('/api/progress'),
 }

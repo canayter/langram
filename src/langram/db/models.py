@@ -111,7 +111,11 @@ class UserConceptMastery(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     concept_id: Mapped[str] = mapped_column(ForeignKey("concepts.id", ondelete="CASCADE"), index=True)
+    # The probability the learner knows this concept, from Bayesian Knowledge
+    # Tracing. Kept as a plain float because everything reads it; the counts
+    # behind it live in state.
     ability_estimate: Mapped[float] = mapped_column(Float, default=0.0)
+    state: Mapped[dict] = mapped_column(Json, default=dict)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
@@ -152,6 +156,9 @@ class Response(Base):
     latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     raw_answer: Mapped[str] = mapped_column(Text, default="")
     error_tags: Mapped[list] = mapped_column(Json, default=list)
+    # The rules this form gave the learner a chance to apply. Errors divided by
+    # opportunities is the only way an error count means anything.
+    skills: Mapped[list] = mapped_column(Json, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
 

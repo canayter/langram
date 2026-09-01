@@ -31,18 +31,30 @@ const secondaryButton =
   'mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 ' +
   'hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800'
 
-function Shell({ children, onSignOut }: { children: React.ReactNode; onSignOut: () => void }) {
+function Shell({ children, onSignOut, onShowProgress }: {
+  children: React.ReactNode
+  onSignOut: () => void
+  onShowProgress: () => void
+}) {
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <span className="font-mono text-sm tracking-tight text-slate-400">langram</span>
-          <button
-            onClick={onSignOut}
-            className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-          >
-            Sign out
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={onShowProgress}
+              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            >
+              Progress
+            </button>
+            <button
+              onClick={onSignOut}
+              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
         {children}
       </div>
@@ -50,7 +62,10 @@ function Shell({ children, onSignOut }: { children: React.ReactNode; onSignOut: 
   )
 }
 
-export function SessionScreen({ onSignOut }: { onSignOut: () => void }) {
+export function SessionScreen({ onSignOut, onShowProgress }: {
+  onSignOut: () => void
+  onShowProgress: () => void
+}) {
   const [item, setItem] = useState<Item | null>(null)
   const [result, setResult] = useState<AnswerResult | null>(null)
   const [attempt, setAttempt] = useState(1)
@@ -104,7 +119,7 @@ export function SessionScreen({ onSignOut }: { onSignOut: () => void }) {
 
   if (error) {
     return (
-      <Shell onSignOut={onSignOut}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -115,14 +130,14 @@ export function SessionScreen({ onSignOut }: { onSignOut: () => void }) {
 
   if (!item) {
     return (
-      <Shell onSignOut={onSignOut}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
         <p className="text-slate-500">Loading.</p>
       </Shell>
     )
   }
 
   return (
-    <Shell onSignOut={onSignOut}>
+    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
       <div className="flex items-baseline justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">

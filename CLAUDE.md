@@ -107,10 +107,25 @@ already in place and what restarting needs is in `docs/deferred-audio.md`. Do
 not add an audio feature without reading it: the hooks exist and are easy to
 duplicate by accident.
 
-Next is Phase 7, the learner model. Mastery is currently a running average in
-`tutor.record_mastery`, explicitly a placeholder, to be replaced wholesale by
-Bayesian Knowledge Tracing per concept rather than tuned. Everything needed to
-fit it is already logged: per response correctness, latency and error tags.
+Phase 7 is done. Mastery is Bayesian Knowledge Tracing per concept in
+`src/langram/bkt.py`, with the guess rate taken from the item rather than fixed,
+because a two option judgement is guessable and a typed answer is not. A concept
+counts as known only with both a high probability and at least
+`tutor.MIN_OPPORTUNITIES` attempts behind it.
+
+The four BKT parameters are defaults, not fitted values. Fitting them per
+concept needs learner data that does not exist yet, and everything required to
+do it is logged.
+
+`GET /api/progress` is the diagnostic report: per rule, per concept, and in
+sentences rather than scores. Rates are errors over opportunities, where an
+opportunity is a rule the target form actually exercised, read off the
+derivation. A wrong answer whose cause cannot be pinned on a rule, such as
+rejecting a well formed word, is left out of the rates rather than quietly
+distorting them.
+
+Remaining from the brief: Phase 8, the register and vernacular track. Almost
+every claim in it is a native speaker judgement.
 
 Secrets: set LANGRAM_SECRET_KEY in any deployment. Without it a new signing key
 is generated per process, which logs every learner out on restart.

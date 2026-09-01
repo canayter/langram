@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routers import auth, content, session
+from .routers import auth, content, progress, session
 
 DESCRIPTION = (
     "Turkish for English speakers. Exercises are generated from a morphological "
@@ -26,6 +26,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(auth.router)
     app.include_router(content.router)
+    app.include_router(progress.router)
     app.include_router(session.router)
 
     @app.get("/api/health", tags=["meta"])

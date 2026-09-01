@@ -81,3 +81,36 @@ class UnitOut(BaseModel):
     research_refs: list[str]
     prerequisites: list[str]
     concepts: list[ConceptOut]
+
+
+class SkillReportOut(BaseModel):
+    """One linguistic rule, and how reliably it is being applied."""
+    skill: str
+    label: str
+    opportunities: int
+    errors: int
+    accuracy: float | None
+    summary: str
+    confident: bool
+
+
+class ConceptProgressOut(BaseModel):
+    id: str
+    name: str
+    unit_id: str
+    unit_title: str
+    why_hard: str
+    p_known: float
+    opportunities: int
+    correct: int
+    status: str
+
+
+class ProgressOut(BaseModel):
+    answered: int
+    correct: int
+    accuracy: float | None
+    headline: str
+    skills: list[SkillReportOut]
+    concepts: list[ConceptProgressOut]
+    note: str

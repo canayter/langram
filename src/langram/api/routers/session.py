@@ -19,6 +19,7 @@ from ...db.models import Concept, Exercise, Response, ReviewCard
 from ...diagnosis import feedback_for_item, normalize
 from ...generators import GenerationError, assemble
 from ...scheduling import review
+from ...skills import skills_for
 from ..deps import LanguageDep, SessionDep, UserDep
 from ..schemas import AnswerIn, AnswerOut, ItemOut
 from ..security import create_item_token, read_item_token
@@ -87,12 +88,16 @@ def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: Use
         latency_ms=body.latency_ms,
         raw_answer=body.answer[:512],
         error_tags=list(result.get("tags", [])),
+        # What this form gave them a chance to apply, right or wrong. Errors
+        # without opportunities are not a rate.
+        skills=list(skills_for(language, item.lemma, item.suffixes)) if item.lemma else [],
     ))
 
     mastery = due_at = None
     # Rate the card once the item is settled: solved, or given up on.
     if correct or body.attempt >= LAST_RUNG:
-        mastery = tutor.record_mastery(session, user.id, concept.id, correct)
+        mastery = tutor.record_mastery(session, user.id, concept.id, correct,
+                                       option_count=_option_count(item))
         due_at = _reschedule(session, user.id, item, correct=correct, attempts=body.attempt)
 
     session.commit()
@@ -107,6 +112,15 @@ def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: Use
         mastery=mastery,
         due_at=due_at,
     )
+
+
+def _option_count(item) -> int | None:
+    """How many ways there were to answer, which sets the guess rate.
+
+    A two option judgement is guessable half the time and a typed answer is not.
+    """
+    options = item.payload.get("options")
+    return len(options) if isinstance(options, list) and options else None
 
 
 def _as_answered(language, item, given: str) -> str:
