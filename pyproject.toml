@@ -14,12 +14,31 @@ dependencies = ["PyYAML>=6.0"]
 # of it, so the pure library stays cheap to install and to reason about.
 db = ["SQLAlchemy>=2.0", "alembic>=1.13"]
 content = ["jsonschema>=4.20"]
+api = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "argon2-cffi>=23.1",
+    "PyJWT>=2.8",
+    "fsrs>=5.0",
+    "pydantic[email]>=2.7",
+    "pydantic-settings>=2.3",
+]
+# Everything, plus what only the tests need. This is what CI installs, so a
+# dependency missing here is a dependency that only exists on one machine.
 dev = [
     "pytest>=8.0",
     "hypothesis>=6.100",
+    "httpx>=0.27",
     "SQLAlchemy>=2.0",
     "alembic>=1.13",
     "jsonschema>=4.20",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "argon2-cffi>=23.1",
+    "PyJWT>=2.8",
+    "fsrs>=5.0",
+    "pydantic[email]>=2.7",
+    "pydantic-settings>=2.3",
 ]
 
 [project.scripts]
