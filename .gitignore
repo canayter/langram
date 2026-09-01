@@ -11,3 +11,7 @@ dist/
 # frontend
 web/node_modules/
 web/dist/
+
+# secrets and local config
+.env
+.env.*
