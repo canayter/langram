@@ -163,13 +163,26 @@ def feedback_for_item(language, item, given: str, attempt: int, *, correct: bool
 
 
 def _judgement_feedback(item, attempt: int) -> dict:
+    """A judgement has two ways to be wrong, and they are different mistakes.
+
+    Accepting a broken form means the rule was not noticed. Rejecting a well
+    formed one means a rule was applied that is not there. Signal detection
+    names them, and naming them separately is what will make d-prime possible
+    when perception training arrives.
+    """
     broken = item.extra.get("broken_rule")
-    tags = [broken] if broken else []
+    if item.extra.get("well_formed"):
+        tags = ["rejected_a_good_form"]
+    else:
+        tags = ["missed_the_error"] + ([broken] if broken else [])
     if attempt <= 1:
         return {"kind": "clarification", "tags": tags,
                 "message": "Not quite. Look at the ending once more and ask whether it fits."}
     if attempt == 2:
-        clue = _CLUES.get(broken or "", "Check the suffix against the last vowel of the stem.")
+        clue = ("Nothing is wrong with this one. Check it against the rule rather "
+                "than against how it looks."
+                if item.extra.get("well_formed")
+                else _CLUES.get(broken or "", "Check the suffix against the last vowel of the stem."))
         return {"kind": "metalinguistic", "tags": tags, "message": clue}
     if attempt == 3:
         return {"kind": "elicitation", "tags": tags,

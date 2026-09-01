@@ -156,6 +156,7 @@ class Response(Base):
 
 
 class Recording(Base):
+    """Empty until the audio work starts. See docs/deferred-audio.md."""
     __tablename__ = "recordings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -170,6 +171,7 @@ class Recording(Base):
 
 
 class PerceptionTrial(Base):
+    """Empty until the audio work starts. See docs/deferred-audio.md."""
     __tablename__ = "perception_trials"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

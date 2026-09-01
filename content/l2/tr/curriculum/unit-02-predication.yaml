@@ -83,7 +83,9 @@ concepts:
         stage: structured_input
         generator: minimal_pair_identification
         # Both forms are well formed and differ only in who is being talked
-        # about, so this genuinely needs audio. Waits for Phase 5.
+        # about, so this genuinely needs audio and is not served yet. The same
+        # contrast is covered in reading by who-is-being-talked-about above.
+        # See docs/deferred-audio.md.
         prompt: "Did you hear I am, or you are?"
         difficulty: 2
         params:

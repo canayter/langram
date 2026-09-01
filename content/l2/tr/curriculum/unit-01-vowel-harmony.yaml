@@ -34,8 +34,9 @@ concepts:
       - id: hear-the-difference
         stage: structured_input
         generator: minimal_pair_identification
-        # Reads rather than listens until Phase 5 records the talkers, and the
-        # prompt says so rather than implying audio that is not there.
+        # Reads rather than listens: the talkers are not recorded, and the
+        # prompt says what the learner is actually doing rather than implying
+        # audio that is not there. See docs/deferred-audio.md.
         prompt: "Only one of these is possible Turkish. Which one?"
         difficulty: 1
         params:

@@ -46,6 +46,8 @@ concepts:
       - id: hear-the-owner
         stage: structured_input
         generator: minimal_pair_identification
+        # Needs audio, so not served yet. whose-is-it above covers the same
+        # contrast in reading. See docs/deferred-audio.md.
         prompt: "Did you hear my house or your house?"
         difficulty: 3
         params:

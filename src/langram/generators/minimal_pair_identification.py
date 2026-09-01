@@ -4,9 +4,9 @@ Comprehension only: the learner picks, and produces nothing. The wrong option is
 made by running the engine with one rule suppressed, so it is wrong for exactly
 one nameable reason.
 
-Modality is text until Phase 5. The content parameter says so rather than the
-prompt implying a recording that does not exist yet; when talkers are recorded,
-this generator gains an audio payload and the parameter flips.
+Modality is text. The content parameter says so rather than the prompt implying
+a recording that does not exist yet; when talkers are recorded, this generator
+gains an audio payload and the parameter flips. See docs/deferred-audio.md.
 """
 from __future__ import annotations
 
@@ -32,7 +32,8 @@ def build(exercise, language, rng: random.Random) -> GeneratedItem:
     if str(params.get("contrast")) == "person" and params.get("modality") != "text":
         from . import GenerationError
         raise GenerationError(
-            f"{exercise.id}: a person contrast needs recorded talkers, which arrive in Phase 5"
+            f"{exercise.id}: a person contrast needs recorded talkers. "
+            f"See docs/deferred-audio.md"
         )
 
     suffix_id = rng.choice(require_suffixes(exercise, params))

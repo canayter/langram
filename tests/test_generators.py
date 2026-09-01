@@ -10,7 +10,7 @@ import random
 import pytest
 import yaml
 
-from langram.diagnosis import classify, normalize
+from langram.diagnosis import classify, feedback_for_item, normalize
 from langram.generators import GenerationError, assemble, generate
 from langram.generators._common import allomorphs, broken_variants, rounding_error
 from langram.loader import CONTENT_ROOT, load_language
@@ -147,10 +147,11 @@ class TestMinimalPair:
 
     def test_a_person_contrast_waits_for_audio(self, language):
         """Two well formed words differing only in person are readable on paper,
-        so the item means nothing until there is a recording."""
+        so the item means nothing until there is a recording. It refuses rather
+        than quietly becoming a reading task."""
         spec = _spec("minimal_pair_identification", contrast="person",
                      persons=["POSS1SG", "POSS2SG"])
-        with pytest.raises(GenerationError, match="Phase 5"):
+        with pytest.raises(GenerationError, match="recorded talkers"):
             generate(spec, language, random.Random(10))
 
 
@@ -173,6 +174,38 @@ class TestGrammaticalityJudgement:
                 assert item.answer_form() == well_formed
                 return
         pytest.fail("no ungrammatical item was generated")
+
+    def _judgement(self, language, want: str):
+        rng = random.Random(21)
+        spec = _spec("grammaticality_judgement", suffix="PL")
+        for _ in range(40):
+            item = generate(spec, language, rng)
+            if item.answer == want:
+                return item
+        pytest.fail(f"no item with answer {want} was generated")
+
+    def test_rejecting_a_well_formed_word_is_named(self, language):
+        """Two ways to be wrong, and they are different mistakes. Neither may
+        come back with no tag, or the diagnostic report cannot count it."""
+        item = self._judgement(language, "yes")
+        result = feedback_for_item(language, item, "no", 1, correct=False)
+        assert result["tags"] == ["rejected_a_good_form"]
+
+    def test_accepting_a_broken_form_is_named(self, language):
+        item = self._judgement(language, "no")
+        result = feedback_for_item(language, item, "yes", 1, correct=False)
+        assert "missed_the_error" in result["tags"]
+        assert item.extra["broken_rule"] in result["tags"],             "the rule that was missed should be named too"
+
+    def test_every_wrong_judgement_carries_a_tag(self, language):
+        rng = random.Random(22)
+        spec = _spec("grammaticality_judgement", suffix="POSS1SG")
+        for _ in range(30):
+            item = generate(spec, language, rng)
+            wrong = "no" if item.answer == "yes" else "yes"
+            for attempt in (1, 2, 3, 4):
+                result = feedback_for_item(language, item, wrong, attempt, correct=False)
+                assert result["tags"], f"{item.payload['form']} at attempt {attempt}"
 
     def test_a_register_comparison_is_not_served_yet(self, language):
         spec = _spec("grammaticality_judgement", compare=["bare_predication", "PRED3SG"])
