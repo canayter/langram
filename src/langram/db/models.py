@@ -68,6 +68,13 @@ class Concept(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     unit_id: Mapped[str] = mapped_column(ForeignKey("units.id", ondelete="CASCADE"), index=True)
+    # Position within the unit's content/*.yaml concepts list. Two concepts can
+    # share a stage tier in tutor.next_item (unit 1 has two concepts that both
+    # start with structured_input exercises), and the interleaving shuffle
+    # there must not also decide which of them gets introduced first: a later
+    # concept's intro can reference an earlier one ("the rule you just saw"),
+    # so introduction order has to follow authoring order, not chance.
+    order: Mapped[int] = mapped_column("order_index", Integer, default=0)
     name: Mapped[str] = mapped_column(String(128))
     type: Mapped[str] = mapped_column(String(32))
     why_hard: Mapped[str] = mapped_column(Text)

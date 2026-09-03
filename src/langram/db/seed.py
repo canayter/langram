@@ -98,10 +98,11 @@ def seed(session: Session, content_root: Path | None = None) -> dict[str, int]:
         ))
         unit_ids.add(unit["id"])
         counts["units"] += 1
-        for concept in unit["concepts"]:
+        for concept_order, concept in enumerate(unit["concepts"]):
             session.merge(Concept(
                 id=concept["id"],
                 unit_id=unit["id"],
+                order=concept_order,
                 name=concept["name"],
                 type=concept["type"],
                 why_hard=" ".join(concept["why_hard"].split()),

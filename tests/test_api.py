@@ -268,6 +268,21 @@ class TestConceptIntros:
         # An intro is not answerable: no exercise or spec a wrong guess could hit.
         assert item["stage"] == "intro"
 
+    def test_the_first_concept_introduced_is_always_the_units_first_one(self, client):
+        """Unit 1 has two concepts that both start with a structured_input
+        exercise, sharing tutor.next_item's first tier. Regression for a bug
+        where the interleaving shuffle ran before the intro scan, so which
+        concept's intro was served first was a coin flip: a new learner could
+        meet harmony-is-not-spelling's intro, "The rule you just saw...",
+        with nothing shown yet, because twofold-harmony had not been
+        introduced first as the content assumes."""
+        for _ in range(15):
+            token = client.post("/api/auth/guest").json()
+            r = client.get("/api/session/next", headers={"Authorization": f"Bearer {token['access_token']}"})
+            item = r.json()
+            assert item["payload"]["kind"] == "intro"
+            assert item["concept_id"] == "twofold-harmony"
+
     def test_dismissing_the_intro_leads_to_a_real_exercise_for_the_same_concept(self, learner):
         intro = learner.get("/api/session/next").json()
         exercise = learner.get("/api/session/next").json()

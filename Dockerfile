@@ -14,8 +14,9 @@ COPY alembic.ini ./
 COPY alembic ./alembic
 COPY content ./content
 COPY schemas ./schemas
+COPY docs ./docs
 
-RUN pip install --no-cache-dir ".[db,api,content,postgres]"
+RUN pip install --no-cache-dir -e ".[db,api,content,postgres]"
 
 # Runs once per deploy: bring the schema up to date, then load content/ into
 # the content tables. Learner state is never touched by either step; see

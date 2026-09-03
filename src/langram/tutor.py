@@ -239,17 +239,20 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         for tier_key in dict.fromkeys((u.order, STAGE_ORDER.get(e.stage, 9)) for e, c, u in ordered):
             tier = [row for row in ordered
                     if (row[2].order, STAGE_ORDER.get(row[0].stage, 9)) == tier_key]
-            rng.shuffle(tier)
-            for exercise, concept, unit in tier:
-                # Checked here, not scanned for up front: this is the specific
-                # concept about to be served by priority and interleaving, so
-                # its intro is what belongs before it. Scanning the whole
-                # candidate list for any un-introduced concept would jump
-                # ahead to a later concept the moment the first one's intro
-                # had already been seen, introducing material out of order.
+
+            # Un-introduced concepts in this tier are checked in authoring
+            # order first, before the interleaving shuffle below ever runs.
+            # Two concepts can share a tier (unit 1's both start with
+            # structured_input), and a shuffled scan could hand the intro to
+            # whichever concept's row happened to land first, introducing a
+            # later concept ahead of an earlier one it depends on.
+            for exercise, concept, unit in sorted(tier, key=lambda row: row[1].order):
                 if _needs_intro(session, user_id, concept):
                     _mark_intro_seen(session, user_id, concept.id, now)
                     return Served(IntroItem(concept), "intro", unit.id, unit.title, concept.name)
+
+            rng.shuffle(tier)
+            for exercise, concept, unit in tier:
                 if respect_cap and _current_streak(session, user_id, concept.id) >= BLOCK_SIZE:
                     continue
                 try:

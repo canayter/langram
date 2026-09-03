@@ -19,6 +19,36 @@ export function StartScreen() {
           morphological grammar, so the rules are applied rather than memorised.
         </p>
 
+        <dl className="mt-6 space-y-3 border-t border-slate-200 pt-6 dark:border-slate-800">
+          <div>
+            <dt className="text-sm font-medium text-slate-900 dark:text-slate-100">
+              You&apos;ll see a rule before you&apos;re asked to use it
+            </dt>
+            <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
+              Every new pattern starts with exercises where you only have to
+              recognise it. Producing it yourself comes after.
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-slate-900 dark:text-slate-100">
+              Topics are mixed, not drilled one at a time
+            </dt>
+            <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
+              Exercises interleave what you&apos;ve learned so far. It feels
+              harder in the moment and holds up better afterward.
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-slate-900 dark:text-slate-100">
+              Review comes back on its own schedule
+            </dt>
+            <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
+              Answers you get right come back at increasing intervals; ones you
+              miss come back sooner. Check your progress any time.
+            </dd>
+          </div>
+        </dl>
+
         {!showForm ? (
           <div className="mt-8 space-y-3">
             <button
