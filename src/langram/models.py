@@ -15,6 +15,10 @@ class Lexeme:
     vowel_deletion: bool = False
     harmony_class: str | None = None      # "front" | "back" | None (derive it)
     review: tuple[str, ...] = ()
+    # Short and well established only: a loan language and root, or "modern
+    # coinage" plus what it is built from. Absent rather than guessed for
+    # anything less certain than that.
+    etymology: str | None = None
 
     @property
     def needs_review(self) -> bool:

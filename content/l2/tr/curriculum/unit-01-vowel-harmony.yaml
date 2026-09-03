@@ -35,8 +35,17 @@ concepts:
       but araba becomes arabalar. Nothing here is memorised word by word. The vowel
       in the suffix simply matches the vowel class of the one before it, a pattern
       called vowel harmony. English has nothing like it, so there is nothing to fall
-      back on already knowing. The exercises below only ask you to notice which
-      shape is correct. Producing one yourself comes later.
+      back on already knowing.
+
+      You will see this suffix written as -lAr in the exercises. In this
+      notation, a capital letter is not being used as an ordinary Turkish
+      letter. It is a placeholder standing for whichever vowel actually
+      belongs there, and it changes with the word, exactly as you are about
+      to see. A lowercase letter, like the l and the r here, is not a
+      placeholder. It stays exactly as written, every time.
+
+      The exercises below only ask you to notice which shape is correct. Producing
+      one yourself comes later.
     teaches_suffixes: [PL]
     exercises:
       - id: hear-the-difference

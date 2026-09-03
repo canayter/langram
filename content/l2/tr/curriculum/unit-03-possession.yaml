@@ -11,7 +11,7 @@ rationale: >
   final stem and a vowel appears after a consonant final stem, which learners
   meet as two unrelated oddities and which are one rule seen from both sides.
   The second is stem alternation, since possessive suffixes are vowel initial
-  and therefore expose final voicing: kitap becomes kitabim.
+  and therefore expose final voicing: kitap becomes kitabım.
 
   Case suffixes in Unit 4 will need both, plus the pronominal n that only shows
   up when a case suffix follows a third person possessive. Meeting all of that
@@ -38,9 +38,15 @@ concepts:
       English marks who owns something on the owner: my house, your house. Turkish
       marks it on the thing owned instead: the suffix attaches to house itself, not
       to a separate possessive word. The same suffix that means my also changes
-      shape with vowel harmony, exactly like the suffixes you have already met. The
-      exercises below ask you to notice whose something is before you are asked to
-      mark it yourself.
+      shape with vowel harmony, exactly like the suffixes you have already met.
+
+      You will also start seeing suffixes written with parentheses, like -(I)m. A
+      segment in parentheses is not always there. It only appears when the stem
+      needs it, most often to keep two vowels from running together. You will meet
+      the exact rule for when in the next concept.
+
+      The exercises below ask you to notice whose something is before you are asked
+      to mark it yourself.
     teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG, POSS1PL, POSS2PL, POSS3PL]
     exercises:
       - id: whose-is-it
@@ -83,7 +89,7 @@ concepts:
     name: Buffers, and why they are one rule
     type: grammatical_feature
     why_hard: >
-      Learners are usually taught the y in arabayi and the i in evim as two
+      Learners are usually taught the y in arabayı and the i in evim as two
       separate facts to memorise. They are the same repair: Turkish avoids two
       vowels meeting and avoids an awkward cluster, so whichever segment is
       missing gets supplied. Seeing it as one rule halves what there is to learn
@@ -125,7 +131,7 @@ concepts:
     name: Some stems change when a vowel follows
     type: grammatical_feature
     why_hard: >
-      kitap becomes kitabim but sepet stays sepetim, and nothing in the spelling
+      kitap becomes kitabım but sepet stays sepetim, and nothing in the spelling
       tells you which. This is the first point where Turkish requires the
       learner to store a property of the word rather than apply a rule, so it
       has to be taught as a property and drilled as one. The engine knows which
@@ -133,7 +139,7 @@ concepts:
     intro: >
       Some Turkish stems change their final consonant when a vowel-initial suffix is
       added, and some do not, and nothing in the spelling of the bare word tells you
-      which. kitap becomes kitabim when a suffix follows, but sepet stays sepetim.
+      which. kitap becomes kitabım when a suffix follows, but sepet stays sepetim.
       This is not a rule to apply. It is a property of each individual word, the
       same way an English speaker simply has to know that the plural of goose is
       geese rather than gooses.

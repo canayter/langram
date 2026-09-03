@@ -261,8 +261,13 @@ class TestClozeAndProduction:
     def test_dotted_and_dotless_i_stay_distinct(self, language):
         """Python uppercases i to I, which in Turkish reads as ı, a different
         phoneme. Forgiving that would undercut the distinction this app exists
-        to teach, so it is not forgiven."""
-        for _ in range(20):
+        to teach, so it is not forgiven.
+
+        Measured: about 1 in 7 draws contains i, so 20 unseeded attempts
+        failed to find one about 4.5% of the time in 200 trials. 100 pushes
+        that under one in a hundred thousand.
+        """
+        for _ in range(100):
             item = generate(_spec("type_the_form", suffix="PL"), language, random.Random())
             if "i" in item.answer:
                 assert not item.accepts(item.answer.upper(), normalize)

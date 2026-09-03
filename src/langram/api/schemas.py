@@ -20,6 +20,16 @@ class TokenOut(BaseModel):
     is_guest: bool
 
 
+class WordInfoOut(BaseModel):
+    """Meaning and pronunciation for the stem an item is about. Never leaks
+    an inflected surface form: only the lemma an exercise already shows."""
+    lemma: str
+    gloss: str
+    ipa: str
+    ipa_caveat: str
+    etymology: str | None = None
+
+
 class ItemOut(BaseModel):
     """What the client renders. The answer is deliberately absent."""
     item_token: str
@@ -37,6 +47,7 @@ class ItemOut(BaseModel):
     # discriminator is payload["kind"].
     payload: dict[str, Any]
     source: str
+    word_info: WordInfoOut | None = None
 
 
 class AnswerIn(BaseModel):

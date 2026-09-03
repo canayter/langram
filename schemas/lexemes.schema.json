@@ -7,15 +7,36 @@
   "minItems": 1,
   "items": {
     "type": "object",
-    "required": ["id", "lemma", "pos"],
+    "required": [
+      "id",
+      "lemma",
+      "pos"
+    ],
     "additionalProperties": false,
     "properties": {
-      "id": { "type": "string", "minLength": 1 },
-      "lemma": { "type": "string", "minLength": 1 },
-      "pos": {
-        "enum": ["noun", "adjective", "verb", "adverb", "pronoun", "postposition", "particle", "numeral"]
+      "id": {
+        "type": "string",
+        "minLength": 1
       },
-      "gloss": { "type": "string" },
+      "lemma": {
+        "type": "string",
+        "minLength": 1
+      },
+      "pos": {
+        "enum": [
+          "noun",
+          "adjective",
+          "verb",
+          "adverb",
+          "pronoun",
+          "postposition",
+          "particle",
+          "numeral"
+        ]
+      },
+      "gloss": {
+        "type": "string"
+      },
       "final_voicing": {
         "type": "boolean",
         "description": "Stem-final p/c/t/k voices before a vowel-initial suffix. Required on any stem ending in one of those four; see the semantic checks."
@@ -25,8 +46,16 @@
         "description": "The last stem vowel drops before a vowel-initial suffix: burun -> burnu."
       },
       "harmony_class": {
-        "enum": ["front", "back"],
+        "enum": [
+          "front",
+          "back"
+        ],
         "description": "Only on disharmonic loans, where suffix backness does not follow the last stem vowel."
+      },
+      "etymology": {
+        "type": "string",
+        "minLength": 10,
+        "description": "A loan origin and root, or 'modern coinage' plus what it is built from. Optional: absent for any lexeme whose history is not well established rather than guessed. This is prose shown directly to a learner, so it is subject to the same em-dash rule as other learner-facing text."
       },
       "frequency_band": {
         "type": "integer",
@@ -34,10 +63,18 @@
         "maximum": 10,
         "description": "Corpus frequency band. Absent until a real list is loaded; never guessed."
       },
-      "audio": { "type": "array", "items": { "type": "string" } },
+      "audio": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
       "review": {
         "type": "array",
-        "items": { "type": "string", "minLength": 1 },
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
         "minItems": 1,
         "description": "Anything a native speaker should confirm. Never a placeholder for a guess."
       }

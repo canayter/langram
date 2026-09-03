@@ -86,6 +86,27 @@ class TestSchemaFailures:
 
 
 class TestSemanticFailures:
+    def test_two_suffixes_in_a_category_cannot_share_a_gloss(self, content):
+        """Shipped once: PRED2SG and PRED2PL both glossed "you are", because
+        English does not mark number on "you". A shared gloss is not just
+        confusing, it is indistinguishable as a multiple-choice option and,
+        for form_meaning_match, indistinguishable as an answer."""
+        path = content / "l2" / "tr" / "morphology" / "suffixes.yaml"
+        data = _read(path)
+        pred2sg = next(s for s in data if s["id"] == "PRED2SG")
+        pred2sg["glosses"] = ["you are"]
+        pred1pl = next(s for s in data if s["id"] == "PRED1PL")
+        pred1pl["glosses"] = ["you are"]
+        _write(path, data)
+        errors = _errors(content)
+        assert "PRED1PL" in errors and "PRED2SG" in errors
+        assert "'you are'" in errors
+
+    def test_the_real_suffixes_have_no_gloss_collisions(self):
+        """The four that used to collide, PRED2SG/PRED2PL and POSS2SG/POSS2PL,
+        both "your" and both "you are" in English, must stay disambiguated."""
+        assert validate().ok
+
     def test_lexeme_ending_in_an_alternating_stop_must_declare_voicing(self, content):
         path = content / "l2" / "tr" / "lexicon" / "lexemes.yaml"
         data = _read(path)

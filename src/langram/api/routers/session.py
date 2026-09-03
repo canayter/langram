@@ -18,10 +18,12 @@ from ... import tutor
 from ...db.models import Concept, Exercise, Response, ReviewCard
 from ...diagnosis import feedback_for_item, normalize
 from ...generators import GenerationError, assemble
+from ...ipa import CAVEAT as IPA_CAVEAT
+from ...ipa import transcribe
 from ...scheduling import review
 from ...skills import skills_for
 from ..deps import LanguageDep, SessionDep, UserDep
-from ..schemas import AnswerIn, AnswerOut, ItemOut
+from ..schemas import AnswerIn, AnswerOut, ItemOut, WordInfoOut
 from ..security import create_item_token, read_item_token
 
 router = APIRouter(prefix="/api/session", tags=["session"])
@@ -55,6 +57,28 @@ def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
         prompt=item.prompt,
         payload=item.payload,
         source=served.source,
+        word_info=_word_info(language, getattr(item, "lemma", None)),
+    )
+
+
+def _word_info(language, lemma: str | None) -> WordInfoOut | None:
+    """Meaning and a generated pronunciation sketch for the word an item is
+    actually about. Never the inflected surface form: several exercise kinds
+    show that as the answer, and the stem shown in the prompt is always safe
+    to describe further.
+    """
+    if not lemma:
+        return None
+    try:
+        lexeme = language.lexeme(lemma)
+    except KeyError:
+        return None
+    return WordInfoOut(
+        lemma=lexeme.lemma,
+        gloss=lexeme.gloss,
+        ipa=transcribe(language.phonology, lexeme.lemma),
+        ipa_caveat=IPA_CAVEAT,
+        etymology=lexeme.etymology,
     )
 
 

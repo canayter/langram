@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -28,7 +29,7 @@ BIBLIOGRAPHY_DOC = ROOT / "docs" / "bibliography.md"
 
 # The working agreement forbids em dashes in user-facing copy. These are the
 # fields a learner actually reads.
-LEARNER_FACING = ("title", "rationale", "why_hard", "intro", "prompt", "name", "gloss", "claim")
+LEARNER_FACING = ("title", "rationale", "why_hard", "intro", "prompt", "name", "gloss", "claim", "etymology")
 
 
 @dataclass
@@ -124,6 +125,27 @@ def validate(content_root: Path | None = None) -> Report:
     suffix_ids = {s["id"] for s in suffixes}
     if len(suffix_ids) != len(suffixes):
         report.error("suffixes.yaml: duplicate suffix ids")
+
+    # Two suffixes in the same category sharing an English gloss produce
+    # multiple-choice options a learner cannot tell apart, and worse, an
+    # answer the server cannot tell apart either: form_meaning_match's gloss
+    # mode uses the gloss string itself as the value it checks. This shipped
+    # once (PRED2SG and PRED2PL both "you are", English not marking number)
+    # before it was caught by a person actually clicking through the app.
+    by_category: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
+    for s in suffixes:
+        if s.get("glosses"):
+            by_category[s["category"]][s["glosses"][0]].append(s["id"])
+    for category, labels in by_category.items():
+        for label, ids in labels.items():
+            if len(ids) > 1:
+                report.error(
+                    f"suffixes.yaml: {', '.join(sorted(ids))} are all glossed "
+                    f"{label!r} in category {category!r}. A shared first gloss "
+                    f"is indistinguishable as a multiple-choice option; give one "
+                    f"of them a disambiguating gloss, such as {label!r} + "
+                    f"'(plural)'"
+                )
     # A literal vowel in a suffix is an allomorph, and allomorphs belong in
     # engine output rather than in content. Turkish does have suffixes with
     # fixed vowels (-Iyor, -ki), so there is an opt-out, but it must be said

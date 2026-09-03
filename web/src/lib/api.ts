@@ -17,6 +17,14 @@ export type Payload =
   | { kind: 'type'; cue: string; stem: string; gloss: string; suffix: Suffix }
   | { kind: 'intro'; title: string; text: string }
 
+export type WordInfo = {
+  lemma: string
+  gloss: string
+  ipa: string
+  ipa_caveat: string
+  etymology: string | null
+}
+
 export type Item = {
   item_token: string
   exercise_id: string
@@ -29,6 +37,7 @@ export type Item = {
   prompt: string
   source: 'new' | 'review' | 'intro'
   payload: Payload
+  word_info: WordInfo | null
 }
 
 export type DerivationStep = { rule: string; condition: string; result: string; form: string }

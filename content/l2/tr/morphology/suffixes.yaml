@@ -29,7 +29,9 @@
   surface: "-(I)n"
   category: possessive
   slot: 2
-  glosses: [your]
+  # "(singular)" disambiguates from POSS2PL: English "your" does not mark
+  # number, and an option list built from these glosses needs to.
+  glosses: ["your (singular)", your]
 
 - id: POSS3SG
   surface: "-(s)I"
@@ -50,7 +52,7 @@
   surface: "-(I)nIz"
   category: possessive
   slot: 2
-  glosses: [your]
+  glosses: ["your (plural)", your]
 
 - id: POSS3PL
   surface: "-lArI"
@@ -120,7 +122,9 @@
   surface: "-sIn"
   category: predicative
   slot: 4
-  glosses: [you are]
+  # "(singular)" disambiguates from PRED2PL: English "you" does not mark
+  # number, and an option list built from these glosses needs to.
+  glosses: ["you are (singular)", you are]
 
 - id: PRED3SG
   surface: "-DIr"
@@ -128,7 +132,7 @@
   slot: 4
   glosses: [is]
   # Optional and formal in speech. Bare nominal predication is the neutral
-  # form: "O ogrenci" rather than "O ogrencidir".
+  # form: "O öğrenci" rather than "O öğrencidir".
 
 - id: PRED1PL
   surface: "-(y)Iz"
@@ -140,4 +144,4 @@
   surface: "-sInIz"
   category: predicative
   slot: 4
-  glosses: [you are]
+  glosses: ["you are (plural)", you are]

@@ -3,6 +3,7 @@ import { api, type AnswerResult, type Item } from '../lib/api'
 import { Derivation } from './Derivation'
 import { ItemBody } from './ItemBody'
 import { WhyPanel } from './WhyPanel'
+import { WordInfo } from './WordInfo'
 
 const TAG_LABELS: Record<string, string> = {
   harmony_backness: 'backness harmony',
@@ -67,6 +68,11 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
   onShowProgress: () => void
 }) {
   const [item, setItem] = useState<Item | null>(null)
+  // Which numbered question this is within the current concept's block of
+  // five. Purely a display concern: the cap itself is enforced server side,
+  // this only tracks what to show, and resets whenever the concept changes
+  // or an intro is shown, since an intro is not a numbered question.
+  const [block, setBlock] = useState<{ concept: string; count: number } | null>(null)
   const [result, setResult] = useState<AnswerResult | null>(null)
   const [attempt, setAttempt] = useState(1)
   const [chosen, setChosen] = useState<string | null>(null)
@@ -94,6 +100,13 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
       const next = await api.next(lastConcept.current)
       setItem(next)
       shownAt.current = Date.now()
+      setBlock((prev) => {
+        if (next.payload.kind === 'intro') return null
+        if (prev && prev.concept === next.concept_id) {
+          return { concept: next.concept_id, count: Math.min(prev.count + 1, 5) }
+        }
+        return { concept: next.concept_id, count: 1 }
+      })
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -182,6 +195,11 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
           </h1>
         </div>
         <div className="flex shrink-0 gap-2">
+          {block && (
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              {block.count} of 5
+            </span>
+          )}
           <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             {STAGE_LABELS[item.stage] ?? item.stage}
           </span>
@@ -202,6 +220,8 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
         settled={settled}
         onAnswer={(value) => void submit(value)}
       />
+
+      <WordInfo key={item.item_token} info={item.word_info} />
 
       {result && (
         <div className="mt-6" aria-live="polite">

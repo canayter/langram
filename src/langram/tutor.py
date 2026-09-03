@@ -18,7 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import bkt
-from .db.models import Concept, Exercise, ReviewCard, Unit, UserConceptMastery
+from .db.models import Concept, Exercise, Response, ReviewCard, Unit, UserConceptMastery
 from .generators import REGISTRY, GenerationError, assemble, generate
 
 # Comprehension before production. A concept's guided output is only reached
@@ -35,6 +35,12 @@ MASTERY_THRESHOLD = 0.85
 # option items is five coin flips, and BKT will happily call that knowledge
 # without a floor on how much was actually seen.
 MIN_OPPORTUNITIES = 6
+
+# A concept is served in blocks, not an unbroken drip feed: five items, then
+# something else, even if the learner has not mastered it yet. A longer
+# uninterrupted run on one topic is exactly the blocked practice the brief
+# argues against; the concept comes back around on a later visit.
+BLOCK_SIZE = 5
 
 
 @dataclass(frozen=True)
@@ -107,6 +113,26 @@ def _implemented(generator: str) -> bool:
     return bool(entry and entry.implemented)
 
 
+def _current_streak(session: Session, user_id: int, concept_id: str) -> int:
+    """How many of the most recent responses, walking back, are unbroken for
+    this concept. Resets to zero the moment any other concept is answered, so
+    a concept that filled its block earlier in the session is free to come
+    back around once something else has been practiced.
+    """
+    recent = session.scalars(
+        select(Response.concept_id)
+        .where(Response.user_id == user_id)
+        .order_by(Response.id.desc())
+        .limit(BLOCK_SIZE)
+    ).all()
+    streak = 0
+    for cid in recent:
+        if cid != concept_id:
+            break
+        streak += 1
+    return streak
+
+
 def _due_review(session: Session, user_id: int, now: dt.datetime) -> ReviewCard | None:
     return session.scalars(
         select(ReviewCard)
@@ -152,12 +178,14 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         .order_by(Unit.order)
     ).all()
 
-    open_units = _open_units(rows, mastery)
+    servable = _Servability(rows, language, rng)
+    open_units = _open_units(rows, mastery, servable)
     candidates = [
         (exercise, concept, unit) for exercise, concept, unit in rows
         if _implemented(exercise.generator)
         and unit.id in open_units
         and not mastery.get(concept.id, False)
+        and servable(concept.id)
     ]
 
     # A concept whose intro was just shown must get at least one real
@@ -200,26 +228,35 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
     # Work outwards from the earliest unit and the earliest stage. An exercise
     # that cannot build an item right now is skipped rather than fatal: one
     # unbuildable spec should not end a session.
+    #
+    # Two passes: the first respects each concept's block cap, so five in a
+    # row on one topic hands off to something else. The second drops the cap
+    # and is only reached when every open concept is already capped, which
+    # means capping further would stop the session outright rather than
+    # interleave; continuing to serve the capped concept beats stopping.
     ordered = sorted(fresh, key=lambda row: (row[2].order, STAGE_ORDER.get(row[0].stage, 9)))
-    for tier_key in dict.fromkeys((u.order, STAGE_ORDER.get(e.stage, 9)) for e, c, u in ordered):
-        tier = [row for row in ordered
-                if (row[2].order, STAGE_ORDER.get(row[0].stage, 9)) == tier_key]
-        rng.shuffle(tier)
-        for exercise, concept, unit in tier:
-            # Checked here, not scanned for up front: this is the specific
-            # concept about to be served by priority and interleaving, so its
-            # intro is what belongs before it. Scanning the whole candidate
-            # list for any un-introduced concept would jump ahead to a later
-            # concept the moment the first one's intro had already been seen,
-            # introducing material out of order.
-            if _needs_intro(session, user_id, concept):
-                _mark_intro_seen(session, user_id, concept.id, now)
-                return Served(IntroItem(concept), "intro", unit.id, unit.title, concept.name)
-            try:
-                item = generate(ExerciseSpec.of(exercise, concept), language, rng)
-            except (GenerationError, NotImplementedError):
-                continue
-            return Served(item, "new", unit.id, unit.title, concept.name)
+    for respect_cap in (True, False):
+        for tier_key in dict.fromkeys((u.order, STAGE_ORDER.get(e.stage, 9)) for e, c, u in ordered):
+            tier = [row for row in ordered
+                    if (row[2].order, STAGE_ORDER.get(row[0].stage, 9)) == tier_key]
+            rng.shuffle(tier)
+            for exercise, concept, unit in tier:
+                # Checked here, not scanned for up front: this is the specific
+                # concept about to be served by priority and interleaving, so
+                # its intro is what belongs before it. Scanning the whole
+                # candidate list for any un-introduced concept would jump
+                # ahead to a later concept the moment the first one's intro
+                # had already been seen, introducing material out of order.
+                if _needs_intro(session, user_id, concept):
+                    _mark_intro_seen(session, user_id, concept.id, now)
+                    return Served(IntroItem(concept), "intro", unit.id, unit.title, concept.name)
+                if respect_cap and _current_streak(session, user_id, concept.id) >= BLOCK_SIZE:
+                    continue
+                try:
+                    item = generate(ExerciseSpec.of(exercise, concept), language, rng)
+                except (GenerationError, NotImplementedError):
+                    continue
+                return Served(item, "new", unit.id, unit.title, concept.name)
 
     raise LookupError("no exercise can produce an item for this learner yet")
 
@@ -230,13 +267,51 @@ def is_mastered(row) -> bool:
     return row.ability_estimate >= MASTERY_THRESHOLD and seen >= MIN_OPPORTUNITIES
 
 
-def _open_units(rows, mastery: dict[str, bool]) -> set[str]:
-    """Units whose prerequisites are finished.
+class _Servability:
+    """Whether a concept can currently produce at least one item, probed
+    once per concept per call to next_item and cached for the rest of it.
 
-    A unit is finished when every concept in it is above the threshold. Ordering
-    by unit alone would let a learner meet nominalised subordination in their
-    second session; the prerequisites in the content exist to stop that, and
-    this is where they take effect.
+    Without this, a concept with no working exercise (a register comparison
+    waiting on a citation, say) can never be mastered, so it never leaves the
+    "not mastered" candidate pool, and every unit gated behind it can never
+    finish or unlock, for any learner, permanently. This happened: unit 2 has
+    exactly one such concept, and a simulated learner who mastered everything
+    servable hit a dead end at turn 30, and again at turn 50 once every other
+    concept in the curriculum was also mastered and there was nothing left
+    for the "revisit mastered material" fallback to fall back to either,
+    because that fallback only triggers when the candidate list is empty, and
+    a single permanently unservable concept kept it from ever being empty.
+
+    Probed rather than declared in content, so a concept that becomes
+    servable later (the citation arrives, the audio is recorded) needs no
+    separate flag kept in sync by hand.
+    """
+    def __init__(self, rows, language, rng: random.Random):
+        self._by_concept: dict[str, list[tuple[Exercise, Concept]]] = {}
+        for exercise, concept, _unit in rows:
+            self._by_concept.setdefault(concept.id, []).append((exercise, concept))
+        self._language = language
+        self._rng = rng
+        self._cache: dict[str, bool] = {}
+
+    def __call__(self, concept_id: str) -> bool:
+        if concept_id not in self._cache:
+            self._cache[concept_id] = False
+            for exercise, concept in self._by_concept.get(concept_id, []):
+                if not _implemented(exercise.generator):
+                    continue
+                try:
+                    generate(ExerciseSpec.of(exercise, concept), self._language, self._rng)
+                except (GenerationError, NotImplementedError):
+                    continue
+                self._cache[concept_id] = True
+                break
+        return self._cache[concept_id]
+
+
+def _open_units(rows, mastery: dict[str, bool], servable: _Servability) -> set[str]:
+    """Units whose prerequisites are finished: every concept in them is
+    either mastered, or was never going to be masterable in the first place.
     """
     concepts_by_unit: dict[str, set[str]] = {}
     prerequisites: dict[str, list[str]] = {}
@@ -246,7 +321,9 @@ def _open_units(rows, mastery: dict[str, bool]) -> set[str]:
 
     def finished(unit_id: str) -> bool:
         concepts = concepts_by_unit.get(unit_id, set())
-        return bool(concepts) and all(mastery.get(c, False) for c in concepts)
+        return bool(concepts) and all(
+            mastery.get(c, False) or not servable(c) for c in concepts
+        )
 
     return {
         unit_id for unit_id in concepts_by_unit

@@ -103,6 +103,7 @@ def load_language(code: str = "tr", root: Path | None = None) -> Language:
             vowel_deletion=bool(raw.get("vowel_deletion", False)),
             harmony_class=harmony_class,
             review=tuple(raw.get("review", ())),
+            etymology=raw.get("etymology"),
         )
         if lexeme.lemma in lexemes:
             raise ContentError(f"duplicate lemma: {lexeme.lemma}")

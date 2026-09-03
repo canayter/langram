@@ -207,6 +207,62 @@ class TestUnlocking:
         assert "unit-03-possession" not in units, "unit three still waits for unit two"
 
 
+class TestPermanentlyUnservableConcepts:
+    """bare-third-person's only exercise always raises GenerationError: it is
+    a register comparison waiting on a citation (see suffixes.yaml, PRED3SG).
+    A concept like that must never be able to block anything, and for a while
+    it did: once everything else reachable was mastered, unit 2 could never
+    be marked finished, so unit 3 could never unlock, and once literally
+    everything servable in the whole curriculum was mastered, the tutor had
+    nothing left to serve at all and returned a 503 to every learner who
+    tried hard enough. Reproduced directly here rather than by looping
+    through real answers, which is how it was actually found."""
+
+    def _master_everything_except(self, factory, learner, excluding: set[str]):
+        with factory() as s:
+            concepts = s.scalars(select(Concept)).all()
+            for concept in concepts:
+                if concept.id in excluding:
+                    continue
+                s.add(UserConceptMastery(
+                    user_id=learner.user_id, concept_id=concept.id, ability_estimate=0.99,
+                    state={"p_known": 0.99, "opportunities": 9, "correct": 9},
+                ))
+            s.commit()
+
+    def test_a_concept_with_no_working_exercise_does_not_block_its_unit(self, learner, factory):
+        self._master_everything_except(
+            factory, learner,
+            excluding={"bare-third-person", "possessive-suffixes", "buffer-segments", "stem-alternation"},
+        )
+        units = {learner.get("/api/session/next").json()["unit_id"] for _ in range(12)}
+        assert "unit-03-possession" in units, "unit 2's one dead concept should not have locked unit 3"
+
+    def test_the_tutor_never_dead_ends_once_everything_servable_is_mastered(self, learner, factory):
+        with factory() as s:
+            all_ids = {c.id for c in s.scalars(select(Concept)).all()}
+        self._master_everything_except(factory, learner, excluding={"bare-third-person"})
+
+        for _ in range(20):
+            r = learner.get("/api/session/next")
+            assert r.status_code == 200, (
+                "a permanently unservable concept kept the candidate list from "
+                "ever being empty, so the mastered-material fallback never "
+                "triggered, and the tutor ran out of anything to serve"
+            )
+
+    def test_the_stuck_concept_is_never_falsely_credited(self, learner, factory):
+        """Excluding a concept from the unlock requirement is not the same
+        as excluding it from the report: it must still read as not started,
+        never as quietly passed."""
+        self._master_everything_except(factory, learner, excluding={"bare-third-person"})
+        for _ in range(15):
+            learner.get("/api/session/next")
+        report = learner.get("/api/progress").json()
+        row = next(c for c in report["concepts"] if c["id"] == "bare-third-person")
+        assert row["status"] == "not started"
+
+
 class TestProgressReport:
     def test_an_empty_report_says_so(self, learner):
         report = learner.get("/api/progress").json()
