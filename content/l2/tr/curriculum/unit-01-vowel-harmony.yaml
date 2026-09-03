@@ -29,6 +29,14 @@ concepts:
       usual first error is to fix on one shape, normally the one they met first,
       and use it everywhere: evler and then arabalar becomes arabaler. The rule
       is not hard to state; making it automatic is the work.
+    intro: >
+      Turkish suffixes are not fixed forms. The plural suffix has two shapes, and
+      which one attaches depends on the last vowel of the stem: ev becomes evler,
+      but araba becomes arabalar. Nothing here is memorised word by word. The vowel
+      in the suffix simply matches the vowel class of the one before it, a pattern
+      called vowel harmony. English has nothing like it, so there is nothing to fall
+      back on already knowing. The exercises below only ask you to notice which
+      shape is correct. Producing one yourself comes later.
     teaches_suffixes: [PL]
     exercises:
       - id: hear-the-difference
@@ -81,6 +89,12 @@ concepts:
       Learners often look at the first vowel of a word, or at the whole word as
       a shape, rather than at the last vowel. Long words expose this: the
       trigger in bilgisayarlar is the final a, and nothing earlier matters.
+    intro: >
+      The rule you just saw depends on one specific vowel: the last one in the stem,
+      not the first, and not the word as a whole. bilgisayar (computer) starts with
+      a front vowel but ends in a back one, so its plural is bilgisayarlar.
+      Everything before that final vowel is irrelevant to the suffix. The exercises
+      below ask you to find that last vowel and use it to predict the shape.
     teaches_suffixes: [PL]
     exercises:
       - id: find-the-trigger

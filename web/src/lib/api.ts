@@ -15,6 +15,7 @@ export type Payload =
   | { kind: 'choose_suffix'; stem: string; gloss: string; meaning: string
       options: SuffixOption[] }
   | { kind: 'type'; cue: string; stem: string; gloss: string; suffix: Suffix }
+  | { kind: 'intro'; title: string; text: string }
 
 export type Item = {
   item_token: string
@@ -26,7 +27,7 @@ export type Item = {
   stage: string
   generator: string
   prompt: string
-  source: 'new' | 'review'
+  source: 'new' | 'review' | 'intro'
   payload: Payload
 }
 

@@ -70,6 +70,7 @@ class ConceptOut(BaseModel):
     name: str
     type: str
     why_hard: str
+    intro: str
     teaches_suffixes: list[str]
 
 

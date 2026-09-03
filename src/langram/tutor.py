@@ -61,10 +61,29 @@ class ExerciseSpec:
         )
 
 
+class IntroItem:
+    """Explicit information about a concept, shown once before its first
+    exercise. Not generated and never answered: dismissed with a click, which
+    is why it carries no spec worth rebuilding.
+
+    Attribute surface matches what the session router reads off a real
+    GeneratedItem (exercise_id, concept_id, stage, generator, prompt, payload,
+    spec), so nothing downstream needs to know this is not one.
+    """
+    def __init__(self, concept: Concept):
+        self.exercise_id = f"intro:{concept.id}"
+        self.concept_id = concept.id
+        self.generator = "concept_intro"
+        self.stage = "intro"
+        self.prompt = ""
+        self.payload = {"kind": "intro", "title": concept.name, "text": concept.intro}
+        self.spec: dict = {}
+
+
 @dataclass(frozen=True)
 class Served:
-    item: object                 # GeneratedItem
-    source: str                  # "review" or "new"
+    item: object                 # GeneratedItem or IntroItem
+    source: str                  # "review", "new", or "intro"
     unit_id: str
     unit_title: str
     concept_name: str
@@ -140,6 +159,36 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         and unit.id in open_units
         and not mastery.get(concept.id, False)
     ]
+
+    # A concept whose intro was just shown must get at least one real
+    # exercise before interleaving is free to introduce a different concept
+    # instead. Without this, two concepts sharing an early tier (unit 1 has
+    # two, both structured_input) can each show their intro back to back
+    # with no practice in between, since the per-row check further down only
+    # guarantees a concept's own intro precedes its own exercises, not that
+    # nothing else gets introduced in the meantime.
+    in_progress = {
+        row.concept_id
+        for row in session.scalars(
+            select(UserConceptMastery).where(
+                UserConceptMastery.user_id == user_id,
+                UserConceptMastery.intro_seen_at.is_not(None),
+            )
+        )
+        if int((row.state or {}).get("opportunities", 0)) == 0
+    }
+    if in_progress:
+        priority = sorted(
+            (row for row in candidates if row[1].id in in_progress),
+            key=lambda row: (row[2].order, STAGE_ORDER.get(row[0].stage, 9)),
+        )
+        for exercise, concept, unit in priority:
+            try:
+                item = generate(ExerciseSpec.of(exercise, concept), language, rng)
+            except (GenerationError, NotImplementedError):
+                continue
+            return Served(item, "new", unit.id, unit.title, concept.name)
+
     if not candidates:
         # Everything available is mastered, so revisit rather than stop.
         candidates = [(e, c, u) for e, c, u in rows if _implemented(e.generator)]
@@ -157,6 +206,15 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
                 if (row[2].order, STAGE_ORDER.get(row[0].stage, 9)) == tier_key]
         rng.shuffle(tier)
         for exercise, concept, unit in tier:
+            # Checked here, not scanned for up front: this is the specific
+            # concept about to be served by priority and interleaving, so its
+            # intro is what belongs before it. Scanning the whole candidate
+            # list for any un-introduced concept would jump ahead to a later
+            # concept the moment the first one's intro had already been seen,
+            # introducing material out of order.
+            if _needs_intro(session, user_id, concept):
+                _mark_intro_seen(session, user_id, concept.id, now)
+                return Served(IntroItem(concept), "intro", unit.id, unit.title, concept.name)
             try:
                 item = generate(ExerciseSpec.of(exercise, concept), language, rng)
             except (GenerationError, NotImplementedError):
@@ -194,6 +252,32 @@ def _open_units(rows, mastery: dict[str, bool]) -> set[str]:
         unit_id for unit_id in concepts_by_unit
         if all(finished(p) for p in prerequisites.get(unit_id, []))
     }
+
+
+def _mastery_row(session: Session, user_id: int, concept_id: str) -> UserConceptMastery | None:
+    return session.scalars(
+        select(UserConceptMastery).where(
+            UserConceptMastery.user_id == user_id,
+            UserConceptMastery.concept_id == concept_id,
+        )
+    ).first()
+
+
+def _needs_intro(session: Session, user_id: int, concept: Concept) -> bool:
+    """A concept with nothing to say does not gate on anything to say."""
+    if not (concept.intro or "").strip():
+        return False
+    row = _mastery_row(session, user_id, concept.id)
+    return row is None or row.intro_seen_at is None
+
+
+def _mark_intro_seen(session: Session, user_id: int, concept_id: str, now: dt.datetime) -> None:
+    row = _mastery_row(session, user_id, concept_id)
+    if row is None:
+        row = UserConceptMastery(user_id=user_id, concept_id=concept_id,
+                                 ability_estimate=bkt.DEFAULTS.prior, state={})
+        session.add(row)
+    row.intro_seen_at = now
 
 
 def record_mastery(session: Session, user_id: int, concept_id: str, correct: bool,

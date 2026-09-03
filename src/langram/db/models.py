@@ -71,6 +71,10 @@ class Concept(Base):
     name: Mapped[str] = mapped_column(String(128))
     type: Mapped[str] = mapped_column(String(32))
     why_hard: Mapped[str] = mapped_column(Text)
+    # Explicit information shown once before the learner meets any exercise
+    # for this concept, so noticing the pattern is not the first thing being
+    # asked of them. See tutor.py's intro gate.
+    intro: Mapped[str] = mapped_column(Text, default="")
     teaches_suffixes: Mapped[list] = mapped_column(Json, default=list)
 
     unit: Mapped[Unit] = relationship(back_populates="concepts")
@@ -116,6 +120,11 @@ class UserConceptMastery(Base):
     # behind it live in state.
     ability_estimate: Mapped[float] = mapped_column(Float, default=0.0)
     state: Mapped[dict] = mapped_column(Json, default=dict)
+    # Set the moment a concept's intro is shown, independent of BKT state.
+    # Kept as its own column rather than a key inside `state`, because
+    # bkt.update() replaces `state` wholesale with only its own three keys on
+    # every real answer, which would silently erase a flag stored inside it.
+    intro_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

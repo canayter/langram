@@ -124,6 +124,23 @@ derivation. A wrong answer whose cause cannot be pinned on a rule, such as
 rejecting a well formed word, is left out of the rates rather than quietly
 distorting them.
 
+Every concept now carries `intro`, required by the curriculum schema: explicit
+information about the pattern, shown once before the learner meets any exercise
+for it. This is not new pedagogy; VanPatten's Processing Instruction model
+(already cited for input-before-output) has explicit information as its first
+stage, and the app was only implementing the third. `tutor.py` gates the very
+first exercise of each concept behind its intro, and additionally forces one
+real exercise of a just-introduced concept before interleaving is allowed to
+introduce a different one, so a learner never meets two intros in a row with no
+practice between them. `intro_seen_at` lives on `user_concept_mastery` as its
+own column rather than inside the BKT `state` blob, because `bkt.update()`
+replaces `state` wholesale on every real answer and would otherwise erase it
+silently. On the frontend, `SessionScreen`'s mount effect needed a synchronous
+re-entry guard: `/api/session/next` is not idempotent (it can mark an intro
+seen), and React 18 StrictMode's deliberate double-invoke of effects in
+development was firing it twice, so the intro was being fetched correctly and
+then consumed by the second call before it ever rendered.
+
 Remaining from the brief: Phase 8, the register and vernacular track. Almost
 every claim in it is a native speaker judgement.
 

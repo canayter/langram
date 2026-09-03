@@ -15,7 +15,10 @@ from sqlalchemy.orm import sessionmaker
 from langram.api.deps import get_language, get_session
 from langram.api.main import create_app
 from langram.api.security import read_item_token
-from langram.db.models import Base, Concept, Exercise, Response, ReviewCard, User
+from langram import bkt
+from langram.db.models import (
+    Base, Concept, Exercise, Response, ReviewCard, User, UserConceptMastery,
+)
 from langram.db.seed import seed
 from langram.generators import assemble
 from langram.tutor import ExerciseSpec
@@ -53,15 +56,25 @@ def client(factory):
 
 @pytest.fixture
 def learner(client):
-    token = client.post("/api/auth/guest").json()["access_token"]
-    client.headers["Authorization"] = f"Bearer {token}"
+    token = client.post("/api/auth/guest").json()
+    client.headers["Authorization"] = f"Bearer {token['access_token']}"
+    client.user_id = token["user_id"]
     return client
 
 
 def _first_item(learner):
-    r = learner.get("/api/session/next")
-    assert r.status_code == 200, r.text
-    return r.json()
+    """The first real exercise, skipping over a concept's one-time intro.
+
+    Mirrors exactly what the frontend does: an intro is dismissed with a
+    click that calls next() again, never with a POST to /answer.
+    """
+    for _ in range(10):
+        r = learner.get("/api/session/next")
+        assert r.status_code == 200, r.text
+        item = r.json()
+        if item["payload"]["kind"] != "intro":
+            return item
+    raise AssertionError("stuck behind intros")
 
 
 def _answer(learner, item, option, attempt=1, latency=None):
@@ -226,11 +239,83 @@ class TestTheLoop:
         # The spec is stored so the same item can come back on review.
         assert all(c.item_spec.get("lemma") for c in cards)
 
-    def test_interleaving_avoids_the_concept_just_seen(self, learner):
+    def test_interleaving_avoids_the_concept_just_seen(self, learner, factory):
+        """`after` reflects a settled item, the way the frontend sends it: only
+        once a response has actually been recorded, which is also what takes a
+        concept out of "just introduced, must be practiced next" priority.
+        Passing `after` for an item nobody has actually answered is not a
+        scenario the real app produces."""
         first = _first_item(learner)
         seen = first["concept_id"]
+        assert _answer(learner, first, _right(factory, first))["correct"]
         following = learner.get(f"/api/session/next?after={seen}").json()
         assert following["concept_id"] != seen
+
+
+class TestConceptIntros:
+    """Explicit information about a concept is a required stage before
+    structured input, not an optional preamble (VanPatten, Processing
+    Instruction). These tests are what test_comprehension_comes_before_production
+    already assumes: that _first_item has something to skip."""
+
+    def test_a_new_learner_meets_the_intro_before_any_exercise(self, learner):
+        r = learner.get("/api/session/next")
+        item = r.json()
+        assert item["payload"]["kind"] == "intro"
+        assert item["source"] == "intro"
+        assert item["payload"]["text"]
+        assert item["unit_id"] == "unit-01-vowel-harmony"
+        # An intro is not answerable: no exercise or spec a wrong guess could hit.
+        assert item["stage"] == "intro"
+
+    def test_dismissing_the_intro_leads_to_a_real_exercise_for_the_same_concept(self, learner):
+        intro = learner.get("/api/session/next").json()
+        exercise = learner.get("/api/session/next").json()
+        assert exercise["payload"]["kind"] != "intro"
+        assert exercise["concept_id"] == intro["concept_id"]
+
+    def test_the_intro_is_shown_exactly_once(self, learner, factory):
+        intro = learner.get("/api/session/next").json()
+        item = _first_item(learner)
+        assert _answer(learner, item, _right(factory, item))["correct"]
+        # Same concept could come up again on interleaving; its intro must not.
+        for _ in range(6):
+            nxt = learner.get(f"/api/session/next?after={item['concept_id']}").json()
+            assert not (nxt["payload"]["kind"] == "intro"
+                       and nxt["concept_id"] == intro["concept_id"])
+
+    def test_an_intro_is_not_evidence_of_mastery(self, learner, factory):
+        """Being shown the explanation is not the same as demonstrating the
+        rule. The mastery row an intro creates must still read at the prior."""
+        intro = learner.get("/api/session/next").json()
+        with factory() as s:
+            row = s.scalars(
+                select(UserConceptMastery).where(
+                    UserConceptMastery.user_id == learner.user_id,
+                    UserConceptMastery.concept_id == intro["concept_id"],
+                )
+            ).first()
+            assert row is not None
+            assert row.ability_estimate == bkt.DEFAULTS.prior
+            assert row.state.get("opportunities", 0) == 0
+            assert row.intro_seen_at is not None
+
+    def test_answering_afterwards_does_not_erase_that_the_intro_was_seen(self, learner, factory):
+        """bkt.update() replaces `state` wholesale with only its own three
+        keys, so intro_seen_at has to live outside `state` or a real answer
+        would silently wipe it."""
+        intro = learner.get("/api/session/next").json()
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+        with factory() as s:
+            row = s.scalars(
+                select(UserConceptMastery).where(
+                    UserConceptMastery.user_id == learner.user_id,
+                    UserConceptMastery.concept_id == intro["concept_id"],
+                )
+            ).first()
+            assert row.intro_seen_at is not None
+            assert row.state.get("opportunities", 0) >= 1
 
 
 class TestItemTokens:

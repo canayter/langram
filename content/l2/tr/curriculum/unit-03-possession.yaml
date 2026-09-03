@@ -34,6 +34,13 @@ concepts:
       has to relocate the marking to the other noun. The third person is also
       ambiguous in a way English is not: evi is his house, her house and its
       house, and context does the rest.
+    intro: >
+      English marks who owns something on the owner: my house, your house. Turkish
+      marks it on the thing owned instead: the suffix attaches to house itself, not
+      to a separate possessive word. The same suffix that means my also changes
+      shape with vowel harmony, exactly like the suffixes you have already met. The
+      exercises below ask you to notice whose something is before you are asked to
+      mark it yourself.
     teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG, POSS1PL, POSS2PL, POSS3PL]
     exercises:
       - id: whose-is-it
@@ -81,6 +88,13 @@ concepts:
       vowels meeting and avoids an awkward cluster, so whichever segment is
       missing gets supplied. Seeing it as one rule halves what there is to learn
       and stops the learner inserting a buffer where none is needed.
+    intro: >
+      When a possessive suffix that starts with a vowel meets a stem that already
+      ends in a vowel, Turkish will not let the two vowels sit next to each other.
+      An extra consonant is inserted between them to keep them apart. It looks like
+      an irregular exception the first few times you see it, but it is the same
+      repair every time: whichever stem shape would otherwise create an awkward run
+      of sounds gets one consonant added to fix it.
     teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG]
     exercises:
       - id: spot-the-buffer
@@ -116,6 +130,13 @@ concepts:
       learner to store a property of the word rather than apply a rule, so it
       has to be taught as a property and drilled as one. The engine knows which
       stems alternate; the learner has to learn them the same way.
+    intro: >
+      Some Turkish stems change their final consonant when a vowel-initial suffix is
+      added, and some do not, and nothing in the spelling of the bare word tells you
+      which. kitap becomes kitabim when a suffix follows, but sepet stays sepetim.
+      This is not a rule to apply. It is a property of each individual word, the
+      same way an English speaker simply has to know that the plural of goose is
+      geese rather than gooses.
     teaches_suffixes: [POSS1SG, POSS3SG]
     exercises:
       - id: notice-the-change

@@ -73,8 +73,19 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
   const [error, setError] = useState<string | null>(null)
   const lastConcept = useRef<string | undefined>(undefined)
   const shownAt = useRef<number>(Date.now())
+  // /api/session/next is not idempotent: serving a concept's intro also
+  // marks it seen server-side. React 18 StrictMode deliberately double-fires
+  // a mount effect in development, and without this guard the second call
+  // would land after the intro was already consumed by the first, so the
+  // intro would fetch correctly and then never render. The ref persists
+  // across StrictMode's synthetic remount (only state and effects reset), so
+  // setting it synchronously, before the first await, blocks the second call
+  // from ever reaching the network.
+  const loading = useRef(false)
 
   const load = useCallback(async () => {
+    if (loading.current) return
+    loading.current = true
     setResult(null)
     setChosen(null)
     setAttempt(1)
@@ -85,6 +96,8 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
       shownAt.current = Date.now()
     } catch (e) {
       setError((e as Error).message)
+    } finally {
+      loading.current = false
     }
   }, [])
 
@@ -132,6 +145,27 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
     return (
       <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
         <p className="text-slate-500">Loading.</p>
+      </Shell>
+    )
+  }
+
+  // Explicit information about the concept, shown once before its first
+  // exercise. Not answered, so it never touches submit() or api.answer.
+  if (item.payload.kind === 'intro') {
+    return (
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
+        <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          {item.unit_title}
+        </p>
+        <h1 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
+          {item.concept_name}
+        </h1>
+        <p className="mt-6 max-w-prose leading-relaxed text-slate-700 dark:text-slate-300">
+          {item.payload.text}
+        </p>
+        <button onClick={() => void load()} className={`${primaryButton} mt-8`} autoFocus>
+          Start practicing
+        </button>
       </Shell>
     )
   }

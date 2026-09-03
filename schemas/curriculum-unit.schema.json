@@ -4,12 +4,28 @@
   "title": "Curriculum unit",
   "description": "One unit: why it sits where it sits, the concepts it teaches, and the exercises that teach them. Exercises are specifications for generators, not static items, so the engine can produce unlimited practice from the grammar.",
   "type": "object",
-  "required": ["id", "order", "title", "rationale", "research_refs", "concepts"],
+  "required": [
+    "id",
+    "order",
+    "title",
+    "rationale",
+    "research_refs",
+    "concepts"
+  ],
   "additionalProperties": false,
   "properties": {
-    "id": { "type": "string", "pattern": "^unit-[0-9][0-9]-[a-z-]+$" },
-    "order": { "type": "integer", "minimum": 1 },
-    "title": { "type": "string", "minLength": 3 },
+    "id": {
+      "type": "string",
+      "pattern": "^unit-[0-9][0-9]-[a-z-]+$"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
     "rationale": {
       "type": "string",
       "minLength": 40,
@@ -18,42 +34,98 @@
     "research_refs": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
       "description": "Keys into content/bibliography.yaml. The validator refuses a key that is not there."
     },
     "prerequisites": {
       "type": "array",
-      "items": { "type": "string", "pattern": "^unit-[0-9][0-9]-[a-z-]+$" }
+      "items": {
+        "type": "string",
+        "pattern": "^unit-[0-9][0-9]-[a-z-]+$"
+      }
     },
     "concepts": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "name", "type", "why_hard", "exercises"],
+        "required": [
+          "id",
+          "name",
+          "type",
+          "why_hard",
+          "intro",
+          "exercises"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-          "name": { "type": "string", "minLength": 3 },
-          "type": { "enum": ["grammatical_feature", "phoneme_contrast", "lexical_set", "pragmatic_pattern"] },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 3
+          },
+          "type": {
+            "enum": [
+              "grammatical_feature",
+              "phoneme_contrast",
+              "lexical_set",
+              "pragmatic_pattern"
+            ]
+          },
           "why_hard": {
             "type": "string",
             "minLength": 30,
             "description": "What an English speaker gets wrong here, and why. Shown to the learner in the diagnostic report."
           },
-          "teaches_suffixes": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z0-9_]+$" } },
-          "review": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "intro": {
+            "type": "string",
+            "minLength": 40,
+            "description": "Explicit information about the pattern, shown once before the learner meets any exercise for this concept. Not a table and not the full grammar: enough to say what to notice. VanPatten's Processing Instruction model treats this as a required stage before structured input, not an optional preamble."
+          },
+          "teaches_suffixes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z0-9_]+$"
+            }
+          },
+          "review": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
           "exercises": {
             "type": "array",
             "minItems": 1,
             "items": {
               "type": "object",
-              "required": ["id", "stage", "generator"],
+              "required": [
+                "id",
+                "stage",
+                "generator"
+              ],
               "additionalProperties": false,
               "properties": {
-                "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
                 "stage": {
-                  "enum": ["structured_input", "guided_output", "free_output", "perception", "review"],
+                  "enum": [
+                    "structured_input",
+                    "guided_output",
+                    "free_output",
+                    "perception",
+                    "review"
+                  ],
                   "description": "Input before output is not a preference here. A concept may not have a guided_output exercise without a structured_input one first; the validator enforces it."
                 },
                 "generator": {
@@ -61,9 +133,18 @@
                   "pattern": "^[a-z0-9_]+$",
                   "description": "Name of the item generator. Must be registered in langram.generators, implemented or not."
                 },
-                "prompt": { "type": "string", "description": "Learner-facing instruction. No em dashes." },
-                "params": { "type": "object" },
-                "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 }
+                "prompt": {
+                  "type": "string",
+                  "description": "Learner-facing instruction. No em dashes."
+                },
+                "params": {
+                  "type": "object"
+                },
+                "difficulty": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                }
               }
             }
           }

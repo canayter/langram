@@ -28,7 +28,7 @@ BIBLIOGRAPHY_DOC = ROOT / "docs" / "bibliography.md"
 
 # The working agreement forbids em dashes in user-facing copy. These are the
 # fields a learner actually reads.
-LEARNER_FACING = ("title", "rationale", "why_hard", "prompt", "name", "gloss", "claim")
+LEARNER_FACING = ("title", "rationale", "why_hard", "intro", "prompt", "name", "gloss", "claim")
 
 
 @dataclass

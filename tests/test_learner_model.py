@@ -154,6 +154,10 @@ def _answer_one(learner, factory, correct: bool):
     wrong answers are real forms built by the wrong rule, so the test uses those.
     """
     item = learner.get("/api/session/next").json()
+    # Skip a concept's one-time intro, which has no exercise behind it and is
+    # dismissed with a click rather than an answer.
+    while item["payload"]["kind"] == "intro":
+        item = learner.get("/api/session/next").json()
     token = read_item_token(item["item_token"])
     language = get_language()
     with factory() as s:

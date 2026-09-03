@@ -32,6 +32,13 @@ concepts:
       rounding is the one English speakers drop. The common error is to use the
       unrounded shape everywhere, giving doktorim for doktorum, because the
       learner heard backness and stopped there.
+    intro: >
+      The suffix you are about to meet has four shapes instead of two, because it
+      tracks two things about the last vowel of the stem rather than one: whether it
+      is back or front, and whether it is rounded or not. doktor ends in a back,
+      rounded vowel, so its shape is doktorum, not doktorim. Backness alone is not
+      enough here. The exercises below ask you to notice both features before you
+      are asked to choose a shape yourself.
     teaches_suffixes: [PRED1SG, PRED1PL]
     exercises:
       - id: four-way-listen
@@ -69,6 +76,14 @@ concepts:
       the person marking on the predicate itself, so learners either look for a
       missing verb or insert olmak, which is a different verb meaning "to
       become" and is wrong here.
+    intro: >
+      In English, saying what someone is takes a separate word: am, are, is. Turkish
+      has no such word. Instead, a suffix attaches directly to the predicate itself:
+      ogrenci, student, plus a suffix gives ogrenciyim, one word meaning I am a
+      student. There is no verb to insert, and olmak, which is sometimes translated
+      as to be, actually means to become and does not belong here. The exercises
+      below show the suffix in context, so you can recognise who is being talked
+      about before producing it yourself.
     teaches_suffixes: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
     exercises:
       - id: who-is-being-talked-about
@@ -121,6 +136,12 @@ concepts:
       textbooks hand them -DIr. In ordinary speech the bare form is the neutral
       one and -DIr sounds official. This is a register problem disguised as a
       grammar problem.
+    intro: >
+      Everything so far has added a suffix to say I am or you are. The third person,
+      is, works differently: in ordinary speech nothing is added at all. ogrenci on
+      its own already means it is a student or he or she is a student, depending on
+      context. A suffix does exist for this, but it belongs in formal or official
+      language, not in the sentence you would actually say to a friend.
     review:
       - Confirm the register description of -DIr before this is shown to a learner
     teaches_suffixes: [PRED3SG]
