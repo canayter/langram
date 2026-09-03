@@ -13,6 +13,10 @@ dependencies = ["PyYAML>=6.0"]
 # The engine itself needs only PyYAML. Everything below is for building on top
 # of it, so the pure library stays cheap to install and to reason about.
 db = ["SQLAlchemy>=2.0", "alembic>=1.13"]
+# Postgres is the deployment target (see CLAUDE.md); SQLite needs no driver
+# beyond the standard library, which is why this is its own extra rather
+# than folded into "db".
+postgres = ["psycopg[binary]>=3.1"]
 content = ["jsonschema>=4.20"]
 api = [
     "fastapi>=0.115",

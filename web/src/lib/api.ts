@@ -95,12 +95,19 @@ export function getToken() {
   return token
 }
 
+// Empty in dev (vite's proxy forwards /api/* to VITE_API) and empty by
+// default in production too, for the case where the API is reverse-proxied
+// onto the same origin as the frontend. Set at build time when the frontend
+// and the API are deployed to different origins, e.g.
+// VITE_API_BASE=https://langram-api.fly.dev npm run build
+const API_BASE = import.meta.env.VITE_API_BASE ?? ''
+
 async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
   headers.set('Content-Type', 'application/json')
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const response = await fetch(path, { ...init, headers })
+  const response = await fetch(API_BASE + path, { ...init, headers })
   if (!response.ok) {
     let detail = response.statusText
     try {

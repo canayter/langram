@@ -1,0 +1,36 @@
+# Fly.io app config. Created by `fly launch` normally; written by hand here
+# so the repo already has one and `fly launch` only needs to attach it to an
+# actual app name and org, both of which are account-specific decisions.
+#
+# app name is a placeholder: `fly launch` will ask, or edit this line first.
+app = "langram-api"
+primary_region = "ord"          # Chicago, close to where this is developed
+
+[build]
+
+[deploy]
+  release_command = "/app/release.sh"
+
+[env]
+  LANGRAM_CORS_ORIGINS = '["https://ayter.com"]'
+  # LANGRAM_DATABASE_URL, LANGRAM_SECRET_KEY: set as secrets, never here.
+  # See docs/deploy.md.
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
