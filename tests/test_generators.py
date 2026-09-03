@@ -227,6 +227,25 @@ class TestFormMeaningMatch:
         assert item.payload["kind"] == "choose_letter"
         assert item.answer == language.phonology.last_vowel(item.payload["stem"])
 
+    def test_a_word_whose_vowels_are_all_the_same_letter_is_never_the_trigger_choice(self, language):
+        """anahtar (key) has three vowels, a, a and a: len(vowels) >= 2 passed
+        the old check, but set(vowels) has one member, so the choice was
+        between "a" and nothing. Every draw across many seeds must land on a
+        word with at least two DIFFERENT vowels."""
+        for seed in range(60):
+            item = generate(_spec("form_meaning_match", highlight="last_stem_vowel",
+                                  min_syllables=2, suffix="PL"), language, random.Random(seed))
+            assert len(item.payload["options"]) >= 2, item.payload["stem"]
+
+    def test_anahtar_itself_is_refused_by_assemble(self, language):
+        """The fix belongs in the check itself, not only in build()'s retry:
+        assemble() is reachable directly, for instance replaying a review
+        card, and must refuse this word on its own."""
+        from langram.generators.form_meaning_match import assemble as fmm_assemble
+        with pytest.raises(GenerationError, match="no two different vowels"):
+            fmm_assemble(_spec("form_meaning_match", highlight="last_stem_vowel"),
+                         language, {"mode": "trigger", "lemma": "anahtar", "suffixes": ["PL"]})
+
     def test_the_buffer_item_marks_the_vowel_final_stem(self, language):
         item = generate(_spec("form_meaning_match", highlight="buffer_segment",
                               suffix="POSS3SG"), language, random.Random(16))

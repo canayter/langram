@@ -57,7 +57,17 @@ def build(exercise, language, rng: random.Random) -> GeneratedItem:
     elif mode == "trigger":
         params.setdefault("min_syllables", 2)
         suffixes = suffix_choices(params) or ["PL"]
-        lexeme = pick_lexeme(language, params, rng)
+        # Not every word with two or more vowels has two or more DIFFERENT
+        # vowels: anahtar has three, all of them a, which leaves nothing to
+        # actually choose between. Retried rather than checked once, the way
+        # the other generators handle a draw that will not work out, since
+        # min_syllables alone cannot rule this out ahead of time.
+        for _ in range(12):
+            lexeme = pick_lexeme(language, params, rng)
+            if len({ch for ch in lexeme.lemma if language.phonology.is_vowel(ch)}) >= 2:
+                break
+        else:
+            raise GenerationError(f"{exercise.id}: no candidate word has two different vowels")
         spec = {"mode": mode, "lemma": lexeme.lemma, "suffixes": [rng.choice(suffixes)]}
 
     else:
@@ -93,10 +103,13 @@ def assemble(exercise, language, spec: dict) -> GeneratedItem:
 
     elif mode == "trigger":
         vowels = [ch for ch in lexeme.lemma if language.phonology.is_vowel(ch)]
-        if len(vowels) < 2:
-            raise GenerationError(f"{lemma} has only one vowel, so there is nothing to choose")
-        answer = vowels[-1]
         options = sorted(set(vowels))
+        if len(options) < 2:
+            # Reachable directly through assemble(), e.g. replaying a stale
+            # review card for a word content has since changed, so this
+            # stays a real check rather than trusting build()'s retry alone.
+            raise GenerationError(f"{lemma} has no two different vowels, so there is nothing to choose")
+        answer = vowels[-1]
         payload = {"kind": "choose_letter", "form": result.surface, "stem": lexeme.lemma,
                    "gloss": lexeme.gloss, "options": options}
 
