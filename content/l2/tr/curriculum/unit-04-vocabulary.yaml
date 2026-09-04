@@ -1,0 +1,36 @@
+id: unit-04-vocabulary
+order: 4
+title: Everyday words
+rationale: >
+  Every other unit exercises a suffix using whatever stems happen to carry
+  it. This unit is the reverse: it exercises the stems themselves, so a
+  learner's vocabulary grows on a track of its own rather than only ever
+  being a side effect of whichever grammar point is current. No
+  prerequisites, so it is available from the start and keeps recurring
+  alongside every other unit rather than being finished once and left
+  behind.
+research_refs:
+  - roediger-karpicke-retrieval
+prerequisites: []
+
+concepts:
+  - id: core-vocabulary
+    name: Everyday words, by recognition
+    type: lexical_set
+    why_hard: >
+      Not hard in the way a grammar rule is hard. The difficulty is coverage
+      and retention: a learner needs enough words, held onto long enough,
+      that a grammar exercise is not also a vocabulary quiz they were not
+      expecting.
+    intro: >
+      This is not a suffix, it is a word. You will see a Turkish word and
+      pick what it means from a short list. Retrieval, choosing the right
+      meaning yourself, holds up better over time than simply reading a
+      translation would, which is why this is a question rather than a
+      glossary.
+    exercises:
+      - id: what-does-this-mean
+        stage: structured_input
+        generator: vocab_recognition
+        prompt: "What does this word mean?"
+        difficulty: 1

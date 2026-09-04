@@ -75,6 +75,13 @@ REGISTRY: dict[str, Generator] = {
             "Scheduled recall of a previously introduced form.",
             implemented=True,
         ),
+        Generator(
+            "vocab_recognition",
+            "structured_input",
+            "A bare word, not a suffix: which of these meanings is it. Comprehension, "
+            "drawn from the reviewed lexicon rather than any one concept's stems.",
+            implemented=True,
+        ),
     ]
 }
 
@@ -143,7 +150,7 @@ def _modules() -> dict:
     from . import (
         cloze_suffix_choice, cued_recall, form_meaning_match,
         grammaticality_judgement, minimal_pair_identification, suffix_builder,
-        type_the_form,
+        type_the_form, vocab_recognition,
     )
     return {
         "suffix_builder": suffix_builder,
@@ -153,6 +160,7 @@ def _modules() -> dict:
         "cloze_suffix_choice": cloze_suffix_choice,
         "type_the_form": type_the_form,
         "cued_recall": cued_recall,
+        "vocab_recognition": vocab_recognition,
     }
 
 

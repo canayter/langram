@@ -348,3 +348,35 @@ class TestDistractors:
             for tag, form in broken_variants(language, lexeme, ["POSS1SG"]).items():
                 assert tag in classify(language, lexeme, ["POSS1SG"], form, correct), \
                     f"{lemma}: {form} should be diagnosed as {tag}"
+
+
+class TestVocabRecognition:
+    def test_the_word_shown_is_the_bare_lemma_never_an_inflected_form(self, language):
+        from langram.generators.vocab_recognition import OPTION_COUNT
+        rng = random.Random(9)
+        for _ in range(15):
+            item = generate(_spec("vocab_recognition"), language, rng)
+            assert item.payload["kind"] == "choose_meaning"
+            assert item.payload["form"] == item.lemma
+            assert len(item.payload["options"]) == OPTION_COUNT
+            assert item.answer in item.payload["options"]
+
+    def test_no_two_options_share_a_meaning(self, language):
+        """A duplicate gloss among the options would make the question
+        unanswerable even by someone who knows the word."""
+        rng = random.Random(10)
+        for _ in range(15):
+            item = generate(_spec("vocab_recognition"), language, rng)
+            assert len(set(item.payload["options"])) == len(item.payload["options"])
+
+    def test_distractors_are_drawn_from_the_same_reviewed_pool_as_the_target(self, language):
+        """Both the target and its distractors come from one
+        candidate_lexemes() call in the generator, so this checks the
+        generator draws distractors from that pool at all rather than the
+        full unfiltered lexicon."""
+        from langram.generators._common import candidate_lexemes
+        reviewed_glosses = {lx.gloss for lx in candidate_lexemes(language, {})}
+        rng = random.Random(11)
+        for _ in range(15):
+            item = generate(_spec("vocab_recognition"), language, rng)
+            assert set(item.payload["options"]) <= reviewed_glosses

@@ -38,6 +38,42 @@ blocking (interleaving-over-blocking), and spaced retrieval over massed review
 mechanics the tutor already implements. This entry states them in the UI
 copy; it introduces no new pedagogy.
 
+## Vocabulary recognition is a narrow, deliberate exception, not a reversal
+
+The derivation-trace entry above says teaching the rule and letting the
+learner apply it is "the difference between this project and a flashcard
+app." vocab_recognition looks like the thing that line is contrasting
+against: a word, a set of possible meanings, pick one. It earns an exception
+rather than breaking that claim for three reasons. First, scope: it is one
+concept in one unit, not the shape of the whole curriculum, and every other
+concept still teaches a rule via generated forms. Second, mechanism: this is
+retrieval (choosing the right meaning yourself, from
+roediger-karpicke-retrieval, already cited for spaced review) rather than
+restudy, so it is not a static list to memorise, it is a question. Third,
+and the actual reason it exists at all: coverage. Vocabulary only otherwise
+enters a learner's path as a side effect of whichever suffix is current, so
+a word never carrying a suffix that unit is currently drilling has no
+dedicated path to being learned at all, however common it is. That gap, not
+a desire for flashcards, is what this concept closes.
+
+What keeps it from sliding into "a screen that is only a table" (the
+long-focus-on-form citation's actual target, which is grammar taught apart
+from meaning): the lexicon it draws from is the same reviewed lexicon every
+other exercise already trusts, not a separate word list, and the task is
+meaning-primary by construction, connecting a form to its meaning is the
+whole content, not incidental to a grammar point. This unit has no
+prerequisites and is open from the start, which is why it is unit 4 in file
+order but not gated behind units 1 through 3. The intent is for it to recur
+alongside whichever grammar unit is current, the same way vowel harmony
+error rate ought to be tracked as a standing metric rather than a
+unit-1-only concern, not to be finished once and left behind. tutor.py does
+not fully deliver that yet: today it opens immediately but competes for a
+turn by unit order, so in practice it surfaces once whichever earlier
+concepts are current have hit their per-session block cap, not interleaved
+turn by turn from the first exercise. Making a lexical_set concept genuinely
+concept-agnostic to unit order is the scheduler change the project's roadmap
+notes already call for; this entry should be revisited once that lands.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

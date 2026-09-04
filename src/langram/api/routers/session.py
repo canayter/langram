@@ -58,7 +58,11 @@ def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
         prompt=item.prompt,
         payload=item.payload,
         source=served.source,
-        word_info=_word_info(language, getattr(item, "lemma", None)),
+        # vocab_recognition's whole question is "what does this word mean";
+        # the word-info panel's gloss would hand over the answer underneath
+        # the exercise before it is even attempted.
+        word_info=None if item.generator == "vocab_recognition"
+                  else _word_info(language, getattr(item, "lemma", None)),
         xp_total=user.xp,
         streak=user.current_streak,
     )
