@@ -52,8 +52,8 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
           </span>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-              <span title="Day streak">🔥 {streak}</span>
-              <span title="Total XP" className="text-amber-600 dark:text-amber-400">{xp} XP</span>
+              <span title="Day chain: consecutive days practiced">⛓️ {streak}</span>
+              <span title="Marks earned for correct answers" className="text-amber-600 dark:text-amber-400">{xp} Marks</span>
             </span>
             <button
               onClick={onShowReference}
@@ -261,12 +261,12 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
             <div key={item.item_token} className="mt-2 flex flex-wrap gap-2 animate-pop-in">
               {result.xp_awarded > 0 && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                  +{result.xp_awarded} XP
+                  +{result.xp_awarded} Marks
                 </span>
               )}
               {result.streak_extended && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
-                  🔥 {result.streak} day streak
+                  ⛓️ {result.streak} day chain
                 </span>
               )}
             </div>
