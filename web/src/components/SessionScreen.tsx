@@ -3,6 +3,7 @@ import { api, type AnswerResult, type Item } from '../lib/api'
 import { useStats } from '../lib/store'
 import { Derivation } from './Derivation'
 import { ItemBody } from './ItemBody'
+import { Logo } from './Logo'
 import { VowelChart } from './VowelChart'
 import { WhyPanel } from './WhyPanel'
 import { WordInfo } from './WordInfo'
@@ -45,7 +46,10 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
     <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
-          <span className="font-mono text-sm tracking-tight text-slate-400">langram</span>
+          <span className="flex items-center gap-1.5 font-mono text-sm tracking-tight text-slate-400">
+            <Logo size={18} />
+            langram
+          </span>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
               <span title="Day streak">🔥 {streak}</span>

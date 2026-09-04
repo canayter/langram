@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../lib/store'
+import { Logo } from './Logo'
 
 // Guest first. Asking for an email before someone has seen a single exercise
 // loses them, and the account can be claimed later without losing history.
@@ -13,7 +14,10 @@ export function StartScreen() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-6 dark:bg-slate-950">
       <div className="w-full max-w-sm">
-        <h1 className="font-mono text-2xl tracking-tight text-slate-900 dark:text-slate-50">langram</h1>
+        <div className="flex items-center gap-2.5">
+          <Logo size={30} />
+          <h1 className="font-mono text-2xl tracking-tight text-slate-900 dark:text-slate-50">langram</h1>
+        </div>
         <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
           Turkish for English speakers. Every exercise is generated from a
           morphological grammar, so the rules are applied rather than memorised.
