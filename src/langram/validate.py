@@ -260,6 +260,13 @@ def validate(content_root: Path | None = None) -> Report:
                     f"{path.name}: prerequisite {prereq!r} is taught at or after this unit"
                 )
 
+        for concept in unit["concepts"]:
+            for later in concept.get("recurs_in", []):
+                if later not in seen_concepts:
+                    report.error(
+                        f"{path.name}: {concept['id']} recurs_in unknown concept {later!r}"
+                    )
+
     pending = unimplemented()
     if pending:
         report.note(f"{len(pending)} generators are declared but not implemented yet (Phase 4)")

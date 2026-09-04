@@ -69,6 +69,7 @@ export type Vowel = { symbol: string; back: boolean; rounded: boolean; high: boo
 
 export type Concept = {
   id: string; name: string; type: string; why_hard: string; teaches_suffixes: string[]
+  recurs_in: string[]
 }
 export type Unit = {
   id: string; order: number; title: string; rationale: string

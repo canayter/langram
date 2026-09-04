@@ -168,6 +168,13 @@ class TestSemanticFailures:
         _write(path, data)
         assert "does not come earlier" in _errors(content) or "at or after" in _errors(content)
 
+    def test_recurs_in_pointing_at_a_nonexistent_concept(self, content):
+        path = content / "l2" / "tr" / "curriculum" / "unit-01-vowel-harmony.yaml"
+        data = _read(path)
+        data["concepts"][0]["recurs_in"] = ["a-concept-that-does-not-exist"]
+        _write(path, data)
+        assert "a-concept-that-does-not-exist" in _errors(content)
+
     def test_duplicate_concept_id_across_units(self, content):
         path = content / "l2" / "tr" / "curriculum" / "unit-02-predication.yaml"
         data = _read(path)

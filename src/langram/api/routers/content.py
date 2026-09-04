@@ -25,7 +25,8 @@ def units(session: SessionDep) -> list[UnitOut]:
             research_refs=unit.research_refs, prerequisites=unit.prerequisites,
             concepts=[
                 ConceptOut(id=c.id, name=c.name, type=c.type, why_hard=c.why_hard,
-                           intro=c.intro, teaches_suffixes=c.teaches_suffixes)
+                           intro=c.intro, teaches_suffixes=c.teaches_suffixes,
+                           recurs_in=c.recurs_in)
                 for c in sorted(unit.concepts, key=lambda c: c.id)
             ],
         )

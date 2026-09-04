@@ -95,6 +95,14 @@
               "pattern": "^[A-Z0-9_]+$"
             }
           },
+          "recurs_in": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "description": "Ids of later concepts whose exercises inherently re-test this one, because they teach a suffix that shares this concept's phonology (a later concept's I-type suffix re-tests fourfold-harmony, say). The validator refuses a ref to a concept that does not exist. Not scheduler-active yet; this is the tagging the roadmap's weak-concept resurfacing depends on, recorded now so it is not retrofitted onto a bigger curriculum later."
+          },
           "visual_aid": {
             "enum": ["vowel_chart"],
             "description": "A frontend reference diagram to show alongside this concept's intro, in addition to the prose. An enum, not a free string, so a typo fails validation instead of silently showing nothing."

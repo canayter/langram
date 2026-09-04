@@ -48,6 +48,7 @@ concepts:
       The exercises below ask you to notice whose something is before you are asked
       to mark it yourself.
     teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG, POSS1PL, POSS2PL, POSS3PL]
+    recurs_in: [buffer-segments, stem-alternation]
     exercises:
       - id: whose-is-it
         stage: structured_input
@@ -102,6 +103,7 @@ concepts:
       repair every time: whichever stem shape would otherwise create an awkward run
       of sounds gets one consonant added to fix it.
     teaches_suffixes: [POSS1SG, POSS2SG, POSS3SG]
+    recurs_in: [stem-alternation]
     exercises:
       - id: spot-the-buffer
         stage: structured_input

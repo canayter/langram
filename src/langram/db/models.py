@@ -83,6 +83,12 @@ class Concept(Base):
     # asked of them. See tutor.py's intro gate.
     intro: Mapped[str] = mapped_column(Text, default="")
     teaches_suffixes: Mapped[list] = mapped_column(Json, default=list)
+    # Ids of later concepts whose exercises inherently re-test this one, e.g.
+    # fourfold-harmony recurs in every later concept whose suffixes are
+    # I-type. Not read by the scheduler yet: this is the tagging the
+    # roadmap's weak-concept resurfacing depends on, recorded now rather than
+    # retrofitted later.
+    recurs_in: Mapped[list] = mapped_column(Json, default=list)
     # A frontend reference diagram to show alongside the intro prose, e.g.
     # "vowel_chart". None means the intro is text only.
     visual_aid: Mapped[str | None] = mapped_column(String(32), nullable=True)

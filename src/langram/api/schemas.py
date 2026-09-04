@@ -89,6 +89,7 @@ class ConceptOut(BaseModel):
     why_hard: str
     intro: str
     teaches_suffixes: list[str]
+    recurs_in: list[str]
 
 
 class UnitOut(BaseModel):

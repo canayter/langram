@@ -171,6 +171,17 @@ class TestCurriculum:
         assert len(first["rationale"]) > 40
         assert first["concepts"][0]["why_hard"]
 
+    def test_fourfold_harmony_recurs_in_every_later_i_type_concept(self, client):
+        """The one concrete recurs_in claim in this curriculum: every later
+        concept whose suffixes are I-type genuinely re-tests fourfold
+        harmony as a side effect of teaching something else."""
+        units = client.get("/api/units").json()
+        by_id = {c["id"]: c for u in units for c in u["concepts"]}
+        assert set(by_id["fourfold-harmony"]["recurs_in"]) == {
+            "predication-without-a-verb", "possessive-suffixes",
+            "buffer-segments", "stem-alternation",
+        }
+
 
 class TestTheLoop:
     def test_serves_an_item(self, learner):
