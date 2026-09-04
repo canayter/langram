@@ -40,6 +40,19 @@
 - { id: müdür,    lemma: müdür,    pos: noun, gloss: manager,   predicate_natural: true }
 - { id: asker,    lemma: asker,    pos: noun, gloss: soldier,   predicate_natural: true }
 - { id: oğul,     lemma: oğul,     pos: noun, gloss: son, vowel_deletion: true, predicate_natural: true }
+# Widened 2026-09-04: the predicative pool above (17 nouns) was small enough
+# that a short session visibly repeated the same one or two words, reported
+# directly by a learner. All eight below end in a vowel or a non-alternating
+# consonant (s, r, n), so none of them raise the final_voicing question that
+# would otherwise need a native speaker's confirmation.
+- { id: polis,    lemma: polis,    pos: noun, gloss: police officer, predicate_natural: true }
+- { id: mühendis, lemma: mühendis, pos: noun, gloss: engineer,   predicate_natural: true }
+- { id: avukat,   lemma: avukat,   pos: noun, gloss: lawyer,     final_voicing: false, predicate_natural: true, review: [final_voicing] }
+- { id: şoför,    lemma: şoför,    pos: noun, gloss: driver,     predicate_natural: true }
+- { id: misafir,  lemma: misafir,  pos: noun, gloss: guest,      predicate_natural: true }
+- { id: yabancı,  lemma: yabancı,  pos: noun, gloss: stranger,   predicate_natural: true }
+- { id: hemşire,  lemma: hemşire,  pos: noun, gloss: nurse,      predicate_natural: true }
+- { id: patron,   lemma: patron,   pos: noun, gloss: boss,       predicate_natural: true }
 
 # ── Body ─────────────────────────────────────────────────────────────────────
 - { id: göz,      lemma: göz,      pos: noun, gloss: eye }
