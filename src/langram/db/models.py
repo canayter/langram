@@ -9,10 +9,10 @@ both understand, with JSONB used on Postgres where it helps.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
-    Boolean, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Text,
+    Boolean, Date, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Text,
     UniqueConstraint, func,
 )
 from sqlalchemy.dialects.postgresql import JSONB
@@ -83,6 +83,9 @@ class Concept(Base):
     # asked of them. See tutor.py's intro gate.
     intro: Mapped[str] = mapped_column(Text, default="")
     teaches_suffixes: Mapped[list] = mapped_column(Json, default=list)
+    # A frontend reference diagram to show alongside the intro prose, e.g.
+    # "vowel_chart". None means the intro is text only.
+    visual_aid: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
     unit: Mapped[Unit] = relationship(back_populates="concepts")
     exercises: Mapped[list["Exercise"]] = relationship(back_populates="concept", cascade="all, delete-orphan")
@@ -113,6 +116,18 @@ class User(Base):
     native_language: Mapped[str] = mapped_column(String(8), default="en")
     settings: Mapped[dict] = mapped_column(Json, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    # The playful layer (streaks, XP), kept separate from mastery and
+    # scheduling on purpose: nothing pedagogical reads these, so a bug here
+    # cannot corrupt what the tutor teaches or when a review comes due.
+    # See gamification.py.
+    xp: Mapped[int] = mapped_column(Integer, default=0)
+    current_streak: Mapped[int] = mapped_column(Integer, default=0)
+    longest_streak: Mapped[int] = mapped_column(Integer, default=0)
+    # UTC calendar date, not a timestamp: streaks are day-granular, and this
+    # is the only value gamification.record_practice() needs to decide
+    # whether today is a continuation, a fresh start, or already counted.
+    last_practiced_on: Mapped[date | None] = mapped_column(Date, nullable=True)
 
 
 class UserConceptMastery(Base):

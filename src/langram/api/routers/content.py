@@ -10,8 +10,8 @@ from fastapi import APIRouter
 from sqlalchemy import select
 
 from ...db.models import Unit
-from ..deps import SessionDep
-from ..schemas import ConceptOut, UnitOut
+from ..deps import LanguageDep, SessionDep
+from ..schemas import ConceptOut, UnitOut, VowelOut
 
 router = APIRouter(prefix="/api", tags=["content"])
 
@@ -30,4 +30,17 @@ def units(session: SessionDep) -> list[UnitOut]:
             ],
         )
         for unit in rows
+    ]
+
+
+@router.get("/language/vowels", response_model=list[VowelOut])
+def vowels(language: LanguageDep) -> list[VowelOut]:
+    """The vowel inventory behind harmony, for the chart on Unit 1's intro
+    and the reference panel. Reads language.phonology.vowels directly rather
+    than a copy in the database, so it is the same table every derivation
+    already runs on, not a second one that can drift from it."""
+    return [
+        VowelOut(symbol=symbol, back=bool(features["back"]),
+                  rounded=bool(features["rounded"]), high=bool(features["high"]))
+        for symbol, features in language.phonology.vowels.items()
     ]

@@ -44,3 +44,19 @@ export const useAuth = create<AuthState>((set) => ({
     set({ token: null, isGuest: false })
   },
 }))
+
+// XP and streak: read from whatever the server last reported (session/next
+// and session/answer both carry the running totals), never computed here.
+// Kept as its own store, not folded into useAuth, since Shell reads it
+// without needing to know anything else about identity.
+type StatsState = {
+  xp: number
+  streak: number
+  sync: (xp: number, streak: number) => void
+}
+
+export const useStats = create<StatsState>((set) => ({
+  xp: 0,
+  streak: 0,
+  sync: (xp, streak) => set({ xp, streak }),
+}))

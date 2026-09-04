@@ -108,6 +108,7 @@ def seed(session: Session, content_root: Path | None = None) -> dict[str, int]:
                 why_hard=" ".join(concept["why_hard"].split()),
                 intro=" ".join(concept["intro"].split()),
                 teaches_suffixes=list(concept.get("teaches_suffixes", [])),
+                visual_aid=concept.get("visual_aid"),
             ))
             concept_ids.add(concept["id"])
             counts["concepts"] += 1

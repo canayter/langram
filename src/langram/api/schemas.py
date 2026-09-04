@@ -48,6 +48,8 @@ class ItemOut(BaseModel):
     payload: dict[str, Any]
     source: str
     word_info: WordInfoOut | None = None
+    xp_total: int
+    streak: int
 
 
 class AnswerIn(BaseModel):
@@ -74,6 +76,10 @@ class AnswerOut(BaseModel):
     derivation: list[DerivationStepOut] | None = None
     mastery: float | None = None
     due_at: dt.datetime | None = None
+    xp_awarded: int
+    xp_total: int
+    streak: int
+    streak_extended: bool
 
 
 class ConceptOut(BaseModel):
@@ -116,6 +122,17 @@ class ConceptProgressOut(BaseModel):
     opportunities: int
     correct: int
     status: str
+
+
+class VowelOut(BaseModel):
+    """One vowel's harmony-relevant features, read straight off
+    content/l2/tr/morphology/phonology.yaml -- the same table the engine
+    itself resolves archiphonemes against, so the chart can never drift from
+    what the grammar actually does."""
+    symbol: str
+    back: bool
+    rounded: bool
+    high: bool
 
 
 class ProgressOut(BaseModel):

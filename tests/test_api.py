@@ -332,6 +332,73 @@ class TestConceptIntros:
             assert row.intro_seen_at is not None
             assert row.state.get("opportunities", 0) >= 1
 
+    def test_the_vowel_harmony_intro_carries_its_chart(self, learner):
+        """twofold-harmony is guaranteed to be the first concept introduced
+        (see the tutor.next_item ordering regression above), so this is a
+        stable way to check visual_aid actually reaches the client."""
+        item = learner.get("/api/session/next").json()
+        assert item["payload"]["visual_aid"] == "vowel_chart"
+
+
+class TestGamification:
+    """Streaks and XP: playful, but pure bookkeeping. Nothing here reads or
+    writes mastery or scheduling state, so these tests never touch bkt."""
+
+    def test_a_correct_answer_awards_xp(self, learner, factory):
+        item = _first_item(learner)
+        result = _answer(learner, item, _right(factory, item))
+        assert result["xp_awarded"] == 10
+        assert result["xp_total"] == 10
+
+    def test_a_wrong_answer_awards_no_xp(self, learner, factory):
+        item = _first_item(learner)
+        result = _answer(learner, item, _wrong(factory, item))
+        assert result["xp_awarded"] == 0
+        assert result["xp_total"] == 0
+
+    def test_the_first_answer_of_the_day_extends_the_streak(self, learner, factory):
+        item = _first_item(learner)
+        result = _answer(learner, item, _right(factory, item))
+        assert result["streak"] == 1
+        assert result["streak_extended"] is True
+
+    def test_a_second_answer_the_same_day_does_not_extend_the_streak(self, learner, factory):
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+        item2 = _first_item(learner)
+        result = _answer(learner, item2, _right(factory, item2))
+        assert result["streak"] == 1
+        assert result["streak_extended"] is False
+
+    def test_missing_a_day_resets_the_streak(self, learner, factory):
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+        with factory() as s:
+            user = s.get(User, learner.user_id)
+            user.last_practiced_on = user.last_practiced_on - dt.timedelta(days=3)
+            user.current_streak = 5
+            s.commit()
+        item2 = _first_item(learner)
+        result = _answer(learner, item2, _right(factory, item2))
+        assert result["streak"] == 1
+        assert result["streak_extended"] is True
+
+    def test_session_next_reports_the_running_totals(self, learner, factory):
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+        nxt = learner.get(f"/api/session/next?after={item['concept_id']}").json()
+        assert nxt["xp_total"] == 10
+        assert nxt["streak"] == 1
+
+
+class TestVowelChart:
+    def test_the_vowel_inventory_matches_the_phonology_table(self, client):
+        rows = client.get("/api/language/vowels").json()
+        by_symbol = {v["symbol"]: v for v in rows}
+        assert len(rows) == 8
+        assert by_symbol["a"] == {"symbol": "a", "back": True, "rounded": False, "high": False}
+        assert by_symbol["ü"] == {"symbol": "ü", "back": False, "rounded": True, "high": True}
+
 
 class TestItemTokens:
     def test_a_tampered_token_is_refused(self, learner):

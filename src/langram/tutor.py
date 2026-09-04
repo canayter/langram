@@ -82,7 +82,8 @@ class IntroItem:
         self.generator = "concept_intro"
         self.stage = "intro"
         self.prompt = ""
-        self.payload = {"kind": "intro", "title": concept.name, "text": concept.intro}
+        self.payload = {"kind": "intro", "title": concept.name, "text": concept.intro,
+                        "visual_aid": concept.visual_aid}
         self.spec: dict = {}
 
 

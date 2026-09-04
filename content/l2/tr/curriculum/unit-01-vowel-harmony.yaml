@@ -47,6 +47,7 @@ concepts:
       The exercises below only ask you to notice which shape is correct. Producing
       one yourself comes later.
     teaches_suffixes: [PL]
+    visual_aid: vowel_chart
     exercises:
       - id: hear-the-difference
         stage: structured_input

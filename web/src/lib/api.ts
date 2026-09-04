@@ -15,7 +15,7 @@ export type Payload =
   | { kind: 'choose_suffix'; stem: string; gloss: string; meaning: string
       options: SuffixOption[] }
   | { kind: 'type'; cue: string; stem: string; gloss: string; suffix: Suffix }
-  | { kind: 'intro'; title: string; text: string }
+  | { kind: 'intro'; title: string; text: string; visual_aid: 'vowel_chart' | null }
 
 export type WordInfo = {
   lemma: string
@@ -38,6 +38,8 @@ export type Item = {
   source: 'new' | 'review' | 'intro'
   payload: Payload
   word_info: WordInfo | null
+  xp_total: number
+  streak: number
 }
 
 export type DerivationStep = { rule: string; condition: string; result: string; form: string }
@@ -52,7 +54,13 @@ export type AnswerResult = {
   derivation?: DerivationStep[] | null
   mastery?: number | null
   due_at?: string | null
+  xp_awarded: number
+  xp_total: number
+  streak: number
+  streak_extended: boolean
 }
+
+export type Vowel = { symbol: string; back: boolean; rounded: boolean; high: boolean }
 
 export type Concept = {
   id: string; name: string; type: string; why_hard: string; teaches_suffixes: string[]
@@ -133,4 +141,5 @@ export const api = {
     call<AnswerResult>('/api/session/answer', { method: 'POST', body: JSON.stringify(body) }),
   units: () => call<Unit[]>('/api/units'),
   progress: () => call<Progress>('/api/progress'),
+  vowels: () => call<Vowel[]>('/api/language/vowels'),
 }

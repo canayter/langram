@@ -17,6 +17,7 @@ from sqlalchemy import select
 from ... import tutor
 from ...db.models import Concept, Exercise, Response, ReviewCard
 from ...diagnosis import feedback_for_item, normalize
+from ...gamification import record_practice
 from ...generators import GenerationError, assemble
 from ...ipa import CAVEAT as IPA_CAVEAT
 from ...ipa import transcribe
@@ -58,6 +59,8 @@ def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
         payload=item.payload,
         source=served.source,
         word_info=_word_info(language, getattr(item, "lemma", None)),
+        xp_total=user.xp,
+        streak=user.current_streak,
     )
 
 
@@ -124,6 +127,11 @@ def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: Use
                                        option_count=_option_count(item))
         due_at = _reschedule(session, user.id, item, correct=correct, attempts=body.attempt)
 
+    # Every attempt counts toward today's streak, not just a settled one:
+    # showing up is what a streak measures, and gating it behind the ladder
+    # running out would make hard items worth less than easy ones.
+    practice = record_practice(user, correct=correct, today=dt.datetime.now(dt.timezone.utc).date())
+
     session.commit()
     return AnswerOut(
         correct=correct,
@@ -135,6 +143,10 @@ def answer(body: AnswerIn, session: SessionDep, language: LanguageDep, user: Use
         derivation=list(item.derivation) if (correct or result["kind"] == "explicit") else None,
         mastery=mastery,
         due_at=due_at,
+        xp_awarded=practice.xp_awarded,
+        xp_total=practice.xp_total,
+        streak=practice.streak,
+        streak_extended=practice.streak_extended,
     )
 
 

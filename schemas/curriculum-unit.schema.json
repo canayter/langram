@@ -95,6 +95,10 @@
               "pattern": "^[A-Z0-9_]+$"
             }
           },
+          "visual_aid": {
+            "enum": ["vowel_chart"],
+            "description": "A frontend reference diagram to show alongside this concept's intro, in addition to the prose. An enum, not a free string, so a typo fails validation instead of silently showing nothing."
+          },
           "review": {
             "type": "array",
             "items": {

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, type AnswerResult, type Item } from '../lib/api'
+import { useStats } from '../lib/store'
 import { Derivation } from './Derivation'
 import { ItemBody } from './ItemBody'
+import { VowelChart } from './VowelChart'
 import { WhyPanel } from './WhyPanel'
 import { WordInfo } from './WordInfo'
 
@@ -32,17 +34,29 @@ const secondaryButton =
   'mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 ' +
   'hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800'
 
-function Shell({ children, onSignOut, onShowProgress }: {
+function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
   children: React.ReactNode
   onSignOut: () => void
   onShowProgress: () => void
+  onShowReference: () => void
 }) {
+  const { xp, streak } = useStats()
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <span className="font-mono text-sm tracking-tight text-slate-400">langram</span>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
+              <span title="Day streak">🔥 {streak}</span>
+              <span title="Total XP" className="text-amber-600 dark:text-amber-400">{xp} XP</span>
+            </span>
+            <button
+              onClick={onShowReference}
+              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            >
+              Reference
+            </button>
             <button
               onClick={onShowProgress}
               className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
@@ -63,9 +77,10 @@ function Shell({ children, onSignOut, onShowProgress }: {
   )
 }
 
-export function SessionScreen({ onSignOut, onShowProgress }: {
+export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
   onSignOut: () => void
   onShowProgress: () => void
+  onShowReference: () => void
 }) {
   const [item, setItem] = useState<Item | null>(null)
   // Which numbered question this is within the current concept's block of
@@ -99,6 +114,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
     try {
       const next = await api.next(lastConcept.current)
       setItem(next)
+      useStats.getState().sync(next.xp_total, next.streak)
       shownAt.current = Date.now()
       setBlock((prev) => {
         if (next.payload.kind === 'intro') return null
@@ -133,6 +149,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
         latency_ms: Date.now() - shownAt.current,
       })
       setResult(answered)
+      useStats.getState().sync(answered.xp_total, answered.streak)
       if (answered.correct || answered.kind === 'explicit') {
         lastConcept.current = item.concept_id
       } else {
@@ -145,7 +162,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
 
   if (error) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -156,7 +173,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
 
   if (!item) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
         <p className="text-slate-500">Loading.</p>
       </Shell>
     )
@@ -166,7 +183,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
   // exercise. Not answered, so it never touches submit() or api.answer.
   if (item.payload.kind === 'intro') {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
         <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {item.unit_title}
         </p>
@@ -176,6 +193,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
         <p className="mt-6 max-w-prose leading-relaxed text-slate-700 dark:text-slate-300">
           {item.payload.text}
         </p>
+        {item.payload.visual_aid === 'vowel_chart' && <VowelChart />}
         <button onClick={() => void load()} className={`${primaryButton} mt-8`} autoFocus>
           Start practicing
         </button>
@@ -184,7 +202,7 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
   }
 
   return (
-    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress}>
+    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
       <div className="flex items-baseline justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -234,6 +252,21 @@ export function SessionScreen({ onSignOut, onShowProgress }: {
           >
             {result.message}
           </p>
+
+          {(result.xp_awarded > 0 || result.streak_extended) && (
+            <div key={item.item_token} className="mt-2 flex flex-wrap gap-2 animate-pop-in">
+              {result.xp_awarded > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                  +{result.xp_awarded} XP
+                </span>
+              )}
+              {result.streak_extended && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
+                  🔥 {result.streak} day streak
+                </span>
+              )}
+            </div>
+          )}
 
           {result.elicitation && (
             <p className="mt-2 font-mono text-lg text-slate-700 dark:text-slate-300">
