@@ -94,6 +94,16 @@ SYNCOPE = [
     ("karın", ["ACC"], "karnı"),
     ("göğüs", ["ACC"], "göğsü"),
     ("kayıp", ["ACC"], "kaybı"),        # deletion and voicing in one derivation
+    # Confirmed with a native speaker: the deletion these stems undergo before
+    # an ordinary vowel-initial suffix does not happen before the predicative
+    # suffixes. fikiriz "we are an idea" is grammatical but not something
+    # anyone would say; fikriz is not a word at all.
+    ("fikir", ["POSS1PL"], "fikrimiz"),  # deletes: an ordinary nominal suffix
+    ("fikir", ["PRED1PL"], "fikiriz"),   # does not: the predicative suffix
+    ("isim", ["POSS1PL"], "ismimiz"),
+    ("isim", ["PRED1PL"], "isimiz"),
+    ("resim", ["POSS1PL"], "resmimiz"),
+    ("resim", ["PRED1PL"], "resimiz"),
 ]
 
 # ── Disharmonic loans: harmony class overridden on the lexeme ────────────────

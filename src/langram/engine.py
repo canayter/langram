@@ -106,7 +106,14 @@ def inflect(
 
         # ── stem alternations, only where the stem still meets the suffix ────
         if stem_exposed and first_is_vowel:
-            if lexeme.vowel_deletion:
+            # Confirmed with a native speaker: fikir + POSS1PL is fikrimiz
+            # (syncope), but fikir + PRED1PL is fikiriz, not fikriz (no
+            # syncope) -- "grammatical, but no one would say it" was the
+            # exact judgement, which is a naturalness problem with the
+            # example word, not a phonology problem with the form. The
+            # predicative/copula suffixes do not trigger this stem's vowel
+            # drop the way ordinary nominal suffixes (possessive, case) do.
+            if lexeme.vowel_deletion and suffix.category != "predicative":
                 form = p.delete_last_vowel(form)
                 steps.append(DerivationStep(
                     "vowel_deletion",
