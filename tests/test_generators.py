@@ -111,6 +111,29 @@ class TestEveryExerciseInTheCurriculum:
                 if item.lemma:
                     assert not language.lexeme(item.lemma).review, item.lemma
 
+    def test_a_predicative_exercise_never_predicates_an_unnatural_noun(self, exercises, language):
+        """"biz fikriz" (we are an idea) is grammatical and nobody would say
+        it; "biz doktoruz" (we are doctors) is what predicative_only exists
+        to keep the pool to. Adjectives are exempt -- almost any adjective is
+        a natural personal predicate -- so this only checks nouns."""
+        rng = random.Random(8)
+        checked = 0
+        for exercise in exercises:
+            if not (exercise.params.get("lexeme_filter") or {}).get("predicative_only"):
+                continue
+            for _ in range(8):
+                try:
+                    item = generate(exercise, language, rng)
+                except GenerationError:
+                    break
+                if not item.lemma:
+                    continue
+                lexeme = language.lexeme(item.lemma)
+                if lexeme.pos == "noun":
+                    assert lexeme.predicate_natural, item.lemma
+                checked += 1
+        assert checked > 0, "no predicative exercise actually generated an item to check"
+
 
 class TestSuffixBuilder:
     def test_options_are_the_real_allomorphs(self, language):
@@ -252,6 +275,19 @@ class TestFormMeaningMatch:
         assert item.answer in item.payload["options"]
         assert language.phonology.is_vowel(item.lemma[-1]), \
             "the stem that needed a buffer is the vowel final one"
+
+    def test_the_buffer_item_glosses_every_option_not_just_one(self, language):
+        """Three different words share this item, not three shapes of one
+        word: a learner cannot judge which one needed a buffer without
+        knowing what each option means, not just the one the item happens to
+        track as `lemma`."""
+        item = generate(_spec("form_meaning_match", highlight="buffer_segment",
+                              suffix="POSS3SG"), language, random.Random(16))
+        word_info = item.payload["word_info"]
+        assert set(word_info) == set(item.payload["options"])
+        for form, info in word_info.items():
+            assert info["gloss"]
+            assert info["ipa"]
 
 
 class TestClozeAndProduction:

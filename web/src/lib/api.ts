@@ -8,7 +8,12 @@ export type SuffixOption = { id: string; notation: string; gloss: string }
 
 export type Payload =
   | { kind: 'choose_form'; options: string[]; stem?: string; gloss?: string
-      suffix?: Suffix; option_prefix?: string; modality?: string }
+      suffix?: Suffix; option_prefix?: string; modality?: string
+      // Set only when the options are different words, not different shapes
+      // of one word (form_meaning_match's buffer mode): each option's own
+      // gloss and transcription, keyed by the surface form shown for it.
+      word_info?: Record<string, { gloss: string; ipa: string }>
+      word_info_caveat?: string }
   | { kind: 'choose_meaning'; form: string; gloss: string; options: string[] }
   | { kind: 'choose_letter'; form: string; stem: string; gloss: string; options: string[] }
   | { kind: 'judge'; form: string; gloss: string; suffix: Suffix; options: string[] }

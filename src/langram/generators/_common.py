@@ -85,6 +85,12 @@ def candidate_lexemes(language, params: dict) -> list[Lexeme]:
             continue
         if "final_voicing" in wanted and lexeme.final_voicing != wanted["final_voicing"]:
             continue
+        # A predicative exercise ("we are ___") needs a word someone would
+        # actually say that about. Adjectives are exempt -- almost any
+        # adjective is a natural personal predicate -- so this only screens
+        # nouns, against predicate_natural in the lexicon.
+        if wanted.get("predicative_only") and lexeme.pos == "noun" and not lexeme.predicate_natural:
+            continue
         if wanted.get("ends_in_obstruent") and lexeme.lemma[-1] not in obstruents:
             continue
         if minimum and syllable_count(language, lexeme.lemma) < minimum:

@@ -13,6 +13,13 @@ class Lexeme:
     gloss: str
     final_voicing: bool = False
     vowel_deletion: bool = False
+    # A noun a learner could actually predicate onto a person: "biz
+    # doktoruz" (we are doctors) is something someone would say, "biz
+    # masayız" (we are a table) is not, even though the engine builds both
+    # equally well. Adjectives are exempt from this filter entirely -- almost
+    # any adjective is a natural personal predicate -- so this only matters
+    # for pos: noun. See _common.candidate_lexemes's "predicative_only" filter.
+    predicate_natural: bool = False
     harmony_class: str | None = None      # "front" | "back" | None (derive it)
     review: tuple[str, ...] = ()
     # Short and well established only: a loan language and root, or "modern

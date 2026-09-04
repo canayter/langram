@@ -142,14 +142,25 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
             {...shared}
             label="Possible forms"
             values={payload.options}
-            labels={(value) =>
-              payload.option_prefix ? (
+            labels={(value) => {
+              const info = payload.word_info?.[value]
+              const form = payload.option_prefix ? (
                 <>
                   {payload.option_prefix}
                   <span className="font-semibold">{value}</span>
                 </>
               ) : value
-            }
+              if (!info) return form
+              return (
+                <span className="flex flex-col items-start">
+                  {form}
+                  <span className="mt-0.5 flex gap-1.5 font-sans text-xs font-normal text-slate-500 dark:text-slate-400">
+                    <span title={payload.word_info_caveat}>{info.ipa}</span>
+                    <span>{info.gloss}</span>
+                  </span>
+                </span>
+              )
+            }}
           />
         </>
       )

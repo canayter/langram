@@ -19,6 +19,8 @@ from ._common import (
     candidate_lexemes, ends_in_vowel, pick_lexeme, realisation, suffix_choices,
     syllable_count,
 )
+from ..ipa import CAVEAT as IPA_CAVEAT
+from ..ipa import transcribe
 
 
 def _mode(params: dict) -> str:
@@ -115,11 +117,20 @@ def assemble(exercise, language, spec: dict) -> GeneratedItem:
 
     else:
         others = [language.lexeme(l) for l in spec["others"]]
-        forms = [language.inflect(lx, suffix_ids).surface for lx in [lexeme, *others]]
+        lexemes = [lexeme, *others]
+        forms = [language.inflect(lx, suffix_ids).surface for lx in lexemes]
         answer = forms[0]                       # the vowel-final stem, which needed the buffer
         options = list(forms)
         random.Random(seed).shuffle(options)
-        payload = {"kind": "choose_form", "options": options,
+        # Three different words share one item here, not three shapes of one
+        # word, so one gloss and one transcription is not enough: every
+        # option needs its own, keyed by the surface form shown for it.
+        word_info = {
+            form: {"gloss": lx.gloss, "ipa": transcribe(language.phonology, form)}
+            for lx, form in zip(lexemes, forms)
+        }
+        payload = {"kind": "choose_form", "options": options, "word_info": word_info,
+                   "word_info_caveat": IPA_CAVEAT,
                    "suffix": {"id": language.suffix(suffix_ids[0]).id,
                               "notation": language.suffix(suffix_ids[0]).surface,
                               "glosses": list(language.suffix(suffix_ids[0]).glosses)}}

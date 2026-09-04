@@ -20,23 +20,26 @@
 # See docs/provenance.md.
 
 # ── People ───────────────────────────────────────────────────────────────────
-- { id: adam,     lemma: adam,     pos: noun, gloss: man }
-- { id: kadın,    lemma: kadın,    pos: noun, gloss: woman }
-- { id: çocuk,    lemma: çocuk,    pos: noun, gloss: child,    final_voicing: true }
-- { id: kız,      lemma: kız,      pos: noun, gloss: girl }
-- { id: oğlan,    lemma: oğlan,    pos: noun, gloss: boy }
-- { id: anne,     lemma: anne,     pos: noun, gloss: mother }
-- { id: baba,     lemma: baba,     pos: noun, gloss: father }
-- { id: kardeş,   lemma: kardeş,   pos: noun, gloss: sibling }
-- { id: arkadaş,  lemma: arkadaş,  pos: noun, gloss: friend }
-- { id: öğrenci,  lemma: öğrenci,  pos: noun, gloss: student }
-- { id: öğretmen, lemma: öğretmen, pos: noun, gloss: teacher, etymology: "A 20th century Turkish coinage: öğret-, to teach, plus -men, a person who does it. Created during a period of deliberate language reform to replace the Arabic-derived muallim." }
-- { id: doktor,   lemma: doktor,   pos: noun, gloss: doctor }
-- { id: insan,    lemma: insan,    pos: noun, gloss: human being }
-- { id: komşu,    lemma: komşu,    pos: noun, gloss: neighbour }
-- { id: müdür,    lemma: müdür,    pos: noun, gloss: manager }
-- { id: asker,    lemma: asker,    pos: noun, gloss: soldier }
-- { id: oğul,     lemma: oğul,     pos: noun, gloss: son, vowel_deletion: true }
+# Also the pool for predicative exercises ("biz doktoruz", we are doctors):
+# every noun below is something a learner would plausibly hear predicated
+# onto a person. See predicate_natural in schemas/lexemes.schema.json.
+- { id: adam,     lemma: adam,     pos: noun, gloss: man,       predicate_natural: true }
+- { id: kadın,    lemma: kadın,    pos: noun, gloss: woman,     predicate_natural: true }
+- { id: çocuk,    lemma: çocuk,    pos: noun, gloss: child,     final_voicing: true, predicate_natural: true }
+- { id: kız,      lemma: kız,      pos: noun, gloss: girl,      predicate_natural: true }
+- { id: oğlan,    lemma: oğlan,    pos: noun, gloss: boy,       predicate_natural: true }
+- { id: anne,     lemma: anne,     pos: noun, gloss: mother,    predicate_natural: true }
+- { id: baba,     lemma: baba,     pos: noun, gloss: father,    predicate_natural: true }
+- { id: kardeş,   lemma: kardeş,   pos: noun, gloss: sibling,   predicate_natural: true }
+- { id: arkadaş,  lemma: arkadaş,  pos: noun, gloss: friend,    predicate_natural: true }
+- { id: öğrenci,  lemma: öğrenci,  pos: noun, gloss: student,   predicate_natural: true }
+- { id: öğretmen, lemma: öğretmen, pos: noun, gloss: teacher, predicate_natural: true, etymology: "A 20th century Turkish coinage: öğret-, to teach, plus -men, a person who does it. Created during a period of deliberate language reform to replace the Arabic-derived muallim." }
+- { id: doktor,   lemma: doktor,   pos: noun, gloss: doctor,    predicate_natural: true }
+- { id: insan,    lemma: insan,    pos: noun, gloss: human being, predicate_natural: true }
+- { id: komşu,    lemma: komşu,    pos: noun, gloss: neighbour, predicate_natural: true }
+- { id: müdür,    lemma: müdür,    pos: noun, gloss: manager,   predicate_natural: true }
+- { id: asker,    lemma: asker,    pos: noun, gloss: soldier,   predicate_natural: true }
+- { id: oğul,     lemma: oğul,     pos: noun, gloss: son, vowel_deletion: true, predicate_natural: true }
 
 # ── Body ─────────────────────────────────────────────────────────────────────
 - { id: göz,      lemma: göz,      pos: noun, gloss: eye }

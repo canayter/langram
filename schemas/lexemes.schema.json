@@ -45,6 +45,10 @@
         "type": "boolean",
         "description": "The last stem vowel drops before a vowel-initial suffix: burun -> burnu."
       },
+      "predicate_natural": {
+        "type": "boolean",
+        "description": "For pos: noun only. True if a learner would plausibly hear this word predicated onto a person (\"biz doktoruz\", we are doctors): a role, profession, kinship term, or the like, not a concrete object (\"biz masayiz\", we are a table). Read by the predicative unit's exercises via lexeme_filter: {predicative_only: true}; adjectives never need this, since almost any adjective is a natural personal predicate."
+      },
       "harmony_class": {
         "enum": [
           "front",

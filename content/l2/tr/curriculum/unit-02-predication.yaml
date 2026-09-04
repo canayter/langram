@@ -94,6 +94,7 @@ concepts:
         params:
           cue: person_suffix_only
           persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          lexeme_filter: { predicative_only: true }
       - id: person-contrast
         stage: structured_input
         generator: minimal_pair_identification
@@ -107,6 +108,7 @@ concepts:
           modality: audio
           contrast: person
           persons: [PRED1SG, PRED2SG]
+          lexeme_filter: { predicative_only: true }
       - id: say-what-you-are
         stage: guided_output
         generator: cloze_suffix_choice
@@ -114,6 +116,7 @@ concepts:
         difficulty: 3
         params:
           persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          lexeme_filter: { predicative_only: true }
       - id: predication-production
         stage: free_output
         generator: type_the_form
@@ -121,12 +124,14 @@ concepts:
         difficulty: 4
         params:
           persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          lexeme_filter: { predicative_only: true }
       - id: predication-recall
         stage: review
         generator: cued_recall
         difficulty: 3
         params:
           persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          lexeme_filter: { predicative_only: true }
 
   - id: bare-third-person
     name: The third person is unmarked
