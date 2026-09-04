@@ -100,12 +100,12 @@
 - { id: perde,    lemma: perde,    pos: noun, gloss: curtain }
 - { id: ütü,      lemma: ütü,      pos: noun, gloss: "iron (appliance)" }
 - { id: ocak,     lemma: ocak,     pos: noun, gloss: stove,    final_voicing: true }
-- { id: kap,      lemma: kap,      pos: noun, gloss: container, final_voicing: true, review: [final_voicing] }
+- { id: kap,      lemma: kap,      pos: noun, gloss: container, final_voicing: true }
 
 # ── Food and drink ───────────────────────────────────────────────────────────
 - { id: ekmek,    lemma: ekmek,    pos: noun, gloss: bread,    final_voicing: true }
 - { id: su,       lemma: su,       pos: noun, gloss: water,    review: [irregular_genitive_suyun] }
-- { id: süt,      lemma: süt,      pos: noun, gloss: milk,     final_voicing: false, review: [final_voicing] }
+- { id: süt,      lemma: süt,      pos: noun, gloss: milk,     final_voicing: false }
 - { id: çay,      lemma: çay,      pos: noun, gloss: tea }
 - { id: kahve,    lemma: kahve,    pos: noun, gloss: coffee, etymology: "From Arabic qahwa by way of Ottoman Turkish. The same word travelled on into Italian and then English as coffee." }
 - { id: yemek,    lemma: yemek,    pos: noun, gloss: food,     final_voicing: true }
@@ -131,7 +131,7 @@
 - { id: orman,    lemma: orman,    pos: noun, gloss: forest }
 - { id: pazar,    lemma: pazar,    pos: noun, gloss: market, etymology: "From Persian bazar, market. The same word gave English bazaar." }
 - { id: durak,    lemma: durak,    pos: noun, gloss: "stop (bus)", final_voicing: true }
-- { id: park,     lemma: park,     pos: noun, gloss: park,     final_voicing: false, review: [final_voicing] }
+- { id: park,     lemma: park,     pos: noun, gloss: park,     final_voicing: false }
 - { id: hastane,  lemma: hastane,  pos: noun, gloss: hospital }
 - { id: lokanta,  lemma: lokanta,  pos: noun, gloss: restaurant }
 - { id: ülke,     lemma: ülke,     pos: noun, gloss: country }
@@ -142,8 +142,8 @@
 - { id: yaprak,   lemma: yaprak,   pos: noun, gloss: leaf,     final_voicing: true }
 - { id: toprak,   lemma: toprak,   pos: noun, gloss: soil,     final_voicing: true }
 - { id: çiçek,    lemma: çiçek,    pos: noun, gloss: flower,   final_voicing: true }
-- { id: gök,      lemma: gök,      pos: noun, gloss: sky,      final_voicing: true, review: [final_voicing] }
-- { id: bulut,    lemma: bulut,    pos: noun, gloss: cloud,    final_voicing: false, review: [final_voicing] }
+- { id: gök,      lemma: gök,      pos: noun, gloss: sky,      final_voicing: true }
+- { id: bulut,    lemma: bulut,    pos: noun, gloss: cloud,    final_voicing: false }
 - { id: hava,     lemma: hava,     pos: noun, gloss: "air, weather" }
 - { id: gün,      lemma: gün,      pos: noun, gloss: day }
 - { id: gece,     lemma: gece,     pos: noun, gloss: night }
@@ -152,7 +152,7 @@
 - { id: hafta,    lemma: hafta,    pos: noun, gloss: week, etymology: "From Persian hafte, week, built on haft, seven." }
 - { id: yıl,      lemma: yıl,      pos: noun, gloss: year }
 - { id: saat,     lemma: saat,     pos: noun, gloss: "hour, clock", final_voicing: false, harmony_class: front, review: [harmony_class] }
-- { id: vakit,    lemma: vakit,    pos: noun, gloss: time,     final_voicing: false, vowel_deletion: true, harmony_class: front, review: [harmony_class, final_voicing] }
+- { id: vakit,    lemma: vakit,    pos: noun, gloss: time,     final_voicing: false, vowel_deletion: true, harmony_class: front, review: [harmony_class] }
 - { id: kuş,      lemma: kuş,      pos: noun, gloss: bird }
 - { id: köpek,    lemma: köpek,    pos: noun, gloss: dog,      final_voicing: true }
 - { id: kedi,     lemma: kedi,     pos: noun, gloss: cat }
@@ -168,7 +168,7 @@
 - { id: yer,      lemma: yer,      pos: noun, gloss: place }
 - { id: şey,      lemma: şey,      pos: noun, gloss: thing }
 - { id: para,     lemma: para,     pos: noun, gloss: money, etymology: "From Persian pare, piece." }
-- { id: hayat,    lemma: hayat,    pos: noun, gloss: life,     final_voicing: false, review: [final_voicing] }
+- { id: hayat,    lemma: hayat,    pos: noun, gloss: life,     final_voicing: false }
 - { id: dünya,    lemma: dünya,    pos: noun, gloss: world, etymology: "From Arabic dunya, this world, as distinct from the next." }
 - { id: sevgi,    lemma: sevgi,    pos: noun, gloss: love }
 - { id: umut,     lemma: umut,     pos: noun, gloss: hope,     final_voicing: true }
@@ -198,8 +198,8 @@
 
 # ── Adjectives (they inflect as nominals in predication) ─────────────────────
 - { id: güzel,    lemma: güzel,    pos: adjective, gloss: beautiful }
-- { id: büyük,    lemma: büyük,    pos: adjective, gloss: big,   final_voicing: true, review: [final_voicing] }
-- { id: küçük,    lemma: küçük,    pos: adjective, gloss: small, final_voicing: true, review: [final_voicing] }
+- { id: büyük,    lemma: büyük,    pos: adjective, gloss: big,   final_voicing: true }
+- { id: küçük,    lemma: küçük,    pos: adjective, gloss: small, final_voicing: true }
 - { id: iyi,      lemma: iyi,      pos: adjective, gloss: good }
 - { id: kötü,     lemma: kötü,     pos: adjective, gloss: bad }
 - { id: yeni,     lemma: yeni,     pos: adjective, gloss: new }
@@ -212,7 +212,7 @@
 - { id: kolay,    lemma: kolay,    pos: adjective, gloss: easy }
 - { id: mutlu,    lemma: mutlu,    pos: adjective, gloss: happy }
 - { id: yorgun,   lemma: yorgun,   pos: adjective, gloss: tired }
-- { id: aç,       lemma: aç,       pos: adjective, gloss: hungry, final_voicing: false, review: [final_voicing] }
+- { id: aç,       lemma: aç,       pos: adjective, gloss: hungry, final_voicing: false }
 - { id: genç,     lemma: genç,     pos: adjective, gloss: young,  final_voicing: true }
 - { id: top,      lemma: top,      pos: noun, gloss: ball,        final_voicing: false }
-- { id: ok,       lemma: ok,       pos: noun, gloss: arrow,       final_voicing: false, review: [final_voicing] }
+- { id: ok,       lemma: ok,       pos: noun, gloss: arrow,       final_voicing: false }
