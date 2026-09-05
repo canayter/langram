@@ -40,7 +40,7 @@ concepts:
       enough here. The exercises below ask you to notice both features before you
       are asked to choose a shape yourself.
     teaches_suffixes: [PRED1SG, PRED1PL]
-    recurs_in: [predication-without-a-verb, possessive-suffixes, buffer-segments, stem-alternation]
+    recurs_in: [predication-without-a-verb, possessive-suffixes, buffer-segments, stem-alternation, verb-person-marking]
     exercises:
       - id: four-way-listen
         stage: structured_input

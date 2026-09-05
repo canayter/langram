@@ -81,6 +81,74 @@ concepts:
           stem_mix: [consonant_final]
           show_derivation: true
 
+  - id: verb-person-marking
+    name: Person marking on the present tense
+    type: grammatical_feature
+    why_hard: >
+      These suffixes are not new: -(y)Im, -sIn, -(y)Iz and -sInIz are the exact
+      same person markers already learned for predication (öğrenciyim, you are
+      this). What is new is the word class they now attach to, and one
+      wrinkle specific to verbs: once -(y)Iyor is in place, the suffix that
+      follows it always harmonises against yor's own fixed o, not the verb's
+      own harmony class, so a front-vowel stem like bekle still takes
+      bekliyorum, never bekliyorüm. Unlike on a noun, these endings no longer
+      vary by word once a verb's present tense is in place.
+    intro: >
+      You already know these suffixes from saying what something is: -(y)Im
+      for I, -sIn for you, -(y)Iz for we, -sInIz for you (plural). They work
+      exactly the same way on a verb, added after the present tense suffix
+      rather than directly on a noun: geliyor, is coming, plus -(y)Im gives
+      geliyorum, I am coming; gidiyor, is going, plus -sIn gives gidiyorsun,
+      you are going.
+
+      One thing is different from every suffix so far: because -(y)Iyor's own
+      vowel is always o, back and rounded, the suffix that follows it is
+      always back and rounded too, regardless of what the verb's own harmony
+      class is. bekle is a front-vowel stem everywhere else, but bekliyorum
+      is correct, never bekliyorüm, because by the time the person suffix
+      attaches, the vowel right before it is yor's o, not bekle's own e.
+
+      The third person still needs nothing added, exactly as before: geliyor
+      already means he, she or it is coming, with no suffix at all.
+    teaches_suffixes: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+    exercises:
+      - id: who-is-coming
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Who is this sentence about?"
+        difficulty: 2
+        params:
+          cue: person_suffix_only
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [PROG]
+          lexeme_filter: { pos: verb }
+      - id: say-what-you-are-doing
+        stage: guided_output
+        generator: cloze_suffix_choice
+        prompt: "Complete the sentence."
+        difficulty: 3
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [PROG]
+          lexeme_filter: { pos: verb }
+      - id: verb-person-production
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [PROG]
+          lexeme_filter: { pos: verb }
+      - id: verb-person-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [PROG]
+          lexeme_filter: { pos: verb }
+
   - id: negation
     name: Negating a verb with -mA
     type: grammatical_feature

@@ -179,7 +179,7 @@ class TestCurriculum:
         by_id = {c["id"]: c for u in units for c in u["concepts"]}
         assert set(by_id["fourfold-harmony"]["recurs_in"]) == {
             "predication-without-a-verb", "possessive-suffixes",
-            "buffer-segments", "stem-alternation",
+            "buffer-segments", "stem-alternation", "verb-person-marking",
         }
 
 

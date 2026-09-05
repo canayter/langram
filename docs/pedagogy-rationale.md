@@ -103,6 +103,61 @@ negative-imperative/verbal-noun minimal pair some sources raise for -mA is
 mentioned in this unit's intro as a fact worth knowing, not tested, because
 testing it would require an ability the app does not have).
 
+## Verb person marking reuses the predicative suffixes rather than inventing new ones
+
+Unit 5's own rationale entry above named this as deliberately unbuilt:
+"person marking on verbs (öğreniyorum needs suffixes that do not exist in
+this content yet)". They already existed. -(y)Im, -sIn, -(y)Iz and -sInIz
+are the same pronominal-type person markers unit 2 teaches for nominal
+predication (öğrenciyim), and Turkish reuses exactly these morphemes for
+non-past verb agreement, not a separate paradigm. The new
+verb-person-marking concept teaches no new suffix ids; it teaches the same
+four suffixes attaching after a new fixed prefix (-(y)Iyor) instead of
+directly to a noun, which is a new context for an already-taught rule, the
+same shape as fourfold-harmony recurring through possessive-suffixes and
+stem-alternation. Third singular stays bare, matching PRED3SG's existing
+precedent (bare-third-person), and third plural is deliberately left out of
+this concept: -lAr is the right morpheme, but its stored gloss is "plural"
+(a nominal-count meaning), which would show a misleading option in a
+"who is this about" exercise built from suffix glosses. Giving -lAr a
+verb-agreement sense needs its own content decision, not a silent gloss
+override, so it is left for a later pass rather than guessed at here.
+
+Grounding: the same reuse-over-duplication reasoning already applied when
+PL and the PRED suffixes were first identified as the correct morphemes to
+reuse rather than re-teach.
+
+## Chaining exposed a real, pre-existing bug in the shipped negation
+
+Building the two-suffix chain generation the concept above needed
+(-(y)Iyor then a person suffix) required generators to attach a suffix
+after a fixed prefix for the first time. Actually generating a batch with
+it, rather than trusting the single-suffix tests already in place, is what
+caught this: -mA + -(y)Iyor was already wrong for any verb whose own vowel
+is rounded, and had been since negation shipped, because none of the three
+verbs test_known_forms.py checked it against (gel, git, yap) happen to
+have a rounded stem vowel. The engine gave "okumıyor"; the correct,
+well-attested form is "okumuyor".
+
+The cause: -(Ø)Iyor's own vowel resolves its rounding from whatever vowel
+precedes it, which is the ordinary and correct rule everywhere else (a low
+vowel trigger defaults a following high-vowel suffix to unrounded, e.g.
+PL + PRED3SG gives evlerdir, never evlerdür). -mA is always low (a/e) and
+so has no rounding of its own to give. But the negative progressive is the
+one combination where Turkish reference grammars note the suffix vowel
+reaches past -mA to the verb root's own rounding instead of defaulting to
+unrounded, which is why gitmiyor is regular only by coincidence (git's own
+vowel is already unrounded) while okumuyor is not derivable from the
+general rule at all. This is now a targeted exception in engine.py, keyed
+specifically to NEG immediately preceding PROG, rather than a change to how
+rounding harmony works generally, since the general rule is independently
+confirmed correct by the evlerdir-style cases it already handles.
+
+Grounding: this is the third time this session that generating actual
+output, rather than reasoning about the rule in isolation, is what surfaced
+a bug a rule believed correct for the tested cases (see the recurring bug
+shape below).
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

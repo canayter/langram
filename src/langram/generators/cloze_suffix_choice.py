@@ -9,7 +9,7 @@ from __future__ import annotations
 import random
 
 from . import COMPREHENSION, GeneratedItem, GenerationError
-from ._common import pick_lexeme, suffix_choices
+from ._common import chain, pick_lexeme, suffix_choices
 
 
 def _options(language, params: dict) -> list[str]:
@@ -33,7 +33,7 @@ def build(exercise, language, rng: random.Random) -> GeneratedItem:
     lexeme = pick_lexeme(language, params, rng)
     return assemble(exercise, language, {
         "lemma": lexeme.lemma,
-        "suffixes": [rng.choice(options)],
+        "suffixes": chain(params, rng.choice(options)),
         "options": sorted(options),
     })
 
@@ -42,7 +42,14 @@ def assemble(exercise, language, spec: dict) -> GeneratedItem:
     lemma, suffix_ids = spec["lemma"], list(spec["suffixes"])
     lexeme = language.lexeme(lemma)
     result = language.inflect(lexeme, suffix_ids)
-    suffix = language.suffix(suffix_ids[0])
+    suffix = language.suffix(suffix_ids[-1])
+    # The blank is filled in after whatever fixed prefix the chain carries
+    # (gel + PROG + ___), not after the bare lemma, so a learner sees
+    # "geliyor___", the form the tested suffix actually attaches to.
+    stem_display = (
+        language.inflect(lexeme, suffix_ids[:-1]).surface
+        if len(suffix_ids) > 1 else lexeme.lemma
+    )
 
     options = [
         {"id": sid, "notation": language.suffix(sid).surface,
@@ -61,7 +68,7 @@ def assemble(exercise, language, spec: dict) -> GeneratedItem:
         spec=spec,
         payload={
             "kind": "choose_suffix",
-            "stem": lexeme.lemma,
+            "stem": stem_display,
             "gloss": lexeme.gloss,
             "meaning": meaning,
             "options": options,

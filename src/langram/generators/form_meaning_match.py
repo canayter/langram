@@ -16,7 +16,7 @@ import random
 
 from . import COMPREHENSION, GeneratedItem, GenerationError
 from ._common import (
-    candidate_lexemes, ends_in_vowel, pick_lexeme, realisation, suffix_choices,
+    candidate_lexemes, chain, ends_in_vowel, pick_lexeme, realisation, suffix_choices,
     syllable_count,
 )
 from ..ipa import CAVEAT as IPA_CAVEAT
@@ -53,7 +53,7 @@ def build(exercise, language, rng: random.Random) -> GeneratedItem:
             raise GenerationError(f"{exercise.id}: a meaning choice needs at least two suffixes")
         suffix_id = rng.choice(options)
         lexeme = pick_lexeme(language, params, rng)
-        spec = {"mode": mode, "lemma": lexeme.lemma, "suffixes": [suffix_id],
+        spec = {"mode": mode, "lemma": lexeme.lemma, "suffixes": chain(params, suffix_id),
                 "options": sorted(options)}
 
     elif mode == "trigger":
@@ -98,7 +98,7 @@ def assemble(exercise, language, spec: dict) -> GeneratedItem:
         option_ids = list(spec["options"])
         labels = {sid: _label(language, sid) for sid in option_ids}
         options = sorted(labels[sid] for sid in option_ids)
-        answer = labels[suffix_ids[0]]
+        answer = labels[suffix_ids[-1]]
         question = result.surface
         payload = {"kind": "choose_meaning", "form": question, "gloss": lexeme.gloss,
                    "options": options}

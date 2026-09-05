@@ -152,10 +152,14 @@ before.
    from the start rather than gated in sequence, because vocabulary is meant
    to recur alongside every other unit rather than being finished once. Not
    fully realised yet: see "Not built yet" below.
-5. The first verbal unit: present tense (-(y)Iyor) and negation (-mA),
-   third person only. Deliberately narrow: both are uncontested facts about
-   Turkish needing no native-speaker judgement call, unlike most of what a
-   fuller verb system would need (see "Not built yet").
+5. The first verbal unit: present tense (-(y)Iyor), negation (-mA), and
+   person marking, which reuses the same PRED1SG/PRED2SG/PRED1PL/PRED2PL
+   suffixes unit 2 teaches for nominal predication rather than inventing a
+   new paradigm. Third singular stays bare (PRED3SG's precedent); third
+   plural is left out deliberately, since -lAr's stored gloss is nominal
+   ("plural") and would mislabel a verb-agreement exercise built from it.
+   See `docs/pedagogy-rationale.md` for both that reasoning and the
+   negative-progressive rounding fix chaining surfaced.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -229,6 +233,16 @@ silently does the wrong thing for a case nobody tried yet.
   attach to a noun ("kucuguyor"); and `_stem_after()` didn't recognise the
   new stem-vowel-deletion step, so an internal value silently pointed at the
   wrong (if coincidentally same-length) string.
+- Adding verb person marking needed a suffix to chain after another for the
+  first time (`-(y)Iyor` then a person suffix), which is what generating a
+  batch with it caught: `-mA` + `-(y)Iyor` was already wrong, and had been
+  since negation shipped, for any verb whose own vowel is rounded
+  ("okumıyor" instead of "okumuyor"), because the three verbs
+  `test_known_forms.py` checked it against (gel, git, yap) all happen to
+  have unrounded stem vowels. Fixed in `engine.py` with a targeted exception
+  for `-(Ø)Iyor` immediately after `NEG` specifically; see
+  `docs/pedagogy-rationale.md` for why this is a real Turkish irregularity
+  and not a general harmony change.
 
 Worth actually generating a batch of items after any change to a suffix,
 the lexicon's `pos`/flag fields, or `candidate_lexemes()`, not just running
@@ -236,8 +250,14 @@ the type checker and the existing test suite.
 
 ## Not built yet, roughly in the order it would make sense to tackle
 
-- **Verb person marking** (öğreniyorum, gidiyorsun). Without it, unit 5's
-  verbs can only ever speak in the third person.
+- **Third-person-plural verb agreement** (geliyorlar). The morpheme is
+  -lAr, already built and correct when generated directly (see
+  `test_known_forms.py`'s verbal table), but no exercise teaches it as verb
+  agreement yet: -lAr's stored gloss is "plural" (a nominal-count meaning),
+  which would mislabel a "who is this about" exercise built from suffix
+  glosses. Needs a content decision (a second, verb-agreement-specific
+  gloss for the same suffix id, or a separate display path), not a silent
+  override.
 - **The three-axis tagging / weak-concept resurfacing scheduler.** The
   architectural idea: every exercise item is really tagged along three
   independent axes (lexeme, morphology/suffix, concept/rule), not filed

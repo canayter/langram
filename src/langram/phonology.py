@@ -42,11 +42,17 @@ class Phonology:
         return None
 
     # ── archiphoneme resolution ──────────────────────────────────────────────
-    def resolve(self, archiphoneme: str, context: str, back: bool | None = None) -> str:
+    def resolve(
+        self, archiphoneme: str, context: str,
+        back: bool | None = None, rounded: bool | None = None,
+    ) -> str:
         """Resolve one archiphoneme against the form it is being attached to.
 
         `back` overrides the backness read off the context, which is how a
         disharmonic loan takes front suffixes despite a back final vowel.
+        `rounded` overrides the rounding read off the context the same way,
+        which is how -Iyor's rounding in the negative progressive can reach
+        past -mA's own unrounded a/e to the verb root's rounding instead.
         """
         spec = self.archiphonemes[archiphoneme]
         if spec["type"] == "consonant":
@@ -60,8 +66,8 @@ class Phonology:
         table = spec["resolves"]
         if archiphoneme == "A":
             return table["back" if is_back else "front"]
-        rounded = self.is_rounded(vowel)
-        key = f"{'back' if is_back else 'front'}_{'rounded' if rounded else 'unrounded'}"
+        is_rounded = self.is_rounded(vowel) if rounded is None else rounded
+        key = f"{'back' if is_back else 'front'}_{'rounded' if is_rounded else 'unrounded'}"
         return table[key]
 
     # ── stem alternations ────────────────────────────────────────────────────

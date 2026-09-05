@@ -111,6 +111,10 @@ DISHARMONIC = [
     ("saat", ["ACC"], "saati"),
     ("saat", ["PL"], "saatler"),
     ("saat", ["LOC"], "saatte"),
+    # A chain, not just one suffix: PL's own front vowel has to take over
+    # harmony for LOC once it attaches, rather than saat's declared front
+    # override reaching past PL to govern LOC too (engine.py's harmony_back).
+    ("saat", ["PL", "LOC"], "saatlerde"),
     ("kalp", ["ACC"], "kalbi"),
     ("kalp", ["LOC"], "kalpte"),
     ("rol", ["ACC"], "rolü"),
@@ -175,10 +179,35 @@ VERBAL = [
     ("yap", ["NEG"], "yapma"),
     ("git", ["NEG"], "gitme"),             # NEG is consonant-initial: no
                                             # final_voicing trigger from it
-    ("gel", ["NEG", "PROG"], "gelmiyor"),  # NEG resolves first, then PROG
-                                            # reads harmony off NEG's own -e
+    ("gel", ["NEG", "PROG"], "gelmiyor"),
     ("git", ["NEG", "PROG"], "gitmiyor"),
     ("yap", ["NEG", "PROG"], "yapmıyor"),
+    # The negative progressive's one genuine irregularity: -Iyor's rounding
+    # here tracks the verb root, not NEG's own unrounded -mA, so a rounded
+    # stem needs okumuyor, not the "regular" okumıyor the ordinary rule
+    # (unrounded after a low vowel, as in evler+PRED3SG -> evlerdir) would
+    # otherwise predict. gel/git/yap above never exposed this because none
+    # of their own stem vowels are rounded.
+    ("oku", ["NEG", "PROG"], "okumuyor"),
+    ("konuş", ["NEG", "PROG"], "konuşmuyor"),
+
+    # Person marking: the same PRED suffixes already taught for nominal
+    # predication, reused on a verb. -(y)Iyor's own invariant back-rounded o
+    # governs harmony for whatever follows it, so the person ending's shape
+    # no longer varies with the verb's own harmony class the way it does on
+    # a noun (see engine.py's harmony_back).
+    ("gel", ["PROG", "PRED1SG"], "geliyorum"),
+    ("bekle", ["PROG", "PRED1SG"], "bekliyorum"),   # front stem: still -um, not -üm
+    ("git", ["PROG", "PRED2SG"], "gidiyorsun"),
+    ("oku", ["PROG", "PRED1PL"], "okuyoruz"),
+    ("konuş", ["PROG", "PRED2PL"], "konuşuyorsunuz"),
+    ("yap", ["PROG", "PL"], "yapıyorlar"),
+    ("iste", ["PROG", "PRED3SG"], "istiyordur"),
+
+    # Negation and person together: both fixes composed.
+    ("gel", ["NEG", "PROG", "PRED1SG"], "gelmiyorum"),
+    ("oku", ["NEG", "PROG", "PRED1PL"], "okumuyoruz"),
+    ("konuş", ["NEG", "PROG", "PRED2SG"], "konuşmuyorsun"),
 ]
 
 ALL = (

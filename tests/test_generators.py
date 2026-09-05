@@ -161,6 +161,57 @@ class TestPosIsolation:
             assert language.lexeme(item.lemma).pos != "verb", item.lemma
 
 
+class TestSuffixChaining:
+    """base_suffixes lets an exercise fix a prefix (gel + PROG) and vary only
+    the suffix after it (+ PRED1SG), which verb person marking needs and no
+    exercise before it did. chain() is the one place that assembles the
+    full list inflect() receives; everything else here checks that a
+    generator built for a single suffix still displays the right thing once
+    a second one is chained in front of it."""
+
+    def test_chain_prepends_the_fixed_prefix(self):
+        from langram.generators._common import chain
+        assert chain({}, "PRED1SG") == ["PRED1SG"]
+        assert chain({"base_suffixes": ["PROG"]}, "PRED1SG") == ["PROG", "PRED1SG"]
+
+    def test_type_the_form_produces_the_full_chain(self, language):
+        rng = random.Random(1)
+        spec = _spec("type_the_form", persons=["PRED1SG"], base_suffixes=["PROG"],
+                     lexeme_filter={"pos": "verb"})
+        item = generate(spec, language, rng)
+        assert item.suffixes == ("PROG", "PRED1SG")
+        assert item.answer == language.inflect(item.lemma, ["PROG", "PRED1SG"]).surface
+
+    def test_type_the_form_names_the_last_suffix_not_the_first(self, language):
+        """bekle is front-vowel, but PROG's own o governs whatever follows
+        it (engine.py's harmony_back), so the person suffix shown has to be
+        PRED1SG's own notation, not PROG's."""
+        rng = random.Random(1)
+        spec = _spec("type_the_form", persons=["PRED1SG"], base_suffixes=["PROG"],
+                     lexeme_filter={"pos": "verb"})
+        item = generate(spec, language, rng)
+        assert item.payload["suffix"]["id"] == "PRED1SG"
+
+    def test_cloze_shows_the_chained_stem_not_the_bare_lemma(self, language):
+        """gel + PROG + ___ has to read "geliyor___" to a learner, not
+        "gel___": the person suffix attaches to the inflected verb, not the
+        dictionary stem."""
+        rng = random.Random(1)
+        spec = _spec("cloze_suffix_choice", persons=["PRED1SG", "PRED2SG"],
+                     base_suffixes=["PROG"], lexeme_filter={"pos": "verb"})
+        item = generate(spec, language, rng)
+        base = language.inflect(item.lemma, ["PROG"]).surface
+        assert item.payload["stem"] == base
+        assert item.payload["stem"] != item.lemma
+
+    def test_form_meaning_match_gloss_answers_the_person_not_the_tense(self, language):
+        rng = random.Random(1)
+        spec = _spec("form_meaning_match", persons=["PRED1SG", "PRED2SG"],
+                     base_suffixes=["PROG"], lexeme_filter={"pos": "verb"})
+        item = generate(spec, language, rng)
+        assert item.answer in ("I am", "you are (singular)", "you are")
+
+
 class TestSuffixBuilder:
     def test_options_are_the_real_allomorphs(self, language):
         rng = random.Random(1)

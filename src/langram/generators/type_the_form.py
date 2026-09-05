@@ -9,7 +9,7 @@ from __future__ import annotations
 import random
 
 from . import MORPHOLOGICAL, GeneratedItem
-from ._common import english_cue, pick_lexeme, require_suffixes
+from ._common import chain, english_cue, pick_lexeme, require_suffixes
 
 GENERATOR = "type_the_form"
 DEFAULT_PROMPT = "Say this in Turkish."
@@ -19,7 +19,7 @@ def build(exercise, language, rng: random.Random) -> GeneratedItem:
     params = dict(exercise.params or {})
     suffix_id = rng.choice(require_suffixes(exercise, params))
     lexeme = pick_lexeme(language, params, rng)
-    return assemble(exercise, language, {"lemma": lexeme.lemma, "suffixes": [suffix_id]})
+    return assemble(exercise, language, {"lemma": lexeme.lemma, "suffixes": chain(params, suffix_id)})
 
 
 def assemble(exercise, language, spec: dict, generator: str = GENERATOR,
@@ -27,7 +27,7 @@ def assemble(exercise, language, spec: dict, generator: str = GENERATOR,
     lemma, suffix_ids = spec["lemma"], list(spec["suffixes"])
     lexeme = language.lexeme(lemma)
     result = language.inflect(lexeme, suffix_ids)
-    suffix = language.suffix(suffix_ids[0])
+    suffix = language.suffix(suffix_ids[-1])
 
     return GeneratedItem(
         exercise_id=exercise.id,

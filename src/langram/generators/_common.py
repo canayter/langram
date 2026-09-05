@@ -121,6 +121,18 @@ def pick_lexeme(language, params: dict, rng: random.Random) -> Lexeme:
     return rng.choice(pool)
 
 
+def chain(params: dict, suffix_id: str) -> list[str]:
+    """The full suffix chain for one choice, with any fixed prefix prepended.
+
+    Nominal predication needs only one suffix (ev + PRED1SG), which is all
+    every generator built before this. A verb's person needs two (gel + PROG
+    + PRED1SG): tense is fixed for a given exercise, person is what varies,
+    and inflect() needs both in slot order. base_suffixes is that fixed
+    prefix; a generator that never sets it behaves exactly as before.
+    """
+    return list(params.get("base_suffixes", ())) + [suffix_id]
+
+
 def suffix_choices(params: dict) -> list[str]:
     """The suffixes an exercise may use, however its params spell it."""
     if params.get("suffix"):

@@ -91,6 +91,20 @@ def inflect(
 
         ends_in_vowel = p.is_vowel(form[-1])
 
+        # A disharmonic loan's declared class overrides what its own last
+        # vowel would suggest, but that override is a fact about the STEM,
+        # not about whatever a suffix goes on to contribute. Once the first
+        # suffix has attached, the form's real last vowel is no longer the
+        # stem's own (possibly lying) one -- it is whatever that suffix
+        # correctly resolved to -- so harmony from here on is read naturally
+        # off the growing form instead of continuing to force the original
+        # override onto every later suffix too. This is what makes
+        # -(y)Iyor's invariant back-rounded "o" correctly take over harmony
+        # for whatever attaches after it (bekliyor + PRED1SG -> bekliyorum,
+        # not bekliyorüm), on a front-vowel stem the override would
+        # otherwise keep insisting on past the point it stopped applying.
+        harmony_back = back if stem_exposed else None
+
         # -(Ø)Iyor is the one suffix that consumes the stem's own final
         # vowel rather than inserting a buffer: harmony has to be read off
         # that vowel before it disappears, or resolve() has nothing left to
@@ -101,7 +115,24 @@ def inflect(
         # git- -> gid-) handles it unchanged.
         if optional == "Ø":
             if ends_in_vowel:
-                resolved = p.resolve(body[0], form, back=back)
+                # The negative progressive is Turkish's one well-attested
+                # exception to ordinary harmony: -Iyor's rounding, uniquely
+                # right after -mA, tracks the verb root's own vowel rather
+                # than -mA's own vowel. -mA is always low (a/e), and a low
+                # vowel never carries rounding to give -- everywhere else
+                # that leaves the next high-vowel suffix unrounded by
+                # default (PL -lAr + PRED3SG -DIr gives evlerdir, never
+                # evlerdür) -- but the negative progressive is the
+                # exception grammars of Turkish single out by name: oku +
+                # NEG + PROG is okumuyor, not okumıyor, gitmiyor is regular
+                # only because git's own vowel already happens to be
+                # unrounded.
+                rounded_override = None
+                if previous is not None and previous.id == "NEG":
+                    stem_vowel = p.last_vowel(stem_form)
+                    if stem_vowel is not None:
+                        rounded_override = p.is_rounded(stem_vowel)
+                resolved = p.resolve(body[0], form, back=harmony_back, rounded=rounded_override)
                 removed = form[-1]
                 form = form[:-1] + resolved
                 steps.append(DerivationStep(
@@ -160,7 +191,7 @@ def inflect(
             if realise_optional:
                 inserted = optional
                 if inserted in ("A", "I"):
-                    inserted = p.resolve(inserted, form, back=back)
+                    inserted = p.resolve(inserted, form, back=harmony_back)
                 form += inserted
                 steps.append(DerivationStep(
                     "buffer",
@@ -181,7 +212,7 @@ def inflect(
         # ── the suffix body, segment by segment ──────────────────────────────
         for char in body:
             if char in ("A", "I"):
-                resolved = p.resolve(char, form, back=back)
+                resolved = p.resolve(char, form, back=harmony_back)
                 trigger = p.last_vowel(form)
                 harmony = "twofold" if char == "A" else "fourfold"
                 shape = (
