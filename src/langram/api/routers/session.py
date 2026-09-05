@@ -58,14 +58,32 @@ def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
         prompt=item.prompt,
         payload=item.payload,
         source=served.source,
-        # vocab_recognition's whole question is "what does this word mean";
-        # the word-info panel's gloss would hand over the answer underneath
-        # the exercise before it is even attempted.
-        word_info=None if item.generator == "vocab_recognition"
-                  else _word_info(language, getattr(item, "lemma", None)),
+        word_info=_served_word_info(item, language),
         xp_total=user.xp,
         streak=user.current_streak,
     )
+
+
+def _served_word_info(item, language) -> WordInfoOut | None:
+    """None when a word-info panel would hand over the answer instead of
+    supporting it, rather than the panel a learner otherwise gets for every
+    item's underlying word.
+
+    vocab_recognition's whole question is "what does this word mean", so its
+    own gloss would hand over the answer underneath the exercise before it is
+    even attempted. form_meaning_match's buffer mode has the same problem
+    from a different direction: its three options are three different words,
+    one of which needed a buffer, and spec["lemma"] (see its "buffer" branch)
+    is always that one, so a single-word panel would silently name the
+    correct option regardless of what the options themselves show. The three
+    options already carry their own ipa and gloss in the payload,
+    symmetrically, which is the right place for this information here.
+    """
+    if item.generator == "vocab_recognition":
+        return None
+    if item.generator == "form_meaning_match" and getattr(item, "extra", {}).get("mode") == "buffer":
+        return None
+    return _word_info(language, getattr(item, "lemma", None))
 
 
 def _word_info(language, lemma: str | None) -> WordInfoOut | None:

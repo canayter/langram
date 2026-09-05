@@ -6,6 +6,7 @@ test_feedback_escalates, because prompting before recasting is the pedagogy the
 whole app claims to implement.
 """
 import datetime as dt
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -181,6 +182,46 @@ class TestCurriculum:
             "predication-without-a-verb", "possessive-suffixes",
             "buffer-segments", "stem-alternation", "verb-person-marking",
         }
+
+
+class TestServedWordInfo:
+    """A word-info panel is meant to support an item, not answer it. Two
+    generators break that if handled the same as every other: vocab_recognition
+    IS "what does this word mean", and form_meaning_match's buffer mode always
+    names the correct one of its three word options as the item's own lemma."""
+
+    @staticmethod
+    @pytest.fixture(scope="class")
+    def language():
+        from langram.loader import load_language
+        return load_language("tr")
+
+    def test_vocab_recognition_gets_no_panel(self, language):
+        from langram.api.routers.session import _served_word_info
+        item = SimpleNamespace(generator="vocab_recognition", lemma="ev", extra={})
+        assert _served_word_info(item, language) is None
+
+    def test_buffer_mode_gets_no_panel(self, language):
+        from langram.api.routers.session import _served_word_info
+        item = SimpleNamespace(generator="form_meaning_match", lemma="kutu",
+                               extra={"mode": "buffer"})
+        assert _served_word_info(item, language) is None
+
+    def test_other_form_meaning_match_modes_still_get_one(self, language):
+        from langram.api.routers.session import _served_word_info
+        for mode in ("gloss", "trigger"):
+            item = SimpleNamespace(generator="form_meaning_match", lemma="ev",
+                                   extra={"mode": mode})
+            info = _served_word_info(item, language)
+            assert info is not None, mode
+            assert info.lemma == "ev"
+
+    def test_an_ordinary_generator_still_gets_one(self, language):
+        from langram.api.routers.session import _served_word_info
+        item = SimpleNamespace(generator="type_the_form", lemma="ev", extra={})
+        info = _served_word_info(item, language)
+        assert info is not None
+        assert info.lemma == "ev"
 
 
 class TestTheLoop:
