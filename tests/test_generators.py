@@ -135,6 +135,32 @@ class TestEveryExerciseInTheCurriculum:
         assert checked > 0, "no predicative exercise actually generated an item to check"
 
 
+class TestPosIsolation:
+    """A verbal suffix attached to a noun is not a distractor, it is
+    nonsense ("kucuguyor"). candidate_lexemes()'s default pool has to keep
+    excluding verbs, the same as it always excluded them before verbs
+    existed in the lexicon at all, and an exercise that actually wants verbs
+    has to ask for them explicitly."""
+
+    def test_the_default_pool_still_excludes_verbs(self, language):
+        from langram.generators._common import candidate_lexemes
+        pool = candidate_lexemes(language, {})
+        assert all(lx.pos in ("noun", "adjective") for lx in pool)
+
+    def test_pos_verb_filter_returns_only_verbs(self, language):
+        from langram.generators._common import candidate_lexemes
+        pool = candidate_lexemes(language, {"lexeme_filter": {"pos": "verb"}})
+        assert pool
+        assert all(lx.pos == "verb" for lx in pool)
+
+    def test_a_nominal_suffix_never_draws_a_verb(self, language):
+        rng = random.Random(5)
+        for _ in range(20):
+            item = generate(_spec("form_meaning_match", highlight="last_stem_vowel", suffix="PL"),
+                            language, rng)
+            assert language.lexeme(item.lemma).pos != "verb", item.lemma
+
+
 class TestSuffixBuilder:
     def test_options_are_the_real_allomorphs(self, language):
         rng = random.Random(1)
@@ -154,6 +180,40 @@ class TestSuffixBuilder:
         stem_form = language.inflect(item.lemma, list(item.suffixes)).stem_form
         assert item.accepts(item.answer, normalize)
         assert item.accepts(item.answer[len(stem_form):], normalize)
+
+    def test_prog_stem_form_reflects_the_stem_vowel_deletion_not_the_bare_lemma(self, language):
+        """Regression: _stem_after() did not recognise the new
+        stem_vowel_deletion step, so stem_form silently froze at the bare
+        lemma ("bekle") instead of the form after its own vowel was deleted
+        and replaced ("bekli"). Both are the same LENGTH (one vowel swapped
+        for another), so anything that only uses stem_form's length, like
+        realisation() slicing a surface string, masked the bug completely.
+        Anything that uses stem_form's actual characters does not: session.py
+        reconstructs a bare-suffix answer as stem_form + given, and
+        "bekle" + "yor" is not a Turkish word.
+        """
+        assert language.inflect("bekle", ["PROG"]).stem_form == "bekli"
+        assert language.inflect("iste", ["PROG"]).stem_form == "isti"
+        assert language.inflect("oku", ["PROG"]).stem_form == "oku"
+
+    def test_prog_allomorphs_by_stem_shape(self, language):
+        """A vowel-final verb's harmony vowel is analysed as part of the
+        (alternated) stem, not the suffix -- the same treatment
+        vowel_deletion nouns already get elsewhere in this engine -- so
+        "yor" is the one, genuinely invariant realisation there. A
+        consonant-final verb has nowhere for that vowel to go but the
+        suffix, so all four harmony shapes show up as expected."""
+        assert allomorphs(language, "PROG", consonant_final=False) == ["yor"]
+        consonant_final = allomorphs(language, "PROG", consonant_final=True)
+        assert {"iyor", "ıyor", "uyor", "üyor"} <= set(consonant_final)
+
+    def test_prog_suffix_builder_on_a_consonant_final_verb(self, language):
+        item = generate(_spec("suffix_builder", suffix="PROG",
+                              lexeme_filter={"pos": "verb"}, stem_mix=["consonant_final"]),
+                        language, random.Random(3))
+        assert set(item.payload["options"]) == {"iyor", "ıyor", "uyor", "üyor"}
+        stem_form = language.inflect(item.lemma, list(item.suffixes)).stem_form
+        assert stem_form + item.answer[len(stem_form):] == item.answer
 
 
 class TestMinimalPair:

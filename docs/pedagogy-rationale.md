@@ -74,6 +74,35 @@ turn by turn from the first exercise. Making a lexical_set concept genuinely
 concept-agnostic to unit order is the scheduler change the project's roadmap
 notes already call for; this entry should be revisited once that lands.
 
+## The first verbal unit is scoped to what needs no new judgement call
+
+Unit 5 teaches exactly two suffixes, -(y)Iyor and -mA, and only in the
+unmarked third person. That is a deliberately narrow slice of "verbal
+morphology" for a unit whose rationale claims to start it, and the narrowness
+is the point: both facts are uncontested in every reference description of
+Turkish (present tense, and how to negate it), neither needs a native
+speaker's judgement call the way the disharmonic-loan and syncope questions
+elsewhere in this content did, and third person needs no suffix at all,
+mirroring PRED3SG's existing precedent instead of inventing a new one.
+
+Grounding: input before output (vanpatten-input-processing, already cited
+for the same reason in unit 1) and Pienemann's processability theory
+(pienemann-processability), which is the actual reason this comes after the
+nominal units rather than before them: a learner has to be able to process
+harmony automatically before adding a second word class competing for the
+same rule is worth anything.
+
+What this unit deliberately does not attempt yet, and why: person marking on
+verbs (öğreniyorum needs suffixes that do not exist in this content yet),
+the aorist (its high/low vowel choice is lexically listed per verb in every
+source I have seen quoted for it, which means a real per-verb list, not a
+rule, and I do not have one I trust), the evidential -mIş (a real,
+well-attested distinction, but teaching it well is a bigger unit than
+"started"), and stress (this engine does not model it at all, so the
+negative-imperative/verbal-noun minimal pair some sources raise for -mA is
+mentioned in this unit's intro as a fact worth knowing, not tested, because
+testing it would require an ability the app does not have).
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

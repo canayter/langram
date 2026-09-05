@@ -154,6 +154,33 @@ PREDICATIVE = [
     ("güzel", ["PRED2SG"], "güzelsin"),
 ]
 
+# ── Verbal: negation and the present progressive ─────────────────────────────
+# -(Ø)Iyor deletes the stem's own final vowel and replaces it with the
+# harmonised I, rather than inserting a buffer (see engine.py's
+# stem_vowel_deletion step). Consonant-final stems have nothing to delete, so
+# the ordinary vowel-initial-suffix path handles final_voicing exactly as it
+# would for any other suffix (git -> gid- before -Iyor same as before -(y)I).
+VERBAL = [
+    ("gel", ["PROG"], "geliyor"),          # consonant-final, no alternation
+    ("git", ["PROG"], "gidiyor"),          # consonant-final, final_voicing
+    ("yap", ["PROG"], "yapıyor"),          # consonant-final, does not voice
+    ("oku", ["PROG"], "okuyor"),           # vowel-final, back rounded
+    ("bekle", ["PROG"], "bekliyor"),       # vowel-final, front unrounded
+    ("iç", ["PROG"], "içiyor"),
+    ("çalış", ["PROG"], "çalışıyor"),
+    ("otur", ["PROG"], "oturuyor"),
+    ("iste", ["PROG"], "istiyor"),
+    ("konuş", ["PROG"], "konuşuyor"),
+    ("gel", ["NEG"], "gelme"),
+    ("yap", ["NEG"], "yapma"),
+    ("git", ["NEG"], "gitme"),             # NEG is consonant-initial: no
+                                            # final_voicing trigger from it
+    ("gel", ["NEG", "PROG"], "gelmiyor"),  # NEG resolves first, then PROG
+                                            # reads harmony off NEG's own -e
+    ("git", ["NEG", "PROG"], "gitmiyor"),
+    ("yap", ["NEG", "PROG"], "yapmıyor"),
+]
+
 ALL = (
     [("plain", *r) for r in PLAIN]
     + [("buffer", *r) for r in BUFFERED]
@@ -163,6 +190,7 @@ ALL = (
     + [("pronominal-n", *r) for r in PRONOMINAL_N]
     + [("stacking", *r) for r in STACKED]
     + [("predicative", *r) for r in PREDICATIVE]
+    + [("verbal", *r) for r in VERBAL]
 )
 
 

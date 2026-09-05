@@ -145,3 +145,24 @@
   category: predicative
   slot: 4
   glosses: ["you are (plural)", you are]
+
+# ── Verbal, Phase 2 scope: negation and the present progressive ────────────
+# Both scoped to the 3rd person (unmarked, see PRED3SG's precedent) until
+# the verbal person endings themselves are built. See
+# docs/pedagogy-rationale.md for why these two and not more yet.
+
+- id: NEG
+  surface: "-mA"
+  category: negation
+  slot: 5
+  glosses: [not]
+
+- id: PROG
+  surface: "-(Ø)Iyor"
+  category: tense
+  slot: 6
+  glosses: ["is, is -ing"]
+  has_fixed_vowel: true
+  # The o of -yor never harmonises; only the vowel the stem's own final
+  # vowel is replaced by (via the Ø deletion) does. See engine.py's
+  # stem_vowel_deletion step.

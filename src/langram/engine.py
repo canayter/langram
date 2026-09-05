@@ -90,6 +90,30 @@ def inflect(
             ))
 
         ends_in_vowel = p.is_vowel(form[-1])
+
+        # -(Ø)Iyor is the one suffix that consumes the stem's own final
+        # vowel rather than inserting a buffer: harmony has to be read off
+        # that vowel before it disappears, or resolve() has nothing left to
+        # look at (bekle- has exactly one vowel; deleting it first leaves no
+        # trigger). Consonant-final stems have nothing to delete, so Ø is
+        # simply inert there and the ordinary vowel-initial-suffix path
+        # below (including a consonant-final stem's own final_voicing, as in
+        # git- -> gid-) handles it unchanged.
+        if optional == "Ø":
+            if ends_in_vowel:
+                resolved = p.resolve(body[0], form, back=back)
+                removed = form[-1]
+                form = form[:-1] + resolved
+                steps.append(DerivationStep(
+                    "stem_vowel_deletion",
+                    f"{suffix.id} deletes {lexeme.lemma!r}'s own final vowel before attaching",
+                    f"/{removed}/ is replaced by fourfold harmony's /{resolved}/",
+                    form,
+                    {"archiphoneme": body[0], "resolved": resolved},
+                ))
+                body = body[1:]
+            optional = None
+
         optional_is_vowel = bool(optional) and (optional in ("A", "I") or p.is_vowel(optional))
 
         if optional is None:
@@ -215,7 +239,7 @@ def _stem_after(steps: list[DerivationStep]) -> str:
     """The stem as it stood after syncope and voicing, before anything was added."""
     stem = steps[0].form
     for step in steps:
-        if step.rule in ("vowel_deletion", "final_voicing"):
+        if step.rule in ("vowel_deletion", "final_voicing", "stem_vowel_deletion"):
             stem = step.form
         elif step.rule in ("buffer", "harmony", "voicing_assimilation", "attach", "pronominal_n"):
             break

@@ -216,3 +216,19 @@
 - { id: genç,     lemma: genç,     pos: adjective, gloss: young,  final_voicing: true }
 - { id: top,      lemma: top,      pos: noun, gloss: ball,        final_voicing: false }
 - { id: ok,       lemma: ok,       pos: noun, gloss: arrow,       final_voicing: false }
+
+# ── Verbs ────────────────────────────────────────────────────────────────────
+# lemma is the bare stem the engine attaches suffixes to (gel-, git-), not the
+# dictionary citation form (gelmek, gitmek): matches how every nominal lemma
+# here already works, and keeps -mek/-mak, which teaches nothing on its own,
+# out of the engine entirely.
+- { id: gel,      lemma: gel,      pos: verb, gloss: come }
+- { id: git,      lemma: git,      pos: verb, gloss: go, final_voicing: true }
+- { id: yap,      lemma: yap,      pos: verb, gloss: do, final_voicing: false }
+- { id: oku,      lemma: oku,      pos: verb, gloss: read }
+- { id: bekle,    lemma: bekle,    pos: verb, gloss: wait }
+- { id: iç,       lemma: iç,       pos: verb, gloss: drink, final_voicing: false }
+- { id: çalış,    lemma: çalış,    pos: verb, gloss: work }
+- { id: otur,     lemma: otur,     pos: verb, gloss: sit }
+- { id: iste,     lemma: iste,     pos: verb, gloss: want }
+- { id: konuş,    lemma: konuş,    pos: verb, gloss: speak }

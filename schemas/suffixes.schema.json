@@ -21,8 +21,8 @@
       },
       "surface": {
         "type": "string",
-        "pattern": "^(|-([(][a-zçğıöşüAI][)])?[a-zçğıöşüACDI]+)$",
-        "description": "Archiphoneme notation: -(y)I, -DAn, -lAr. Empty string for a zero marker. Character classes rather than escapes, so the pattern survives a round trip through any tooling."
+        "pattern": "^(|-([(][a-zçğıöşüAIØ][)])?[a-zçğıöşüACDI]+)$",
+        "description": "Archiphoneme notation: -(y)I, -DAn, -lAr. Empty string for a zero marker. Ø in the optional slot is a different zero: it means this suffix deletes the stem's own final vowel before attaching (-(Ø)Iyor), rather than inserting a buffer. Character classes rather than escapes, so the pattern survives a round trip through any tooling."
       },
       "category": {
         "enum": [
@@ -32,7 +32,8 @@
           "predicative",
           "derivational",
           "tense",
-          "person"
+          "person",
+          "negation"
         ]
       },
       "slot": {

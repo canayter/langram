@@ -1,0 +1,136 @@
+id: unit-05-present-tense
+order: 5
+title: The present tense
+rationale: >
+  Every unit so far has been nominal: a noun or adjective carrying a suffix,
+  never a verb. This is the first verbal unit, and it starts with the two
+  most basic facts about a Turkish verb: how to say something is happening
+  right now, and how to say it is not. Both depend on vowel harmony, which is
+  why this unit needs it already in place rather than teaching it again from
+  scratch.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-01-vowel-harmony
+
+concepts:
+  - id: present-progressive
+    name: Present tense with -(y)Iyor
+    type: grammatical_feature
+    why_hard: >
+      This suffix does something no suffix in the earlier units does: on a
+      stem that already ends in a vowel, it deletes that vowel and puts its
+      own harmonised vowel in its place, rather than adding a buffer. bekle
+      loses its e; oku loses its u and gets it back, unchanged, because u is
+      already the correct shape for a back rounded stem. The o of yor itself
+      never changes no matter what the stem is.
+    intro: >
+      This suffix means something is happening right now: gel, come, plus
+      this suffix gives geliyor, is coming. On a stem that already ends in a
+      consonant, like gel, the suffix simply attaches, and its vowel
+      harmonises the same way you have already seen: gidiyor, is going, kitap
+      following you here for comparison would harmonise the same way its
+      other suffixes do.
+
+      On a stem that ends in a vowel, something different happens: bekle,
+      wait, does not become bekleiyor. The stem's own last vowel is dropped
+      and replaced by the suffix's harmonised vowel instead, giving bekliyor.
+      oku, read, works the same way, but because its last vowel u is already
+      the correct back rounded shape, dropping it and putting the same shape
+      back looks like nothing happened at all: okuyor.
+
+      One part of this suffix never changes: the yor at the end is always
+      yor, in every single word, regardless of harmony. Only the vowel
+      directly before it varies.
+
+      Everything here is the third person, is/are doing, which needs no
+      suffix at all, the same way the third person needed nothing in the
+      sentences you have already met.
+
+      The stem itself is what a dictionary calls the verb once its own
+      -mek/-mak ending is removed: gelmek is to come, and gel is what every
+      suffix in this unit and the next actually attaches to.
+    teaches_suffixes: [PROG]
+    exercises:
+      - id: notice-the-vowel-drop
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffix: PROG
+          distractor: wrong_harmony
+          lexeme_filter: { pos: verb }
+      - id: is-this-a-real-form
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 2
+        params:
+          suffix: PROG
+          lexeme_filter: { pos: verb }
+      - id: build-the-present
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add -(y)Iyor. Watch the suffix change shape as you attach it."
+        difficulty: 3
+        params:
+          suffix: PROG
+          lexeme_filter: { pos: verb }
+          stem_mix: [consonant_final]
+          show_derivation: true
+
+  - id: negation
+    name: Negating a verb with -mA
+    type: grammatical_feature
+    why_hard: >
+      English negates a verb with a separate word, not, usually needing do
+      as well: does not come. Turkish negates with one suffix glued directly
+      onto the stem, before the tense suffix, not after it: gel-mi-yor-um is
+      literally come-not-ing-I, in that order. There is no do-support to
+      insert and no separate word to place.
+    intro: >
+      This suffix means not, and it attaches directly to the stem, before
+      the tense suffix that follows it: gel, come, plus this suffix gives
+      gelme, and adding the present tense on top of that gives gelmiyor, is
+      not coming. The order matters: negation always comes before tense,
+      never after.
+
+      The suffix itself harmonises the same two-way way you already know from
+      the plural: gelme after a front stem, yapma after a back one.
+
+      Note for later: gelme written on its own is genuinely two different
+      words, do not come and the act of coming, distinguished in speech by
+      where the stress falls and not by anything visible in the spelling.
+      This app does not model stress yet, so that distinction is not
+      something it can currently test; it is mentioned here so the word
+      never looks like a typo when you meet it again.
+    teaches_suffixes: [NEG]
+    exercises:
+      - id: notice-the-negative
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffix: NEG
+          distractor: wrong_harmony
+          lexeme_filter: { pos: verb }
+      - id: is-this-negated-correctly
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 2
+        params:
+          suffix: NEG
+          lexeme_filter: { pos: verb }
+      - id: build-the-negative
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add -mA. Watch the suffix change shape as you attach it."
+        difficulty: 3
+        params:
+          suffix: NEG
+          lexeme_filter: { pos: verb }
+          show_derivation: true

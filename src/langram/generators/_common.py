@@ -76,9 +76,17 @@ def candidate_lexemes(language, params: dict) -> list[Lexeme]:
     mix = params.get("stem_mix")
     obstruents = set(language.phonology.final_voicing)
 
+    # A verbal suffix (negation, tense) attached to a noun or adjective is
+    # not a distractor, it is nonsense ("kucuguyor"): the default pool stays
+    # noun/adjective for every exercise already written against it, and an
+    # exercise that actually wants verbs says so explicitly, rather than
+    # verbs joining the default pool and leaking into nominal exercises that
+    # never asked for a pos filter at all.
+    allowed_pos = (wanted["pos"],) if "pos" in wanted else ("noun", "adjective")
+
     out = []
     for lexeme in language.lexemes.values():
-        if lexeme.pos not in ("noun", "adjective"):
+        if lexeme.pos not in allowed_pos:
             continue
         # Anything a native speaker has not confirmed stays out of a learner's way.
         if lexeme.review:
