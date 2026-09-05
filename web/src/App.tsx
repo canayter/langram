@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { NetworkNav } from './components/NetworkNav'
 import { ProgressScreen } from './components/ProgressScreen'
 import { ReferenceScreen } from './components/ReferenceScreen'
 import { SessionScreen } from './components/SessionScreen'
 import { StartScreen } from './components/StartScreen'
 import { useAuth } from './lib/store'
 
-export default function App() {
+function Screen() {
   const { token, signOut } = useAuth()
   const [showProgress, setShowProgress] = useState(false)
   const [showReference, setShowReference] = useState(false)
@@ -19,5 +20,14 @@ export default function App() {
       onShowProgress={() => setShowProgress(true)}
       onShowReference={() => setShowReference(true)}
     />
+  )
+}
+
+export default function App() {
+  return (
+    <>
+      <Screen />
+      <NetworkNav />
+    </>
   )
 }

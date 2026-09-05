@@ -1,24 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, type AnswerResult, type Item } from '../lib/api'
+import { TAG_LABELS } from '../lib/labels'
 import { useStats } from '../lib/store'
+import { primaryButton, secondaryButton } from '../lib/ui'
 import { Derivation } from './Derivation'
 import { ItemBody } from './ItemBody'
 import { Logo } from './Logo'
+import { SessionSummary, type SessionStats } from './SessionSummary'
 import { VowelChart } from './VowelChart'
 import { WhyPanel } from './WhyPanel'
 import { WordInfo } from './WordInfo'
-
-const TAG_LABELS: Record<string, string> = {
-  harmony_backness: 'backness harmony',
-  harmony_rounding: 'rounding harmony',
-  stem_alternation: 'stem alternation',
-  vowel_deletion: 'vowel deletion',
-  buffer_missing: 'buffer consonant',
-  form_not_processed: 'the ending was skipped',
-  rejected_a_good_form: 'rejected a well formed word',
-  missed_the_error: 'accepted a broken form',
-  unclassified: 'form',
-}
 
 const STAGE_LABELS: Record<string, string> = {
   structured_input: 'Notice',
@@ -27,13 +18,19 @@ const STAGE_LABELS: Record<string, string> = {
   review: 'Review',
 }
 
-const primaryButton =
-  'rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 ' +
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2'
+// How many exercises make up one block before the summary interrupts the
+// loop. Not a server-side concept: /api/session/next has no notion of a
+// bounded session, it always has another item, so where a block ends is
+// entirely a client-side pacing decision.
+const SESSION_LENGTH = 10
 
-const secondaryButton =
-  'mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 ' +
-  'hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800'
+const EMPTY_STATS: SessionStats = {
+  answered: 0,
+  correct: 0,
+  marks: 0,
+  concepts: new Map(),
+  mistakes: {},
+}
 
 function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
   children: React.ReactNode
@@ -96,6 +93,8 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
   const [attempt, setAttempt] = useState(1)
   const [chosen, setChosen] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [stats, setStats] = useState<SessionStats>(EMPTY_STATS)
+  const [showSummary, setShowSummary] = useState(false)
   const lastConcept = useRef<string | undefined>(undefined)
   const shownAt = useRef<number>(Date.now())
   // /api/session/next is not idempotent: serving a concept's intro also
@@ -154,14 +153,48 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
       })
       setResult(answered)
       useStats.getState().sync(answered.xp_total, answered.streak)
+      // Every wrong attempt is its own mistake worth tallying, whether or
+      // not the item is eventually solved through the ladder.
+      if (!answered.correct && answered.tags.length > 0) {
+        setStats((s) => {
+          const mistakes = { ...s.mistakes }
+          for (const tag of answered.tags) mistakes[tag] = (mistakes[tag] ?? 0) + 1
+          return { ...s, mistakes }
+        })
+      }
       if (answered.correct || answered.kind === 'explicit') {
         lastConcept.current = item.concept_id
+        setStats((s) => {
+          const concepts = new Map(s.concepts)
+          concepts.set(item.concept_id, item.concept_name)
+          return {
+            ...s,
+            answered: s.answered + 1,
+            correct: s.correct + (answered.correct ? 1 : 0),
+            marks: s.marks + answered.xp_awarded,
+            concepts,
+          }
+        })
       } else {
         setAttempt((n) => n + 1)
       }
     } catch (e) {
       setError((e as Error).message)
     }
+  }
+
+  function continueOrSummarize() {
+    if (stats.answered >= SESSION_LENGTH) {
+      setShowSummary(true)
+    } else {
+      void load()
+    }
+  }
+
+  function keepPracticing() {
+    setStats(EMPTY_STATS)
+    setShowSummary(false)
+    void load()
   }
 
   if (error) {
@@ -179,6 +212,14 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
     return (
       <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
         <p className="text-slate-500">Loading.</p>
+      </Shell>
+    )
+  }
+
+  if (showSummary) {
+    return (
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
+        <SessionSummary stats={stats} onContinue={keepPracticing} />
       </Shell>
     )
   }
@@ -290,7 +331,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
           {result.derivation && <Derivation steps={result.derivation} />}
 
           {settled && (
-            <button onClick={() => void load()} className={`${primaryButton} mt-6`} autoFocus>
+            <button onClick={continueOrSummarize} className={`${primaryButton} mt-6`} autoFocus>
               Continue
             </button>
           )}
