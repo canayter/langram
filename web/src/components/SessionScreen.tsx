@@ -24,6 +24,26 @@ const STAGE_LABELS: Record<string, string> = {
 // entirely a client-side pacing decision.
 const SESSION_LENGTH = 10
 
+function FocusBanner({ conceptName, onExit }: { conceptName: string; onExit: () => void }) {
+  return (
+    <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border
+                     border-indigo-200 bg-indigo-50 px-3 py-2 text-sm dark:border-indigo-900
+                     dark:bg-indigo-950/40">
+      <span className="text-indigo-900 dark:text-indigo-200">
+        Practicing <span className="font-medium">{conceptName}</span> on purpose &mdash;
+        skipping the usual order.
+      </span>
+      <button
+        onClick={onExit}
+        className="shrink-0 font-medium text-indigo-700 hover:text-indigo-900
+                   dark:text-indigo-300 dark:hover:text-indigo-100"
+      >
+        Back to normal practice
+      </button>
+    </div>
+  )
+}
+
 const EMPTY_STATS: SessionStats = {
   answered: 0,
   correct: 0,
@@ -32,11 +52,12 @@ const EMPTY_STATS: SessionStats = {
   mistakes: {},
 }
 
-function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
+function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUnits }: {
   children: React.ReactNode
   onSignOut: () => void
   onShowProgress: () => void
   onShowReference: () => void
+  onShowUnits: () => void
 }) {
   const { xp, streak } = useStats()
   return (
@@ -52,6 +73,12 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
               <span title="Day chain: consecutive days practiced">⛓️ {streak}</span>
               <span title="Marks earned for correct answers" className="text-amber-600 dark:text-amber-400">{xp} Marks</span>
             </span>
+            <button
+              onClick={onShowUnits}
+              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            >
+              Units
+            </button>
             <button
               onClick={onShowReference}
               className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
@@ -78,10 +105,14 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference }: {
   )
 }
 
-export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
+export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onShowUnits,
+                                focusConcept, onExitFocus }: {
   onSignOut: () => void
   onShowProgress: () => void
   onShowReference: () => void
+  onShowUnits: () => void
+  focusConcept: string | null
+  onExitFocus: () => void
 }) {
   const [item, setItem] = useState<Item | null>(null)
   // Which numbered question this is within the current concept's block of
@@ -115,7 +146,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
     setAttempt(1)
     setError(null)
     try {
-      const next = await api.next(lastConcept.current)
+      const next = await api.next(lastConcept.current, focusConcept ?? undefined)
       setItem(next)
       useStats.getState().sync(next.xp_total, next.streak)
       shownAt.current = Date.now()
@@ -131,7 +162,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
     } finally {
       loading.current = false
     }
-  }, [])
+  }, [focusConcept])
 
   useEffect(() => {
     void load()
@@ -199,7 +230,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
 
   if (error) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -210,7 +241,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
 
   if (!item) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
         <p className="text-slate-500">Loading.</p>
       </Shell>
     )
@@ -218,7 +249,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
 
   if (showSummary) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
         <SessionSummary stats={stats} onContinue={keepPracticing} />
       </Shell>
     )
@@ -228,7 +259,8 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
   // exercise. Not answered, so it never touches submit() or api.answer.
   if (item.payload.kind === 'intro') {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+        {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
         <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {item.unit_title}
         </p>
@@ -247,7 +279,8 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference }: {
   }
 
   return (
-    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference}>
+    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+      {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
       <div className="flex items-baseline justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">

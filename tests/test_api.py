@@ -304,6 +304,53 @@ class TestTheLoop:
         assert following["concept_id"] != seen
 
 
+class TestExplicitNavigation:
+    """?concept=... lets a learner jump straight to a concept by id, on
+    purpose bypassing everything next_item() otherwise decides for them:
+    due reviews, unit prerequisites, mastery, interleaving. Free-roam by
+    design -- a concept several units ahead of anything the learner has
+    touched is reachable, not just concepts already unlocked."""
+
+    def test_jumps_straight_to_a_concept_never_unlocked(self, learner):
+        item = learner.get("/api/session/next?concept=verb-person-marking").json()
+        assert item["concept_id"] == "verb-person-marking"
+        assert item["unit_id"] == "unit-05-present-tense"
+
+    def test_shows_the_concept_intro_first_like_any_other_path(self, learner):
+        item = learner.get("/api/session/next?concept=verb-person-marking").json()
+        assert item["payload"]["kind"] == "intro"
+
+    def test_stays_on_the_requested_concept_across_calls(self, learner):
+        learner.get("/api/session/next?concept=verb-person-marking")  # dismiss the intro
+        for _ in range(6):
+            item = learner.get("/api/session/next?concept=verb-person-marking").json()
+            assert item["concept_id"] == "verb-person-marking"
+
+    def test_an_unknown_concept_id_is_rejected_not_silently_ignored(self, learner):
+        r = learner.get("/api/session/next?concept=not-a-real-concept")
+        assert r.status_code == 503
+
+
+class TestRevisitingMasteredMaterial:
+    """Regression for a real bug found by simulating a learner well past full
+    mastery: next_item()'s "everything is mastered, revisit rather than
+    stop" fallback used to pick by (unit, stage) tier exactly the way new
+    material does, which collapses onto whichever two concepts share the
+    very first tier -- each one's streak resets the moment the other gets a
+    turn, so BLOCK_SIZE's cap never trips between just two, and every later
+    concept is never served again."""
+
+    def test_rotates_through_more_than_the_first_two_concepts(self, learner, factory):
+        seen_concepts = set()
+        for _ in range(220):
+            item = _first_item(learner)
+            seen_concepts.add(item["concept_id"])
+            result = _answer(learner, item, _right(factory, item))
+            assert result["correct"], result
+        # The curriculum has 11 concepts; the bug capped this at exactly 2.
+        assert len(seen_concepts) >= 8, seen_concepts
+
+
 class TestConceptIntros:
     """Explicit information about a concept is a required stage before
     structured input, not an optional preamble (VanPatten, Processing

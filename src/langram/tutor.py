@@ -7,6 +7,11 @@ served before production wherever both exist.
 
 Interleaving is deliberate: consecutive items avoid the concept just seen.
 Blocked practice looks better inside a session and is worse a week later.
+
+A learner can also override all of this and ask for one concept by name
+(focus_concept): none of the above competes for a turn then, on the
+reasoning that picking a concept on purpose already answers "what deserves
+this turn" more directly than anything the scheduler could infer.
 """
 from __future__ import annotations
 
@@ -106,7 +111,12 @@ def parse_ref(ref: str) -> tuple[str, str, list[str]]:
 
 
 def card_ref(item) -> str:
-    return _ref(item.exercise_id, item.spec["lemma"], item.spec["suffixes"])
+    # item.suffixes rather than item.spec["suffixes"]: every generator sets
+    # the former (defaulting to the empty tuple), but vocab_recognition's
+    # spec has no "suffixes" key at all, since it tests the lexicon rather
+    # than a suffix. Found by the same simulation as the revisit-fallback
+    # fix above, once that fix let the scheduler reach it at all.
+    return _ref(item.exercise_id, item.spec["lemma"], item.suffixes)
 
 
 def _implemented(generator: str) -> bool:
@@ -143,10 +153,56 @@ def _due_review(session: Session, user_id: int, now: dt.datetime) -> ReviewCard 
     ).first()
 
 
+def _focused_item(session: Session, user_id: int, language, rng: random.Random,
+                  concept_id: str, now: dt.datetime) -> Served:
+    """Explicit navigation: the learner picked this concept on purpose, so
+    none of next_item()'s usual competition for a turn applies here -- not
+    due reviews, not unit prerequisites, not mastery, not interleaving with
+    any other concept. The only real decision left is which of the
+    concept's own exercises to serve, and a full shuffle across all of them
+    (rather than the comprehension-then-production tiering the main
+    function uses) is what the revisiting-mastered-material branch above
+    already had to switch to for the same underlying reason: tiering
+    assumes something else is available to hand off to once a stage's cap
+    trips, which is never true when only one concept is being served on
+    purpose.
+    """
+    concept = session.get(Concept, concept_id)
+    if concept is None:
+        raise LookupError(f"no such concept: {concept_id!r}")
+    unit = session.get(Unit, concept.unit_id)
+
+    if _needs_intro(session, user_id, concept):
+        _mark_intro_seen(session, user_id, concept.id, now)
+        return Served(IntroItem(concept), "intro", unit.id, unit.title, concept.name)
+
+    exercises = [
+        e for e in session.scalars(
+            select(Exercise).where(Exercise.concept_id == concept_id)
+        ).all()
+        if _implemented(e.generator)
+    ]
+    if not exercises:
+        raise LookupError(f"{concept_id!r} has no exercise with a working generator")
+
+    rng.shuffle(exercises)
+    for exercise in exercises:
+        try:
+            item = generate(ExerciseSpec.of(exercise, concept), language, rng)
+        except (GenerationError, NotImplementedError):
+            continue
+        return Served(item, "new", unit.id, unit.title, concept.name)
+    raise LookupError(f"{concept_id!r} has no exercise that can currently produce an item")
+
+
 def next_item(session: Session, user_id: int, language, rng: random.Random | None = None,
-              avoid_concept: str | None = None, now: dt.datetime | None = None) -> Served:
+              avoid_concept: str | None = None, now: dt.datetime | None = None,
+              focus_concept: str | None = None) -> Served:
     rng = rng or random.Random()
     now = now or dt.datetime.now(dt.timezone.utc)
+
+    if focus_concept is not None:
+        return _focused_item(session, user_id, language, rng, focus_concept, now)
 
     due = _due_review(session, user_id, now)
     if due is not None:
@@ -218,13 +274,34 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
                 continue
             return Served(item, "new", unit.id, unit.title, concept.name)
 
-    if not candidates:
+    revisiting = not candidates
+    if revisiting:
         # Everything available is mastered, so revisit rather than stop.
         candidates = [(e, c, u) for e, c, u in rows if _implemented(e.generator)]
     if not candidates:
         raise LookupError("no exercise has an implemented generator yet")
 
     fresh = [c for c in candidates if c[1].id != avoid_concept] or candidates
+
+    if revisiting:
+        # Nothing is "earliest unfinished" once everything is mastered, so
+        # picking by (unit, stage) tier the way new material does below
+        # collapses onto whichever two concepts happen to share the very
+        # first tier: each one's streak resets the moment the other gets a
+        # turn, so BLOCK_SIZE's cap -- tuned to force variety while there is
+        # still unmastered material queued behind it -- never trips, and
+        # every later concept is never reached again. Confirmed by
+        # simulating a learner past full mastery: turn 15 onward served only
+        # unit 1's first two concepts, forever. Shuffled instead, every
+        # mastered concept gets an equal turn.
+        rng.shuffle(fresh)
+        for exercise, concept, unit in fresh:
+            try:
+                item = generate(ExerciseSpec.of(exercise, concept), language, rng)
+            except (GenerationError, NotImplementedError):
+                continue
+            return Served(item, "new", unit.id, unit.title, concept.name)
+        raise LookupError("no exercise can produce an item for this learner yet")
 
     # Work outwards from the earliest unit and the earliest stage. An exercise
     # that cannot build an item right now is skipped rather than fatal: one

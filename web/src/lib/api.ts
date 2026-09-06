@@ -141,8 +141,13 @@ export const api = {
   register: (email: string, password: string) =>
     call<{ access_token: string; user_id: number; is_guest: boolean }>(
       '/api/auth/register', { method: 'POST', body: JSON.stringify({ email, password }) }),
-  next: (after?: string) =>
-    call<Item>(`/api/session/next${after ? `?after=${encodeURIComponent(after)}` : ''}`),
+  next: (after?: string, concept?: string) => {
+    const params = new URLSearchParams()
+    if (after) params.set('after', after)
+    if (concept) params.set('concept', concept)
+    const query = params.toString()
+    return call<Item>(`/api/session/next${query ? `?${query}` : ''}`)
+  },
   answer: (body: { item_token: string; answer: string; attempt: number; latency_ms?: number }) =>
     call<AnswerResult>('/api/session/answer', { method: 'POST', body: JSON.stringify(body) }),
   units: () => call<Unit[]>('/api/units'),

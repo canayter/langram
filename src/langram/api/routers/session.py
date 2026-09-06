@@ -36,10 +36,15 @@ LAST_RUNG = 4
 @router.get("/next", response_model=ItemOut)
 def next_item(session: SessionDep, language: LanguageDep, user: UserDep,
               after: str | None = Query(default=None,
-                                        description="concept just answered, so it is not repeated")
+                                        description="concept just answered, so it is not repeated"),
+              concept: str | None = Query(default=None,
+                                          description="explicit navigation: serve only this "
+                                                       "concept, ignoring due reviews, unit "
+                                                       "prerequisites and mastery")
               ) -> ItemOut:
     try:
-        served = tutor.next_item(session, user.id, language, random.Random(), avoid_concept=after)
+        served = tutor.next_item(session, user.id, language, random.Random(),
+                                 avoid_concept=after, focus_concept=concept)
     except LookupError as exc:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, str(exc)) from None
     session.commit()
