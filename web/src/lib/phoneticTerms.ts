@@ -33,6 +33,7 @@ const CONSONANTS: PhoneticTerm[] = [
   { symbol: 'n', term: 'voiced alveolar nasal' },
   { symbol: 'p', term: 'voiceless bilabial plosive' },
   { symbol: 'ɾ', term: 'voiced alveolar tap', note: 'a single flick of the tongue, like Spanish pero' },
+  { symbol: 'ɾ̞̊', term: 'voiceless fricated alveolar tap', note: 'word-final r, or r before a voiceless consonant -- often heard by English speakers as a faint "sh", as in hayır' },
   { symbol: 's', term: 'voiceless alveolar fricative' },
   { symbol: 'ʃ', term: 'voiceless postalveolar fricative', note: 'as in she' },
   { symbol: 't', term: 'voiceless alveolar plosive' },

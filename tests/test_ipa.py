@@ -20,7 +20,7 @@ class TestKnownForms:
         ("ev", "/ev/"),
         ("araba", "/aɾaba/"),
         ("çocuk", "/tʃodʒuk/"),
-        ("şeker", "/ʃekeɾ/"),
+        ("şeker", "/ʃekeɾ̞̊/"),
         ("yol", "/joɫ/"),
         ("cam", "/dʒam/"),
     ])
@@ -52,6 +52,38 @@ class TestKnownForms:
     def test_dark_l_after_a_back_word(self, phonology):
         result = transcribe(phonology, "kol")
         assert "ɫ" in result and result.count("l") == 0
+
+
+class TestRDevoicing:
+    """r is a plain tap [ɾ] intervocalically (like Spanish pero), but
+    devoices and gains audible frication word-finally and before a
+    voiceless consonant, giving [ɾ̞̊] -- confirmed against the Turkish
+    phonology summary on Wikipedia, which specifically notes this can be
+    "mistaken for [ʃ] or [ʂ] by non-Turkish speakers". hayır -- flagged by a
+    native speaker as sounding "almost fricative" at the end -- is exactly
+    this: word-final r after a vowel."""
+
+    def test_word_final_r_devoices(self, phonology):
+        assert transcribe(phonology, "hayır") == "/hajɯɾ̞̊/"
+        assert transcribe(phonology, "var") == "/vaɾ̞̊/"
+
+    def test_r_before_a_voiceless_consonant_devoices(self, phonology):
+        assert transcribe(phonology, "arka") == "/aɾ̞̊ka/"
+        assert transcribe(phonology, "gerçek") == "/geɾ̞̊tʃek/"
+
+    def test_r_before_a_voiced_consonant_stays_a_plain_tap(self, phonology):
+        assert transcribe(phonology, "kardeş") == "/kaɾdeʃ/"
+        assert transcribe(phonology, "armut") == "/aɾmut/"
+
+    def test_intervocalic_r_stays_a_plain_tap(self, phonology):
+        assert transcribe(phonology, "araba") == "/aɾaba/"
+        assert transcribe(phonology, "para") == "/paɾa/"
+
+    def test_word_initial_r_is_a_plain_tap(self, phonology):
+        """Word-initial r does not occur in native Turkish words at all, but
+        it does in loanwords (renk, from Persian), and nothing about the
+        devoicing rule is about word-initial position."""
+        assert transcribe(phonology, "renk") == "/ɾenk/"
 
 
 class TestProperties:

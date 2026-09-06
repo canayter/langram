@@ -34,10 +34,25 @@ _VOWEL_IPA = {
     "o": "o", "ö": "ø", "u": "u", "ü": "y",
 }
 
-# Consonants whose IPA symbol is not just the letter itself.
+# Consonants whose IPA symbol is not just the letter itself. r is handled
+# separately below: it is not one symbol, it is two, conditioned on position.
 _CONSONANT_IPA = {
-    "c": "dʒ", "ç": "tʃ", "j": "ʒ", "r": "ɾ", "ş": "ʃ", "y": "j",
+    "c": "dʒ", "ç": "tʃ", "j": "ʒ", "ş": "ʃ", "y": "j",
 }
+
+# /ɾ/ (the tap in araba, bir-inci-, like Spanish pero) devoices and gains
+# audible frication word-finally and before a voiceless consonant, giving
+# [ɾ̞̊], not a plain [ɾ]: hayır is closer to /hajɯɾ̞̊/ than /hajɯɾ/, often
+# heard by English speakers as a faint "sh". Confirmed against the Turkish
+# phonology summary on Wikipedia, which cites this for exactly this reason
+# ("can be mistaken for [ʃ] or [ʂ] by non-Turkish speakers"); the standard
+# academic source for Turkish phonetic description generally is Zimmer and
+# Orgun's 1992 "Turkish" in the Journal of the International Phonetic
+# Association, though its specific page on this point was not directly
+# checked. Not verified against a native speaker, same as everything else
+# in this file.
+_R_TAP = "ɾ"
+_R_DEVOICED = "ɾ̞̊"
 
 CAVEAT = (
     "Generated from spelling using a standard letter-to-sound mapping, not "
@@ -67,10 +82,20 @@ def transcribe(phonology: Phonology, word: str) -> str:
             out.append(_VOWEL_IPA.get(ch, ch))
         elif ch == "l":
             out.append("ɫ" if _local_backness(phonology, word, i) else "l")
+        elif ch == "r":
+            out.append(_R_DEVOICED if _devoices_r(phonology, word, i) else _R_TAP)
         else:
             out.append(_CONSONANT_IPA.get(ch, ch))
         i += 1
     return "/" + "".join(out) + "/"
+
+
+def _devoices_r(phonology: Phonology, word: str, index: int) -> bool:
+    """Word-final, or immediately before a voiceless consonant: the two
+    positions r devoices and fricates in. is_voiceless() only returns True
+    for consonants in the voiceless set, so a following vowel already falls
+    through to the plain tap without a separate check."""
+    return index == len(word) - 1 or phonology.is_voiceless(word[index + 1])
 
 
 def _local_backness(phonology: Phonology, word: str, index: int) -> bool:
