@@ -367,6 +367,30 @@ class TestRevisitingMasteredMaterial:
         assert len(seen_concepts) >= 8, seen_concepts
 
 
+class TestStageProgression:
+    """Regression for a real bug reported by a user and confirmed by
+    simulation: unit 1's two concepts both start with structured_input, and
+    interleaving-avoidance (never repeat the concept just answered) means
+    they trade turns without either ever being answered twice in a row.
+    BLOCK_SIZE's cap is the only other thing that can hand a turn to a
+    later stage, and a streak that never reaches 2 never reaches 5 either,
+    so a fresh learner was stuck seeing "Notice" for both concepts turns 4
+    through 13 straight, in the exact simulation that first caught this."""
+
+    def test_a_fresh_learner_reaches_production_within_a_reasonable_number_of_turns(
+        self, learner, factory
+    ):
+        stages_seen = set()
+        for _ in range(60):
+            item = _first_item(learner)
+            stages_seen.add(item["stage"])
+            result = _answer(learner, item, _right(factory, item))
+            assert result["correct"], result
+        assert stages_seen - {"structured_input"}, (
+            "60 turns in and nothing but structured_input was ever served"
+        )
+
+
 class TestConceptIntros:
     """Explicit information about a concept is a required stage before
     structured input, not an optional preamble (VanPatten, Processing

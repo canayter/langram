@@ -47,6 +47,14 @@ MIN_OPPORTUNITIES = 6
 # argues against; the concept comes back around on a later visit.
 BLOCK_SIZE = 5
 
+# Opportunities before a concept's guided/free-output exercises are promoted
+# to compete equally with anything else's structured_input, rather than
+# waiting behind it in a strict comprehension-first tier. Low enough that a
+# learner sees production within their first handful of encounters with a
+# concept, high enough that it is not the very first thing they are asked to
+# do with it (see stage_rank() in next_item()).
+STAGE_PROMOTION_THRESHOLD = 3
+
 
 @dataclass(frozen=True)
 class ExerciseSpec:
@@ -221,11 +229,12 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         # The exercise it referred to is gone, so the card is stale.
         session.delete(due)
 
-    mastery = {
-        row.concept_id: is_mastered(row)
-        for row in session.scalars(
-            select(UserConceptMastery).where(UserConceptMastery.user_id == user_id)
-        )
+    mastery_rows = session.scalars(
+        select(UserConceptMastery).where(UserConceptMastery.user_id == user_id)
+    ).all()
+    mastery = {row.concept_id: is_mastered(row) for row in mastery_rows}
+    opportunities = {
+        row.concept_id: int((row.state or {}).get("opportunities", 0)) for row in mastery_rows
     }
 
     rows = session.execute(
@@ -312,11 +321,28 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
     # and is only reached when every open concept is already capped, which
     # means capping further would stop the session outright rather than
     # interleave; continuing to serve the capped concept beats stopping.
-    ordered = sorted(fresh, key=lambda row: (row[2].order, STAGE_ORDER.get(row[0].stage, 9)))
+    def stage_rank(exercise: Exercise, concept: Concept) -> int:
+        # Once a concept has had a few opportunities, its own later stages
+        # are promoted to compete on equal footing with anything else's
+        # structured_input, rather than staying tier-locked behind it.
+        # Comprehension-before-production is a rule about one concept's own
+        # sequence, not about ordering across different concepts, so this
+        # does not weaken it. Without this, two concepts sharing a tier and
+        # avoiding repeating each other (interleaving already does that)
+        # ping-pong forever: neither's streak ever reaches BLOCK_SIZE, since
+        # neither is ever answered twice in a row, so the cap below -- the
+        # only other thing that can hand a turn to a later stage -- never
+        # trips either. Confirmed by simulating a new learner: unit 1's two
+        # concepts alternated for 10 turns straight, "Notice" the whole time.
+        if opportunities.get(concept.id, 0) >= STAGE_PROMOTION_THRESHOLD:
+            return 0
+        return STAGE_ORDER.get(exercise.stage, 9)
+
+    ordered = sorted(fresh, key=lambda row: (row[2].order, stage_rank(row[0], row[1])))
     for respect_cap in (True, False):
-        for tier_key in dict.fromkeys((u.order, STAGE_ORDER.get(e.stage, 9)) for e, c, u in ordered):
+        for tier_key in dict.fromkeys((u.order, stage_rank(e, c)) for e, c, u in ordered):
             tier = [row for row in ordered
-                    if (row[2].order, STAGE_ORDER.get(row[0].stage, 9)) == tier_key]
+                    if (row[2].order, stage_rank(row[0], row[1])) == tier_key]
 
             # Un-introduced concepts in this tier are checked in authoring
             # order first, before the interleaving shuffle below ever runs.
