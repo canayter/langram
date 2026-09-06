@@ -9,7 +9,7 @@ import { UnitsScreen } from './components/UnitsScreen'
 import { useAuth } from './lib/store'
 
 function Screen() {
-  const { token, signOut } = useAuth()
+  const { token } = useAuth()
   const [showProgress, setShowProgress] = useState(false)
   const [showReference, setShowReference] = useState(false)
   const [showUnits, setShowUnits] = useState(false)
@@ -33,7 +33,6 @@ function Screen() {
   }
   return (
     <SessionScreen
-      onSignOut={signOut}
       onShowProgress={() => setShowProgress(true)}
       onShowReference={() => setShowReference(true)}
       onShowUnits={() => setShowUnits(true)}

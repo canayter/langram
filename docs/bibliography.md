@@ -42,5 +42,5 @@ forbidden by the working agreement.
 
 - `turkish-corpus-frequency`  **NEEDS CITATION**
   Corpus frequency lists (Turkish National Corpus or TS Corpus) used to band the lexicon. No band is assigned in the lexicon until this is real.
-- `turkish-reference-grammar`  **NEEDS CITATION**
-  The description of Turkish vowel harmony, voicing assimilation, buffer consonants and stem alternations encoded in content/l2/tr/morphology/.
+- `turkish-reference-grammar` Göksel and Kerslake, 2005  **NEEDS CITATION**
+  The description of Turkish vowel harmony, voicing assimilation, buffer consonants and stem alternations encoded in content/l2/tr/morphology/. Also the source of the Turkicist IPA conventions ipa.py's own comments already name it for (ı as /ɯ/ rather than /ɨ/, and so on). Status stays needs_citation until someone actually checks the claims here page by page against the book, not because the book itself is in doubt.

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api, type BibliographyEntry, type Unit } from '../lib/api'
+import { CITATION_PENDING_LABEL, CITATION_PENDING_TITLE, citationLabel } from '../lib/citations'
 
 // Transparency about method is part of the product, so the reason for an
 // exercise is one click away rather than buried in a marketing page. The
@@ -50,17 +51,20 @@ export function WhyPanel({ unitId, conceptId }: { unitId: string; conceptId: str
             <ul className="space-y-2 border-t border-slate-200 pt-3 dark:border-slate-800">
               {refs.map((ref) => (
                 <li key={ref.key}>
-                  <span className="font-display font-medium text-slate-800 dark:text-slate-200">
-                    {ref.authors ?? ref.key}
-                  </span>
-                  {ref.year && (
-                    <span className="ml-1 font-mono text-xs text-slate-400">{ref.year}</span>
-                  )}
-                  {ref.status === 'needs_citation' && (
-                    <span className="ml-1.5 text-xs text-amber-600 dark:text-amber-400">
-                      unverified
+                  <p>
+                    <span className="font-display font-medium text-slate-800 dark:text-slate-200">
+                      {citationLabel(ref)}
                     </span>
-                  )}
+                    {ref.year && <span className="font-mono text-xs text-slate-400"> &middot; {ref.year}</span>}
+                    {ref.status === 'needs_citation' && (
+                      <span
+                        title={CITATION_PENDING_TITLE}
+                        className="ml-1 text-xs text-slate-400 dark:text-slate-500"
+                      >
+                        &middot; {CITATION_PENDING_LABEL}
+                      </span>
+                    )}
+                  </p>
                   <span className="block text-slate-500 dark:text-slate-400">{ref.claim}</span>
                 </li>
               ))}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api, type BibliographyEntry } from '../lib/api'
+import { CITATION_PENDING_LABEL, CITATION_PENDING_TITLE, citationLabel } from '../lib/citations'
 
 // The credibility claim of an app that says it is research grounded costs
 // nothing to expose and everything to hide: every citation a unit is allowed
@@ -42,8 +43,9 @@ export function SourcesScreen({ onBack }: { onBack: () => void }) {
         <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-600 dark:text-slate-300">
           Every pedagogical decision here is meant to trace back to a real claim in the
           literature, not a guess dressed up as one. This is the full list a unit is allowed to
-          cite &mdash; nothing on it is invented, and a source not yet checked against the actual
-          text says so, rather than pretending otherwise.
+          cite. A "reference pending" tag means the idea and the claim are established, but the
+          exact published reference has not been checked page by page yet &mdash; it is not a
+          question about whether the research itself is legitimate.
         </p>
 
         {error && <p className="mt-6 text-rose-600 dark:text-rose-400">{error}</p>}
@@ -67,16 +69,19 @@ export function SourcesScreen({ onBack }: { onBack: () => void }) {
                   >
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                       <span className="font-display font-medium text-slate-900 dark:text-slate-50">
-                        {entry.authors ?? entry.key}
+                        {citationLabel(entry)}
                       </span>
                       {entry.year && (
                         <span className="font-mono text-xs text-slate-400">{entry.year}</span>
                       )}
                       {entry.status === 'needs_citation' && (
-                        <span className="rounded-full border border-amber-300 px-2 py-0.5
-                                         text-[0.65rem] font-medium uppercase tracking-wide
-                                         text-amber-700 dark:border-amber-800 dark:text-amber-400">
-                          unverified
+                        <span
+                          title={CITATION_PENDING_TITLE}
+                          className="rounded-full border border-slate-300 px-2 py-0.5
+                                     text-[0.65rem] font-medium text-slate-500
+                                     dark:border-slate-600 dark:text-slate-400"
+                        >
+                          {CITATION_PENDING_LABEL}
                         </span>
                       )}
                     </div>

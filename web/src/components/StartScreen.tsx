@@ -1,15 +1,10 @@
-import { useState } from 'react'
 import { useAuth } from '../lib/store'
 import { Logo } from './Logo'
 
-// Guest first. Asking for an email before someone has seen a single exercise
-// loses them, and the account can be claimed later without losing history.
+// Guest only, on purpose: no account step to explain or get stuck on.
+// Progress is tied to this browser; nothing here asks for an email.
 export function StartScreen() {
-  const { startAsGuest, signIn, busy, error } = useAuth()
-  const [showForm, setShowForm] = useState(false)
-  const [register, setRegister] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { startAsGuest, busy, error } = useAuth()
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-6 dark:bg-slate-950">
@@ -31,9 +26,6 @@ export function StartScreen() {
             <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
               Every new pattern starts with exercises where you only have to
               recognise it. Producing it yourself comes after.
-              <span className="ml-1.5 font-mono text-xs text-rose-600 dark:text-rose-400">
-                VanPatten
-              </span>
             </dd>
           </div>
           <div>
@@ -52,81 +44,23 @@ export function StartScreen() {
             <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
               Answers you get right come back at increasing intervals; ones you
               miss come back sooner. Check your progress any time.
-              <span className="ml-1.5 font-mono text-xs text-rose-600 dark:text-rose-400">
-                Cepeda et al.
-              </span>
             </dd>
           </div>
         </dl>
         <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
-          Full sources, not just names, are one tap away once you&apos;re in &mdash; see Sources.
+          The research behind each of these is in Sources, once you&apos;re in.
         </p>
 
-        {!showForm ? (
-          <div className="mt-8 space-y-3">
-            <button
-              onClick={() => void startAsGuest()}
-              disabled={busy}
-              className="w-full rounded-lg font-display bg-rose-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-500 disabled:opacity-60"
-            >
-              {busy ? 'Starting' : 'Start learning'}
-            </button>
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-full text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              I already have an account
-            </button>
-          </div>
-        ) : (
-          <form
-            className="mt-8 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault()
-              void signIn(email, password, register)
-            }}
-          >
-            <label className="block text-sm text-slate-600 dark:text-slate-300">
-              Email
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
-              />
-            </label>
-            <label className="block text-sm text-slate-600 dark:text-slate-300">
-              Password
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete={register ? 'new-password' : 'current-password'}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full rounded-lg font-display bg-rose-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-500 disabled:opacity-60"
-            >
-              {register ? 'Create account' : 'Sign in'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setRegister(!register)}
-              className="w-full text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              {register ? 'I already have an account' : 'Create an account instead'}
-            </button>
-          </form>
-        )}
+        <button
+          onClick={() => void startAsGuest()}
+          disabled={busy}
+          className="mt-8 w-full rounded-lg bg-rose-600 px-4 py-2.5 font-display text-sm
+                     font-medium text-white hover:bg-rose-500 disabled:opacity-60"
+        >
+          {busy ? 'Starting' : 'Start learning'}
+        </button>
 
-        {error && <p className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="mt-4 text-sm text-rose-600 dark:text-rose-400">{error}</p>}
       </div>
     </div>
   )

@@ -52,10 +52,8 @@ const EMPTY_STATS: SessionStats = {
   mistakes: {},
 }
 
-function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUnits,
-                onShowSources }: {
+function Shell({ children, onShowProgress, onShowReference, onShowUnits, onShowSources }: {
   children: React.ReactNode
-  onSignOut: () => void
   onShowProgress: () => void
   onShowReference: () => void
   onShowUnits: () => void
@@ -99,12 +97,6 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUni
             >
               Sources
             </button>
-            <button
-              onClick={onSignOut}
-              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              Sign out
-            </button>
           </div>
         </div>
         {children}
@@ -113,9 +105,8 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUni
   )
 }
 
-export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onShowUnits,
+export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
                                 onShowSources, focusConcept, onExitFocus }: {
-  onSignOut: () => void
   onShowProgress: () => void
   onShowReference: () => void
   onShowUnits: () => void
@@ -239,7 +230,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
 
   if (error) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -250,7 +241,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
 
   if (!item) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         <p className="text-slate-500">Loading.</p>
       </Shell>
     )
@@ -258,7 +249,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
 
   if (showSummary) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         <SessionSummary stats={stats} onContinue={keepPracticing} />
       </Shell>
     )
@@ -268,7 +259,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
   // exercise. Not answered, so it never touches submit() or api.answer.
   if (item.payload.kind === 'intro') {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
         <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {item.unit_title}
@@ -288,7 +279,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
   }
 
   return (
-    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+    <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
       {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
       <div className="flex items-baseline justify-between gap-4">
         <div>
