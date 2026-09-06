@@ -110,6 +110,20 @@ REGISTRY: dict[str, Generator] = {
             "recognised. Thin wrapper around postposition.py.",
             implemented=True,
         ),
+        Generator(
+            "question",
+            "structured_input",
+            "Yes/no questions with mI: the person ending moves onto the "
+            "particle. Built on phrase.py's QuestionParticle.",
+            implemented=True,
+        ),
+        Generator(
+            "question_production",
+            "free_output",
+            "Yes/no questions, produced from an English prompt rather than "
+            "recognised. Thin wrapper around question.py.",
+            implemented=True,
+        ),
     ]
 }
 
@@ -178,8 +192,8 @@ def _modules() -> dict:
     from . import (
         cloze_suffix_choice, cued_recall, existence, existence_production,
         form_meaning_match, grammaticality_judgement, minimal_pair_identification,
-        postposition, postposition_production, suffix_builder, type_the_form,
-        vocab_recognition,
+        postposition, postposition_production, question, question_production,
+        suffix_builder, type_the_form, vocab_recognition,
     )
     return {
         "suffix_builder": suffix_builder,
@@ -194,6 +208,8 @@ def _modules() -> dict:
         "existence_production": existence_production,
         "postposition": postposition,
         "postposition_production": postposition_production,
+        "question": question,
+        "question_production": question_production,
     }
 
 

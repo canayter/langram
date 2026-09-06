@@ -268,6 +268,44 @@ against; and kadar entirely, since it governs a different case depending on
 which of its two meanings (comparison vs "until") is intended, a genuine
 complication worth its own unit rather than a guessed-at corner of this one.
 
+## The question particle needed a third phrase.py part, not a bigger Literal
+
+mI looks at first like existence's var/yok or postpositions' için/gibi: a
+fixed word placed after a predicate. It is not fixed, and modelling it as a
+Literal would have taught the wrong rule. Two things set it apart. First,
+mI itself harmonizes fourfold against whatever precedes it (var mı,
+öğrenci mi, geliyor mu), the same live computation Phonology.resolve()
+already does for every suffix, not a string chosen ahead of time the way
+Literal's var/yok/için/gibi are. Second, and the real complication: for
+every predicate type except existence, the person ending moves off the
+predicate entirely and attaches to mI instead -- geliyor musun, never
+geliyorsun mu -- which means mI itself has to be able to take a further
+suffix chain, the way an ordinary stem does, not just sit there inertly
+the way a Literal always has.
+
+Solved without adding a second inflection code path: once mI's own vowel
+is resolved, a synthetic Lexeme is built on the fly with that resolved
+form as its lemma and harmony_class left unset, and handed to the exact
+same engine.inflect() every Word already goes through. harmony_class
+unset is what makes this correct rather than coincidental -- it means
+backness and rounding for whatever suffix follows are read off mI's own
+resolved vowel, not the original predicate's class, which is precisely
+the harmony_back reset already in engine.py for the identical reason
+(-(y)Iyor's own o governing harmony for a person suffix chained after it).
+The new phrase.py part, QuestionParticle, is this: an optional suffix
+chain plus a resolve-then-inflect step, verified directly against the
+engine for all four predicate types (nominal, present progressive,
+ability, existence) before a single test was written, exactly the same
+discipline as everything else in this file.
+
+Scoped to affirmative yes/no questions on predicate types already taught.
+Past tense mI (a real, different rule: the person ending stays put and mI
+follows the verb bare, geldin mi rather than geldi misin) is out of scope
+because the past tense itself is not built yet; negative questions
+(gelmiyor musun, aren't you coming) are ordinary NEG-then-question and
+should work already through the same mechanism, but were not separately
+curated into this unit's content.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

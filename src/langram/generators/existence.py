@@ -57,6 +57,7 @@ def build(exercise, language, rng: random.Random, mode: str = "meaning") -> Gene
     particle = rng.choice(params.get("particles") or PARTICLES)
     return assemble(exercise, language, {
         "mode": mode, "lemma": lexeme.lemma, "suffixes": [suffix_id], "particle": particle,
+        "question": bool(params.get("question")),
     })
 
 
@@ -65,7 +66,14 @@ def assemble(exercise, language, spec: dict, generator: str = GENERATOR,
     mode = spec.get("mode", "meaning")
     lemma, suffix_ids, particle = spec["lemma"], list(spec["suffixes"]), spec["particle"]
     lexeme = language.lexeme(lemma)
-    result = phrase.render(language, [phrase.Word(lemma, suffix_ids), phrase.Literal(particle)])
+    # var/yok never carry a person suffix (it already lives on the
+    # possessed noun), so a question here is just mI added bare, unlike
+    # question.py's nominal/progressive/ability bases where the person
+    # ending moves onto the particle.
+    parts = [phrase.Word(lemma, suffix_ids), phrase.Literal(particle)]
+    if spec.get("question"):
+        parts.append(phrase.QuestionParticle())
+    result = phrase.render(language, parts)
     cue = _cue(suffix_ids[0], particle, lexeme.gloss)
 
     if mode == "type":

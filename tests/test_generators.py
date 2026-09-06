@@ -546,6 +546,24 @@ class TestExistence:
             assert again.answer == item.answer
             assert again.payload == item.payload
 
+    def test_question_mode_adds_a_bare_mi_with_no_person_suffix(self, language):
+        """var/yok never carry a person suffix in the first place (it is
+        already on the possessed noun), so a question here is just mI
+        added bare -- unlike question.py's other three bases, nothing
+        moves, because nothing was there to move."""
+        params = {**self._params(), "question": True}
+        rng = random.Random(6)
+        for _ in range(15):
+            item = generate(_spec("existence", **params), language, rng)
+            words = item.payload["form"].split()
+            assert len(words) == 3, item.payload["form"]
+            assert words[1] in ("var", "yok")
+            assert words[2] in ("mı", "mi", "mu", "mü")
+
+        prod = generate(_spec("existence_production", **params), language, rng)
+        assert prod.accepts(prod.answer, normalize)
+        assert prod.answer.split()[-1] in ("mı", "mi", "mu", "mü")
+
 
 class TestPostposition:
     """için (for) and gibi (like): a bare noun plus an invariant word,
@@ -599,5 +617,57 @@ class TestPostposition:
         for generator in ("postposition", "postposition_production"):
             item = generate(_spec(generator, **self._params()), language, rng)
             again = assemble(_spec(generator, **self._params()), language, item.spec)
+            assert again.answer == item.answer
+            assert again.payload == item.payload
+
+
+class TestQuestion:
+    """mI questions across every predicate type that moves its person
+    ending onto the particle: nominal, present progressive, ability.
+    Existence's var mı / yok mu is TestExistence's concern instead, since
+    it is existence.py's own question mode, not this generator."""
+
+    def _params(self, base, pos="noun"):
+        filt = {"pos": pos}
+        if pos == "noun":
+            filt["predicative_only"] = True
+        return {"base": base, "lexeme_filter": filt}
+
+    @pytest.mark.parametrize("base,pos", [
+        ("nominal", "noun"), ("progressive", "verb"), ("ability", "verb"),
+    ])
+    def test_recognition_and_production_agree_on_the_answer(self, language, base, pos):
+        rng = random.Random(1)
+        for _ in range(10):
+            item = generate(_spec("question", **self._params(base, pos)), language, rng)
+            assert item.payload["kind"] == "choose_meaning"
+            assert item.answer in item.payload["options"]
+
+            prod = generate(_spec("question_production", **self._params(base, pos)), language, rng)
+            assert prod.payload["kind"] == "type"
+            assert prod.accepts(prod.answer, normalize)
+
+    def test_the_person_ending_is_never_on_the_predicate_itself(self, language):
+        """geliyor musun, never geliyorsun mu -- the base word's own surface
+        (everything before the first space) must not itself already carry
+        a person ending; word_form(base_suffixes only) has to be a strict
+        prefix of the full phrase, with the particle+person as the last
+        word, not fused onto the first."""
+        rng = random.Random(2)
+        for base, pos in [("nominal", "noun"), ("progressive", "verb"), ("ability", "verb")]:
+            for _ in range(8):
+                item = generate(_spec("question_production", **self._params(base, pos)), language, rng)
+                words = item.answer.split()
+                assert len(words) == 2, item.answer
+                assert words[1].startswith(("mı", "mi", "mu", "mü")), item.answer
+
+    def test_assemble_reproduces_the_item(self, language):
+        rng = random.Random(3)
+        for generator, (base, pos) in (
+            ("question", ("nominal", "noun")),
+            ("question_production", ("progressive", "verb")),
+        ):
+            item = generate(_spec(generator, **self._params(base, pos)), language, rng)
+            again = assemble(_spec(generator, **self._params(base, pos)), language, item.spec)
             assert again.answer == item.answer
             assert again.payload == item.payload

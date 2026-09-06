@@ -1,0 +1,165 @@
+id: unit-09-questions
+order: 9
+title: Asking yes or no questions
+rationale: >
+  A single particle, mI, turns a statement into a yes or no question, and it
+  harmonizes fourfold against whatever precedes it exactly the way a suffix
+  would, even though it is written as its own word. Its one real
+  complication is where the person ending ends up: with a nominal predicate,
+  the present progressive, or ability, it moves off the predicate entirely
+  and attaches to mI instead (geliyor musun, never geliyorsun mu), which
+  this unit tests directly since it is the one detail a learner would not
+  guess from mI being "just a word placed after".
+
+  This unit revisits every predicate type taught so far specifically to ask
+  about it, which is the point: mI is not new content stacked onto old
+  content, it is one rule that applies uniformly across all of it.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-02-predication
+  - unit-05-present-tense
+
+concepts:
+  - id: question-nominal
+    name: Asking with a nominal predicate
+    type: grammatical_feature
+    why_hard: >
+      A learner who has learned öğrenciyim, I am a student, as one word
+      naturally expects the question to be that word plus mi tacked on the
+      end: öğrenciyim mi. It is not. The person ending itself moves onto mi,
+      leaving the noun bare: öğrenci miyim. The two look similar and are not
+      interchangeable.
+    intro: >
+      To turn a statement into a yes or no question, add mI right after the
+      predicate. It harmonizes fourfold with whatever comes before it, the
+      same four-way choice you already know: öğrenci, student, gives
+      öğrenci mi, doktor, doctor, gives doktor mu.
+
+      The person ending you would expect on the noun itself moves onto mI
+      instead: not öğrenciyim mi, but öğrenci miyim, am I a student. sin
+      moves the same way: öğrenci misin, are you a student.
+    teaches_suffixes: []
+    exercises:
+      - id: recognize-the-nominal-question
+        stage: structured_input
+        generator: question
+        prompt: "What does this ask?"
+        difficulty: 2
+        params:
+          base: nominal
+          lexeme_filter: { pos: noun, predicative_only: true }
+      - id: ask-with-a-noun
+        stage: free_output
+        generator: question_production
+        prompt: "Ask this in Turkish."
+        difficulty: 4
+        params:
+          base: nominal
+          lexeme_filter: { pos: noun, predicative_only: true }
+
+  - id: question-progressive
+    name: Asking about the present tense
+    type: grammatical_feature
+    why_hard: >
+      This is the textbook example of mI moving the person ending for a
+      reason: geliyorsun mu is simply not said. The tense suffix stays on
+      the verb exactly as it is, bare, and the person ending that would
+      normally follow it appears on mI instead.
+    intro: >
+      The same movement happens with a verb in the present tense. Gel,
+      come, plus the present tense gives geliyor, is coming, exactly as
+      before; asking about it adds mu, harmonizing with the o in yor, and
+      moves the person ending onto it: geliyor musun, are you coming, never
+      geliyorsun mu.
+
+      The third person needs nothing beyond mI itself: geliyor mu, is
+      he, she or it coming.
+    teaches_suffixes: []
+    exercises:
+      - id: recognize-the-progressive-question
+        stage: structured_input
+        generator: question
+        prompt: "What does this ask?"
+        difficulty: 3
+        params:
+          base: progressive
+          lexeme_filter: { pos: verb }
+      - id: ask-what-is-happening
+        stage: free_output
+        generator: question_production
+        prompt: "Ask this in Turkish."
+        difficulty: 4
+        params:
+          base: progressive
+          lexeme_filter: { pos: verb }
+
+  - id: question-ability
+    name: Asking what someone can do
+    type: grammatical_feature
+    why_hard: >
+      The same movement happens a third time, onto a suffix chain that
+      already has two pieces of its own (ABIL and the fixed tense after
+      it). The person ending still moves all the way past both of them
+      onto mI, not partway.
+    intro: >
+      Ability questions work the same way again: gelebilir, can come, plus
+      mI gives gelebilir mi, harmonizing with the i already in it, and the
+      person ending moves onto that mi rather than staying on the verb:
+      gelebilir misin, can you come.
+
+      This is one of the most common questions in the language, since
+      asking whether something is possible is usually asking a question in
+      the first place.
+    teaches_suffixes: []
+    exercises:
+      - id: recognize-the-ability-question
+        stage: structured_input
+        generator: question
+        prompt: "What does this ask?"
+        difficulty: 3
+        params:
+          base: ability
+          lexeme_filter: { pos: verb }
+      - id: ask-what-someone-can-do
+        stage: free_output
+        generator: question_production
+        prompt: "Ask this in Turkish."
+        difficulty: 4
+        params:
+          base: ability
+          lexeme_filter: { pos: verb }
+
+  - id: question-existence
+    name: Asking what someone has
+    type: grammatical_feature
+    why_hard: >
+      var and yok break the pattern the other three concepts just
+      established, which is worth meeting directly rather than assuming it
+      always holds: neither one ever carried a person ending to begin with
+      (it is already on the possessed noun), so there is nothing for mI to
+      take from them. mI simply follows, bare: var mı, yok mu.
+    intro: >
+      Asking whether someone has something adds mI directly after var or
+      yok, and nothing moves, because nothing was there to move: araban
+      var, you have a car, becomes araban var mı, do you have a car; paran
+      yok, you have no money, becomes paran yok mu, don't you have money.
+    teaches_suffixes: []
+    exercises:
+      - id: recognize-the-existence-question
+        stage: structured_input
+        generator: existence
+        prompt: "What does this ask?"
+        difficulty: 3
+        params:
+          question: true
+          lexeme_filter: { pos: noun, possession_only: true }
+      - id: ask-what-someone-has
+        stage: free_output
+        generator: existence_production
+        prompt: "Ask this in Turkish."
+        difficulty: 4
+        params:
+          question: true
+          lexeme_filter: { pos: noun, possession_only: true }

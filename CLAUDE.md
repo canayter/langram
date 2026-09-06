@@ -143,7 +143,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, eight units**:
+**Curriculum, nine units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -183,6 +183,15 @@ before.
    the genitive pronoun complement (benim için) and kadar entirely (it
    governs a different case depending on which of its two meanings is
    meant). See `docs/pedagogy-rationale.md`.
+9. Yes/no questions with mI (öğrenci misin?, geliyor musun?, gelebilir
+   misin?, var mı?). The particle harmonizes fourfold against whatever
+   precedes it and, for every predicate type except existence, the person
+   ending moves off the predicate entirely and onto mI (geliyor musun,
+   never geliyorsun mu). Needed a third phrase.py part, QuestionParticle,
+   since neither Word nor Literal could represent "harmonizes live, and
+   can itself take a further suffix chain": a synthetic Lexeme built from
+   mI's own resolved vowel, handed to the exact same engine.inflect()
+   every Word already uses. See `docs/pedagogy-rationale.md`.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -309,15 +318,12 @@ the type checker and the existing test suite.
   için, no pronouns in the lexicon yet) and kadar entirely (it governs a
   different case depending on which of its two meanings, comparison or
   "until", is meant) -- see `docs/pedagogy-rationale.md`.
-- **The question particle mI** (geliyor musun?, are you coming?).
-  Requested alongside var/yok. Harder than the other two even with
-  phrase.py in place: mI is a separate orthographic word that is
-  nonetheless phonologically dependent on whatever precedes it (mı/mi/mu/mü,
-  fourfold harmony same as any suffix), which phrase.py's Literal cannot
-  represent yet (a Literal never inflects, full stop) -- needs a third
-  Part variant, something like a HarmonizingLiteral resolved against the
-  previous part's own surface via Phonology.resolve() directly, the same
-  primitive the engine itself is built on.
+- **Past-tense questions** (geldin mi?, did you come?). Unit 9's mI
+  covers every predicate type this app currently has, but the past tense
+  itself is not one of them yet, and past-tense mI is a genuinely
+  different rule once it exists: the person ending stays on the verb and
+  mI follows bare, the opposite of every case unit 9 teaches. Revisit once
+  the past tense is built, not before.
 - **The aorist, evidential, passive, causative, reflexive/reciprocal,
   imperative/optative, word order/focus, common derivational suffixes**
   -- all real, all still entirely absent. The aorist specifically needs a
