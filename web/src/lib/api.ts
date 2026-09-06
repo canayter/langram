@@ -160,4 +160,5 @@ export const api = {
   progress: () => call<Progress>('/api/progress'),
   vowels: () => call<Vowel[]>('/api/language/vowels'),
   bibliography: () => call<BibliographyEntry[]>('/api/bibliography'),
+  resetProgress: () => call<void>('/api/progress', { method: 'DELETE' }),
 }

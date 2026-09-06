@@ -506,6 +506,56 @@ class TestGamification:
         assert nxt["streak"] == 1
 
 
+class TestResetProgress:
+    """No account recovery exists (guest only), so this is the only "start
+    over" a learner has -- everything it touches has to actually go, not
+    just the numbers a screen happens to show."""
+
+    def test_wipes_responses_review_cards_and_mastery(self, learner, factory):
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+        with factory() as s:
+            assert s.scalar(select(Response).where(Response.user_id == learner.user_id))
+            assert s.scalar(select(ReviewCard).where(ReviewCard.user_id == learner.user_id))
+            assert s.scalar(
+                select(UserConceptMastery).where(UserConceptMastery.user_id == learner.user_id)
+            )
+
+        assert learner.delete("/api/progress").status_code == 204
+
+        with factory() as s:
+            assert not s.scalar(select(Response).where(Response.user_id == learner.user_id))
+            assert not s.scalar(select(ReviewCard).where(ReviewCard.user_id == learner.user_id))
+            assert not s.scalar(
+                select(UserConceptMastery).where(UserConceptMastery.user_id == learner.user_id)
+            )
+
+    def test_resets_marks_and_chain_to_zero(self, learner, factory):
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+
+        assert learner.delete("/api/progress").status_code == 204
+
+        with factory() as s:
+            user = s.get(User, learner.user_id)
+            assert user.xp == 0
+            assert user.current_streak == 0
+            assert user.longest_streak == 0
+            assert user.last_practiced_on is None
+
+    def test_practice_starts_over_cleanly_afterward(self, learner, factory):
+        """A concept's intro is gated on UserConceptMastery.intro_seen_at;
+        wiping that table has to bring intros back too, or a returning
+        learner would see exercises for a concept they were never
+        (re-)introduced to."""
+        item = _first_item(learner)
+        _answer(learner, item, _right(factory, item))
+        assert learner.delete("/api/progress").status_code == 204
+
+        first_after_reset = _first_item(learner)
+        assert first_after_reset["unit_id"] == "unit-01-vowel-harmony"
+
+
 class TestVowelChart:
     def test_the_vowel_inventory_matches_the_phonology_table(self, client):
         rows = client.get("/api/language/vowels").json()

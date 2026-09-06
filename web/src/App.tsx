@@ -6,7 +6,18 @@ import { SessionScreen } from './components/SessionScreen'
 import { SourcesScreen } from './components/SourcesScreen'
 import { StartScreen } from './components/StartScreen'
 import { UnitsScreen } from './components/UnitsScreen'
+import { api } from './lib/api'
 import { useAuth } from './lib/store'
+
+// A full reload rather than resetting each piece of client state by hand:
+// mastery, review cards and responses are all gone server-side after this,
+// and a reload is the one guaranteed way every component (the stats store,
+// SessionScreen's own block/summary state, whatever screen is open) starts
+// clean from it, rather than trusting each one to notice on its own.
+async function resetProgress() {
+  await api.resetProgress()
+  window.location.reload()
+}
 
 function Screen() {
   const { token } = useAuth()
@@ -33,10 +44,12 @@ function Screen() {
   }
   return (
     <SessionScreen
+      onHome={() => setFocusConcept(null)}
       onShowProgress={() => setShowProgress(true)}
       onShowReference={() => setShowReference(true)}
       onShowUnits={() => setShowUnits(true)}
       onShowSources={() => setShowSources(true)}
+      onResetProgress={resetProgress}
       focusConcept={focusConcept}
       onExitFocus={() => setFocusConcept(null)}
     />

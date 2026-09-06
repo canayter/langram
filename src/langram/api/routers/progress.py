@@ -10,11 +10,11 @@ the number of chances to make it.
 """
 from __future__ import annotations
 
-from fastapi import APIRouter
-from sqlalchemy import select
+from fastapi import APIRouter, status
+from sqlalchemy import delete, select
 
 from ...bkt import MAX_GUESS
-from ...db.models import Concept, Response, Unit, UserConceptMastery
+from ...db.models import Concept, ReviewCard, Response, Unit, UserConceptMastery
 from ...skills import LABELS, describe
 from ...tutor import MASTERY_THRESHOLD, MIN_OPPORTUNITIES, is_mastered
 from ..deps import SessionDep, UserDep
@@ -118,6 +118,25 @@ def progress(session: SessionDep, user: UserDep) -> ProgressOut:
               f"and multiple choice items are discounted, since they can be guessed "
               f"up to {int(MAX_GUESS * 100)} percent of the time."),
     )
+
+
+@router.delete("/progress", status_code=status.HTTP_204_NO_CONTENT)
+def reset_progress(session: SessionDep, user: UserDep) -> None:
+    """Start over: every response, review card and mastery estimate for this
+    user is gone, and the day chain and marks reset to zero. There is no
+    account recovery in this app (guest only, see StartScreen), so this is
+    the only "start fresh" a learner has -- irreversible on purpose, which is
+    exactly why the client is expected to confirm before calling it, not
+    this endpoint.
+    """
+    session.execute(delete(Response).where(Response.user_id == user.id))
+    session.execute(delete(ReviewCard).where(ReviewCard.user_id == user.id))
+    session.execute(delete(UserConceptMastery).where(UserConceptMastery.user_id == user.id))
+    user.xp = 0
+    user.current_streak = 0
+    user.longest_streak = 0
+    user.last_practiced_on = None
+    session.commit()
 
 
 def _headline(answered: int, weakest) -> str:

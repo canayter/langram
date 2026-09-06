@@ -6,6 +6,7 @@ import { primaryButton, secondaryButton } from '../lib/ui'
 import { Derivation } from './Derivation'
 import { ItemBody } from './ItemBody'
 import { Logo } from './Logo'
+import { Menu } from './Menu'
 import { SessionSummary, type SessionStats } from './SessionSummary'
 import { VowelChart } from './VowelChart'
 import { WhyPanel } from './WhyPanel'
@@ -52,51 +53,44 @@ const EMPTY_STATS: SessionStats = {
   mistakes: {},
 }
 
-function Shell({ children, onShowProgress, onShowReference, onShowUnits, onShowSources }: {
+function Shell({ children, onHome, onShowProgress, onShowReference, onShowUnits, onShowSources,
+                onResetProgress }: {
   children: React.ReactNode
+  onHome: () => void
   onShowProgress: () => void
   onShowReference: () => void
   onShowUnits: () => void
   onShowSources: () => void
+  onResetProgress: () => Promise<void>
 }) {
   const { xp, streak } = useStats()
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 font-mono text-sm tracking-tight text-slate-400">
+          <button
+            onClick={onHome}
+            aria-label="Back to practice"
+            className="flex items-center gap-1.5 rounded-lg font-mono text-sm tracking-tight
+                       text-slate-400 hover:text-slate-700 focus:outline-none
+                       focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2
+                       dark:hover:text-slate-200"
+          >
             <Logo size={18} />
             langram
-          </span>
+          </button>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
               <span title="Day chain: consecutive days practiced">⛓️ {streak}</span>
               <span title="Marks earned for correct answers" className="text-amber-600 dark:text-amber-400">{xp} Marks</span>
             </span>
-            <button
-              onClick={onShowUnits}
-              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              Units
-            </button>
-            <button
-              onClick={onShowReference}
-              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              Reference
-            </button>
-            <button
-              onClick={onShowProgress}
-              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              Progress
-            </button>
-            <button
-              onClick={onShowSources}
-              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            >
-              Sources
-            </button>
+            <Menu
+              onShowUnits={onShowUnits}
+              onShowProgress={onShowProgress}
+              onShowReference={onShowReference}
+              onShowSources={onShowSources}
+              onResetProgress={onResetProgress}
+            />
           </div>
         </div>
         {children}
@@ -105,12 +99,14 @@ function Shell({ children, onShowProgress, onShowReference, onShowUnits, onShowS
   )
 }
 
-export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
-                                onShowSources, focusConcept, onExitFocus }: {
+export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowUnits,
+                                onShowSources, onResetProgress, focusConcept, onExitFocus }: {
+  onHome: () => void
   onShowProgress: () => void
   onShowReference: () => void
   onShowUnits: () => void
   onShowSources: () => void
+  onResetProgress: () => Promise<void>
   focusConcept: string | null
   onExitFocus: () => void
 }) {
@@ -230,7 +226,7 @@ export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
 
   if (error) {
     return (
-      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -241,7 +237,7 @@ export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
 
   if (!item) {
     return (
-      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
         <p className="text-slate-500">Loading.</p>
       </Shell>
     )
@@ -249,7 +245,7 @@ export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
 
   if (showSummary) {
     return (
-      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
         <SessionSummary stats={stats} onContinue={keepPracticing} />
       </Shell>
     )
@@ -259,7 +255,7 @@ export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
   // exercise. Not answered, so it never touches submit() or api.answer.
   if (item.payload.kind === 'intro') {
     return (
-      <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
         {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
         <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {item.unit_title}
@@ -279,7 +275,7 @@ export function SessionScreen({ onShowProgress, onShowReference, onShowUnits,
   }
 
   return (
-    <Shell onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
+    <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
       {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
       <div className="flex items-baseline justify-between gap-4">
         <div>
