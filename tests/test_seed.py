@@ -152,7 +152,7 @@ class TestContentStateSplit:
         session.commit()
 
         assert session.get(Unit, "unit-01-vowel-harmony").title == "Vowel harmony, revised"
-        assert _count(session, Unit) == 7
+        assert _count(session, Unit) == 8
 
 
 class TestSchemaPortability:

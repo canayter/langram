@@ -235,6 +235,39 @@ not adamım var -- plus concrete objects, food and drink, and a handful of
 natural abstracts like vaktim var and fikrim var), read via
 lexeme_filter: {possession_only: true}.
 
+## ile is taught as the suffix it already was
+
+INS (-(y)lA) has existed in suffixes.yaml since early in this project,
+fully correct, fully tested at the engine level, and never once exposed to
+a learner: no unit referenced it. It needed no new engine work, because it
+already is an ordinary case-category suffix -- twofold harmony, the same y
+buffer any vowel-final stem takes elsewhere -- not a new mechanism the way
+existence's var/yok was. The free-standing word ile is mentioned in the
+intro for recognition, but the suffix is what gets exercises, since that is
+what a learner will actually produce and hear far more often, and teaching
+both forms with equal weight would be teaching the exception before the
+rule.
+
+için and gibi, by contrast, are genuinely two separate words attaching to a
+bare noun, so they reuse the phrase.py primitive existence.py already
+proved out, not INS's single-suffix machinery. Neither needed the
+naturalness curation existence required: "for a car" and "like a car" are
+natural for essentially any noun, unlike "I have a car" or "you are a car"
+-- but generating a batch still caught a real, smaller version of the same
+class of problem, an adjective (iyi, good) drawing into a pool meant for
+nouns and producing "iyi için" (for good), which does not mean anything on
+its own the way "for a car" does. Fixed by restricting both concepts'
+lexeme_filter to pos: noun explicitly, the same fix applied to unit 5's
+verbal suffixes for the identical reason (a suffix or postposition's
+correct domain has to be declared, not assumed from whatever
+candidate_lexemes()'s default pool happens to include).
+
+Deliberately out of scope: the genitive for pronoun complements (benim
+için, not ben için), since this lexicon has no pronouns yet to test it
+against; and kadar entirely, since it governs a different case depending on
+which of its two meanings (comparison vs "until") is intended, a genuine
+complication worth its own unit rather than a guessed-at corner of this one.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

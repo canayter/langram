@@ -1,0 +1,122 @@
+id: unit-08-postpositions
+order: 8
+title: With, for, and like
+rationale: >
+  Turkish postpositions follow the noun instead of preceding it, and one of
+  the most common, ile (with), doubles as an ordinary case-like suffix in
+  everyday speech: arkadaşımla, with my friend, rather than arkadaşım ile.
+  için (for) and gibi (like) stay separate words with an ordinary noun, no
+  suffix on the noun at all.
+
+  This unit deliberately covers only the plain case, an ordinary noun as the
+  complement. Turkish requires the genitive on a pronoun complement instead
+  (benim için, for me, not ben için), which this content does not yet model
+  since the lexicon has no pronouns to test it against, and kadar (until, as
+  much as) is left out entirely: it governs a different case depending on
+  which of its two meanings is meant, a genuine complication worth its own
+  unit rather than a rushed corner of this one.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-03-possession
+
+concepts:
+  - id: ile-suffix
+    name: With, attached as a suffix
+    type: grammatical_feature
+    why_hard: >
+      ile is a separate word by origin and can still be written that way,
+      but in speech it almost always contracts onto the noun before it, and
+      once it does, it behaves exactly like the case suffixes already
+      learned: twofold harmony, and the same buffer y a vowel-final stem
+      already takes everywhere else. A learner who has only seen ile as a
+      free word will not expect a suffix to be doing the same job.
+    intro: >
+      With is ile, and after a vowel-final word it is often glued directly
+      onto it rather than kept separate: araba, car, plus ile gives
+      arabayla, with the car, the same buffer y you already know from other
+      vowel-initial suffixes. After a consonant, the same fusion happens
+      without a buffer: kalem, pen, plus ile gives kalemle, with a pen.
+
+      The vowel harmonizes the same two-way way you already know from the
+      plural: front stems take -le, back stems take -la. This suffix can
+      follow a possessive: arkadaşım, my friend, plus this suffix gives
+      arkadaşımla, with my friend.
+
+      You will also see this written as a separate word, ile, especially in
+      more careful or formal writing. Both are the same word; the suffix is
+      simply what it usually becomes in speech.
+    teaches_suffixes: [INS]
+    exercises:
+      - id: notice-the-with-suffix
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffix: INS
+          distractor: wrong_harmony
+          lexeme_filter: { pos: noun }
+      - id: is-this-with-correct
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 2
+        params:
+          suffix: INS
+          lexeme_filter: { pos: noun }
+      - id: build-the-with-suffix
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add -(y)lA. Watch the suffix change shape as you attach it."
+        difficulty: 3
+        params:
+          suffix: INS
+          lexeme_filter: { pos: noun }
+          show_derivation: true
+      - id: with-production
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          suffix: INS
+          lexeme_filter: { pos: noun }
+
+  - id: for-and-like
+    name: For and like, as separate words
+    type: grammatical_feature
+    why_hard: >
+      Unlike ile, için and gibi never attach to the noun at all, and the
+      noun itself carries no suffix, which is easy to doubt after a whole
+      curriculum of nouns that almost always carry one. The two words are
+      also a genuine minimal contrast worth telling apart directly: the
+      same noun means something different depending on which one follows
+      it, and only the postposition itself carries that difference.
+    intro: >
+      For is için and like is gibi, and both simply follow the bare noun,
+      with nothing added to it at all: araba, car, plus için gives araba
+      için, for the car; araba plus gibi gives araba gibi, like a car.
+      Nothing here harmonizes and nothing buffers, because nothing attaches;
+      these stay two separate words, always.
+
+      Note for later: both words actually take the genitive instead of the
+      bare noun when the thing before them is a pronoun rather than an
+      ordinary noun (benim için, for me), which is not covered yet here.
+    teaches_suffixes: []
+    exercises:
+      - id: for-or-like
+        stage: structured_input
+        generator: postposition
+        prompt: "What does this mean?"
+        difficulty: 2
+        params:
+          lexeme_filter: { pos: noun }
+      - id: say-for-or-like
+        stage: free_output
+        generator: postposition_production
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          lexeme_filter: { pos: noun }

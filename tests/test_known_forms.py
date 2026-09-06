@@ -55,6 +55,9 @@ BUFFERED = [
     ("kapı", ["POSS3SG"], "kapısı"),
     ("ütü", ["ACC"], "ütüyü"),
     ("ütü", ["DAT"], "ütüye"),
+    ("araba", ["INS"], "arabayla"),         # ile, contracted: buffer y, back
+    ("kalem", ["INS"], "kalemle"),          # consonant-final: no buffer, front
+    ("arkadaş", ["POSS1SG", "INS"], "arkadaşımla"),
 ]
 
 # ── Final obstruent voicing ──────────────────────────────────────────────────

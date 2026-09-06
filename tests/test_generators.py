@@ -545,3 +545,59 @@ class TestExistence:
             again = assemble(_spec(generator, **self._params()), language, item.spec)
             assert again.answer == item.answer
             assert again.payload == item.payload
+
+
+class TestPostposition:
+    """için (for) and gibi (like): a bare noun plus an invariant word,
+    the second generator built on phrase.py after existence.py."""
+
+    def _params(self):
+        return {"lexeme_filter": {"pos": "noun"}}
+
+    def test_recognition_shows_the_two_word_phrase(self, language):
+        rng = random.Random(1)
+        for _ in range(15):
+            item = generate(_spec("postposition", **self._params()), language, rng)
+            assert item.payload["kind"] == "choose_meaning"
+            form = item.payload["form"]
+            assert form.split()[-1] in ("için", "gibi")
+            # The noun itself is untouched: postpositions take the bare
+            # noun, nothing added to it at all.
+            assert form.split()[0] == item.lemma
+            assert item.answer in item.payload["options"]
+
+    def test_options_are_a_genuine_için_vs_gibi_contrast(self, language):
+        """Both options are built from the same noun's own gloss, so the
+        choice can only turn on which postposition was used, never on
+        which noun the learner happened to recognise."""
+        rng = random.Random(2)
+        for _ in range(15):
+            item = generate(_spec("postposition", **self._params()), language, rng)
+            assert len(item.payload["options"]) == 2
+            assert any(o.startswith("for ") for o in item.payload["options"])
+            assert any(o.startswith("like ") for o in item.payload["options"])
+
+    def test_production_answer_is_the_turkish_phrase(self, language):
+        rng = random.Random(3)
+        for _ in range(15):
+            item = generate(_spec("postposition_production", **self._params()), language, rng)
+            assert item.payload["kind"] == "type"
+            assert item.answer.split()[-1] in ("için", "gibi")
+            assert item.accepts(item.answer, normalize)
+
+    def test_the_noun_never_carries_a_suffix(self, language):
+        """Unlike existence's var/yok, için/gibi need nothing added to the
+        noun at all: the bare lemma is the whole first word."""
+        rng = random.Random(4)
+        for _ in range(15):
+            item = generate(_spec("postposition", **self._params()), language, rng)
+            assert item.payload["form"].split()[0] == item.lemma
+            assert item.suffixes == ()
+
+    def test_assemble_reproduces_the_item(self, language):
+        rng = random.Random(5)
+        for generator in ("postposition", "postposition_production"):
+            item = generate(_spec(generator, **self._params()), language, rng)
+            again = assemble(_spec(generator, **self._params()), language, item.spec)
+            assert again.answer == item.answer
+            assert again.payload == item.payload

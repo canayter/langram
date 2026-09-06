@@ -96,6 +96,20 @@ REGISTRY: dict[str, Generator] = {
             "recognised. Thin wrapper around existence.py, mirroring cued_recall.",
             implemented=True,
         ),
+        Generator(
+            "postposition",
+            "structured_input",
+            "Postpositions taking a bare noun (için, gibi): built on phrase.py, "
+            "same shape as existence.",
+            implemented=True,
+        ),
+        Generator(
+            "postposition_production",
+            "free_output",
+            "Postpositions, produced from an English prompt rather than "
+            "recognised. Thin wrapper around postposition.py.",
+            implemented=True,
+        ),
     ]
 }
 
@@ -164,7 +178,8 @@ def _modules() -> dict:
     from . import (
         cloze_suffix_choice, cued_recall, existence, existence_production,
         form_meaning_match, grammaticality_judgement, minimal_pair_identification,
-        suffix_builder, type_the_form, vocab_recognition,
+        postposition, postposition_production, suffix_builder, type_the_form,
+        vocab_recognition,
     )
     return {
         "suffix_builder": suffix_builder,
@@ -177,6 +192,8 @@ def _modules() -> dict:
         "vocab_recognition": vocab_recognition,
         "existence": existence,
         "existence_production": existence_production,
+        "postposition": postposition,
+        "postposition_production": postposition_production,
     }
 
 

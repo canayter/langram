@@ -143,7 +143,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, seven units**:
+**Curriculum, eight units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -176,6 +176,13 @@ before.
    curation distinct from unit 2's predicate_natural (a noun natural as
    "you are a ___" is not automatically natural as "you have a ___", and
    vice versa) -- see `docs/pedagogy-rationale.md` for both.
+8. With, for, and like: ile (unit-level suffix INS, which already existed
+   in suffixes.yaml, fully correct, and had simply never been exposed to a
+   learner before now) and için/gibi (bare-noun postpositions, the second
+   thing built on phrase.py after unit 7's var/yok). Deliberately excludes
+   the genitive pronoun complement (benim için) and kadar entirely (it
+   governs a different case depending on which of its two meanings is
+   meant). See `docs/pedagogy-rationale.md`.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -294,13 +301,14 @@ the type checker and the existing test suite.
   unit covers plain possession only (arabam var); a locative extension
   (evde kedi var, there's a cat at home) is a natural, low-risk follow-up
   using the same mechanism, not attempted yet simply for scope.
-- **Postpositions** (ile, için, gibi, kadar -- with, for, like,
-  until/as much as). Requested alongside var/yok, and phrase.py (built for
-  var/yok) is the right foundation: each is Word(noun) + Literal(postpn),
-  the same shape var/yok already uses. ile specifically also has a
-  bound-suffix contraction (-(y)lA) alongside its free-standing form,
-  which is a real alternation worth teaching, not just vocabulary, and
-  needs its own verification pass before it ships.
+- **Postpositions: ile, için, gibi** (unit 8, built). ile turned out to
+  need no new work at all: INS (-(y)lA) already existed in suffixes.yaml,
+  fully correct, just never exposed to a learner. için/gibi are the second
+  thing built on phrase.py, reusing existence's Word + Literal shape
+  exactly. Deliberately excludes the genitive pronoun complement (benim
+  için, no pronouns in the lexicon yet) and kadar entirely (it governs a
+  different case depending on which of its two meanings, comparison or
+  "until", is meant) -- see `docs/pedagogy-rationale.md`.
 - **The question particle mI** (geliyor musun?, are you coming?).
   Requested alongside var/yok. Harder than the other two even with
   phrase.py in place: mI is a separate orthographic word that is
