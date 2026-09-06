@@ -166,3 +166,38 @@
   # The o of -yor never harmonises; only the vowel the stem's own final
   # vowel is replaced by (via the Ø deletion) does. See engine.py's
   # stem_vowel_deletion step.
+
+- id: ABIL
+  surface: "-(y)Abil"
+  category: tense
+  slot: 6
+  glosses: [can]
+  has_fixed_vowel: true
+  # bil is the frozen auxiliary root (from bilmek, to know) that gives this
+  # construction its name; its own vowel never harmonises, only the A
+  # before it does, so has_fixed_vowel is the genuine case that flag
+  # exists for, not an escape from writing an archiphoneme. Confirmed
+  # against multiple independent descriptions: oku -> okuyabilir,
+  # gel -> gelebilir, yap -> yapabilir.
+
+- id: ABILTENSE
+  surface: "-Ir"
+  category: tense
+  slot: 7
+  glosses: []
+  # Only ever meant to follow ABIL, never used standalone. The general
+  # aorist needs a per-verb high/low-vowel wordlist this project does not
+  # have and has deliberately not built for exactly that reason (see
+  # docs/pedagogy-rationale.md, unit 5). This is not that suffix: -bil is a
+  # fixed syllable ending in front unrounded i, so whatever follows it
+  # resolves against that i by ordinary fourfold harmony every time,
+  # regardless of the original verb's own class -- gelebilir and
+  # yapabilir both end in -ir, never -ar. Kept as its own suffix rather
+  # than folded into one combined "-(y)AbilIr" because engine.py's
+  # harmony_back override is fixed once per suffix application, not per
+  # character within one suffix's own body: a single suffix spanning both
+  # A and I would have forced I to inherit A's override too, giving the
+  # wrong okuyabilır instead of okuyabilir. Splitting means this second
+  # suffix starts with stem_exposed already false, which is exactly the
+  # case harmony_back resetting to None was fixed for earlier this
+  # project (see engine.py, and saat+PL+LOC in test_known_forms.py).

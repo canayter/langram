@@ -1,0 +1,98 @@
+id: unit-06-ability
+order: 6
+title: Saying what you can do
+rationale: >
+  Ability, permission and possibility all share one construction in Turkish,
+  where English keeps them apart as can, may and might: -(y)Abilir carries
+  the whole spread, and context decides which reading is meant. That
+  ambiguity is a fact about Turkish, not a gap in this unit, so nothing here
+  pretends to disambiguate what the language itself does not.
+
+  This is also the first unit whose verb-tense suffix reaches all the way to
+  a full sentence a learner can actually use on their own initiative
+  (okuyabilirim, I can read), rather than only describing what is happening
+  right now. It depends on person marking from unit 5, which it reuses
+  rather than re-teaches.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-05-present-tense
+
+concepts:
+  - id: ability
+    name: Saying what you can do with -(y)Abilir
+    type: grammatical_feature
+    why_hard: >
+      Two things happen at once here that a learner used to nominal suffixes
+      has not seen combined: the suffix has an internal shape that never
+      changes (bil, the frozen root of bilmek, to know), and the vowel that
+      comes after it is fixed by that shape rather than by the original
+      verb, so gelebilir and yapabilir both end in -ir despite gel and yap
+      belonging to different harmony classes. A learner who has only met
+      suffixes that harmonize with the verb itself has no reason to expect
+      that, and will reach for -abilar on a back-vowel verb unless it is
+      pointed out directly.
+    intro: >
+      This suffix means can, in the broad sense Turkish uses it: ability,
+      permission and possibility all read the same way, and only context
+      says which one is meant. Its name comes from bilmek, to know, frozen
+      inside it: gel, come, plus this suffix gives gelebilir, can come; oku,
+      read, gives okuyabilir, can read, with a buffer y since oku already
+      ends in a vowel, the same buffer you have already seen elsewhere.
+
+      One part of this suffix never changes, and it is not the part you
+      might expect. The vowel immediately after bil is always i: gelebilir
+      and yapabilir both end in -ir, never -ar, even though gel and yap
+      harmonize differently everywhere else. That vowel is not reading the
+      original verb at all, it is reading bil itself, which always ends in
+      that same i.
+
+      Adding who: gel plus this suffix plus -(y)Im, the same ending you
+      already know from saying what something is, gives gelebilirim, I can
+      come. The third person still needs nothing added, matching every
+      other suffix you have met so far: gelebilir on its own already means
+      he, she or it can come.
+
+      What this does not cover: saying you cannot do something is not this
+      suffix plus a negative you already know. Turkish handles inability
+      with its own suffix entirely, -(y)AmA, not -(y)Abilir with -mA
+      attached, and that is a different unit, not an omission here.
+    teaches_suffixes: [ABIL, ABILTENSE, PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+    exercises:
+      - id: who-can-do-it
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Who is this sentence about?"
+        difficulty: 2
+        params:
+          cue: person_suffix_only
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [ABIL, ABILTENSE]
+          lexeme_filter: { pos: verb }
+      - id: complete-the-ability
+        stage: guided_output
+        generator: cloze_suffix_choice
+        prompt: "Complete the sentence."
+        difficulty: 3
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [ABIL, ABILTENSE]
+          lexeme_filter: { pos: verb }
+      - id: ability-production
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [ABIL, ABILTENSE]
+          lexeme_filter: { pos: verb }
+      - id: ability-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+        params:
+          persons: [PRED1SG, PRED2SG, PRED1PL, PRED2PL]
+          base_suffixes: [ABIL, ABILTENSE]
+          lexeme_filter: { pos: verb }

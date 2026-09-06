@@ -143,7 +143,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, five units**:
+**Curriculum, six units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -160,6 +160,12 @@ before.
    ("plural") and would mislabel a verb-agreement exercise built from it.
    See `docs/pedagogy-rationale.md` for both that reasoning and the
    negative-progressive rounding fix chaining surfaced.
+6. Ability, -(y)Abilir (can), modelled as two suffixes (ABIL, the -(y)Abil
+   part, then ABILTENSE, the fixed -Ir that always follows it) rather than
+   one combined suffix, and reusing unit 5's person-marking suffixes again.
+   Needed no per-verb aorist data despite ending in -Ir, because that -Ir
+   never attaches to the original verb, only to the frozen root bil. See
+   `docs/pedagogy-rationale.md`.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -268,12 +274,38 @@ the type checker and the existing test suite.
   grammar, not the words. `recurs_in` is a first, partial piece of this
   (which concepts re-test which); `tutor.next_item` does not yet read it,
   and per-lexeme/per-skill tagging beyond that does not exist yet either.
+- **Inability, -(y)AmA** (gidemem, cannot go). -(y)Abilir (unit 6, built)
+  is not this plus -mA: the auxiliary bil disappears entirely, a real
+  suppletive irregularity, deliberately left for its own unit rather than
+  guessed at when unit 6 shipped.
+- **Existence: var / yok** ("there is" / "there isn't", bende param yok, I
+  have no money). Requested directly by the user alongside three other
+  topics; not started, because it needs a phrase-level mechanism the
+  engine does not have yet -- var/yok attach to a whole noun phrase
+  (typically possessor + possessed + locative), not to one stem the way
+  every generator here currently inflects. inflect() and every generator
+  built so far assume one lexeme, one surface form out; this needs an
+  exercise that produces and checks a short sentence instead. Needed by
+  the other two items below as well, not specific to this one.
+- **Postpositions** (ile, için, gibi, kadar -- with, for, like,
+  until/as much as). Requested alongside var/yok. Same phrase-level gap:
+  ile in particular has a bound-suffix contraction (-(y)lA) alongside its
+  free-standing form, which is a real alternation worth teaching, not
+  just vocabulary.
+- **The question particle mI** (geliyor musun?, are you coming?).
+  Requested alongside var/yok. Harder than the other two: it is a
+  separate orthographic word that is nonetheless phonologically dependent
+  on whatever precedes it (mı/mi/mu/mü, fourfold harmony same as any
+  suffix), which the phrase-level mechanism above needs to represent
+  correctly, not just glue two words together with a space.
 - **The aorist, evidential, passive, causative, reflexive/reciprocal,
-  imperative/optative, question particle, word order/focus, postpositions,
-  common derivational suffixes** -- all real, all still entirely absent.
-  The aorist specifically needs a trustworthy per-verb high/low-vowel
-  wordlist before it can be built at all; every source available described
-  it as lexically listed, not a rule.
+  imperative/optative, word order/focus, common derivational suffixes**
+  -- all real, all still entirely absent. The aorist specifically needs a
+  trustworthy per-verb high/low-vowel wordlist before it can be built
+  directly on a verb root at all (unit 6's -(y)Abilir needed no such list
+  because its own -Ir never attaches to the original verb, only to the
+  fixed root bil); every source available described the general aorist
+  as lexically listed, not a rule.
 - **A standalone vocabulary track** (flashcards, content packs organised by
   a learner's actual purpose -- tourism, daily life, a relationship, cooking
   as a task-based frame). Explicitly deprioritised below everything else on

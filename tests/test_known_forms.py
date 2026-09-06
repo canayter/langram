@@ -210,6 +210,28 @@ VERBAL = [
     ("konuş", ["NEG", "PROG", "PRED2SG"], "konuşmuyorsun"),
 ]
 
+# ── Ability: -(y)Abil, split into ABIL + the fixed tense that follows it ─────
+# bil (the frozen root of bilmek) never harmonises, and neither does the
+# vowel immediately after it: it always resolves to i, reading bil's own
+# vowel rather than the original verb's class, so back-vowel verbs
+# (yap, oku, çalış...) still end in -ir, never -ar. Confirmed against
+# multiple independent descriptions of Turkish before writing these.
+ABILITY = [
+    ("gel", ["ABIL", "ABILTENSE"], "gelebilir"),         # consonant-final, front
+    ("yap", ["ABIL", "ABILTENSE"], "yapabilir"),          # consonant-final, back -- still -ir
+    ("git", ["ABIL", "ABILTENSE"], "gidebilir"),          # final_voicing before ABIL's vowel-initial A
+    ("oku", ["ABIL", "ABILTENSE"], "okuyabilir"),         # vowel-final: buffer y, still -ir
+    ("bekle", ["ABIL", "ABILTENSE"], "bekleyebilir"),
+    ("çalış", ["ABIL", "ABILTENSE"], "çalışabilir"),
+    ("konuş", ["ABIL", "ABILTENSE"], "konuşabilir"),
+    ("gel", ["ABIL", "ABILTENSE", "PRED1SG"], "gelebilirim"),
+    ("yap", ["ABIL", "ABILTENSE", "PRED2SG"], "yapabilirsin"),
+    ("oku", ["ABIL", "ABILTENSE", "PRED1PL"], "okuyabiliriz"),
+    ("konuş", ["ABIL", "ABILTENSE", "PRED2PL"], "konuşabilirsiniz"),
+    ("gel", ["ABIL", "ABILTENSE", "PL"], "gelebilirler"),
+    ("yap", ["ABIL", "ABILTENSE", "PRED3SG"], "yapabilirdir"),
+]
+
 ALL = (
     [("plain", *r) for r in PLAIN]
     + [("buffer", *r) for r in BUFFERED]
@@ -220,6 +242,7 @@ ALL = (
     + [("stacking", *r) for r in STACKED]
     + [("predicative", *r) for r in PREDICATIVE]
     + [("verbal", *r) for r in VERBAL]
+    + [("ability", *r) for r in ABILITY]
 )
 
 

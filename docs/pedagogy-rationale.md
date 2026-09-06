@@ -158,6 +158,45 @@ output, rather than reasoning about the rule in isolation, is what surfaced
 a bug a rule believed correct for the tested cases (see the recurring bug
 shape below).
 
+## Ability is built without touching the blocked aorist
+
+Unit 5's own rationale entry names the aorist as deliberately unbuilt,
+because its high/low vowel choice is lexically listed per verb and this
+project does not have a wordlist it trusts for that. -(y)Abilir looks like
+it needs exactly that: it ends in the aorist's own -Ir. It does not,
+because -(y)Abilir's -Ir never attaches to the original verb at all; it
+attaches to bil, the frozen root of bilmek that gives the whole
+construction its name, and bil is the same fixed syllable regardless of
+which verb preceded it. Whatever follows a fixed syllable resolves by
+ordinary fourfold harmony against that syllable's own vowel, not by the
+lexically listed rule that governs the aorist when it attaches directly to
+a verb root, which is why yapabilir and gelebilir both end in -ir despite
+yap and gel belonging to different harmony classes, and why this needed no
+per-verb data to build correctly.
+
+Modelled as two suffixes, ABIL then ABILTENSE, rather than one combined
+"-(y)AbilIr", after generating actual output surfaced a real engine
+limitation: harmony_back (the override engine.py already uses so a later
+suffix reads harmony off the growing form rather than the original stem,
+added for -(y)Iyor plus a person suffix) is fixed once per suffix
+application, not per character within one suffix's own body, so a single
+suffix spanning both the A before bil and the I after it would have forced
+the I to inherit the A's override too, giving okuyabilır instead of
+okuyabilir. Splitting into two suffixes means the second one starts with
+stem_exposed already false, which is exactly the case that override was
+built for.
+
+Deliberately out of scope: saying you cannot do something. Turkish handles
+inability with its own suffix, -(y)AmA, not -(y)Abilir with -mA attached
+the way -(y)Iyor's negative composes -- a real irregularity (the auxiliary
+bil disappears entirely: gelebilirim, gidemem, not gelebilmiyorum), not
+this unit's negation, so it is left for a later unit rather than guessed at.
+
+Grounding: input before output (vanpatten-input-processing) and Pienemann's
+processability theory (pienemann-processability), the same reasons already
+cited for unit 5, for the same reason: person marking is reused rather than
+re-taught, so nothing here is acquired before a learner can process it.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is
