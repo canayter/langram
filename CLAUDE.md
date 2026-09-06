@@ -143,7 +143,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, six units**:
+**Curriculum, seven units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -166,6 +166,16 @@ before.
    Needed no per-verb aorist data despite ending in -Ir, because that -Ir
    never attaches to the original verb, only to the frozen root bil. See
    `docs/pedagogy-rationale.md`.
+7. Existence and possession, var/yok (arabam var, param yok). Turkish has
+   no verb "to have"; the possessed noun carries an ordinary possessive
+   suffix (unit 3) and var/yok stands in for a verb. The first unit built
+   on more than one word: a new module, `phrase.py`, composes an ordered
+   sequence of inflected words and fixed particles by calling the same
+   `Language.inflect()` every other generator already calls, once per
+   part, rather than changing engine.py itself. Needed its own naturalness
+   curation distinct from unit 2's predicate_natural (a noun natural as
+   "you are a ___" is not automatically natural as "you have a ___", and
+   vice versa) -- see `docs/pedagogy-rationale.md` for both.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -278,26 +288,28 @@ the type checker and the existing test suite.
   is not this plus -mA: the auxiliary bil disappears entirely, a real
   suppletive irregularity, deliberately left for its own unit rather than
   guessed at when unit 6 shipped.
-- **Existence: var / yok** ("there is" / "there isn't", bende param yok, I
-  have no money). Requested directly by the user alongside three other
-  topics; not started, because it needs a phrase-level mechanism the
-  engine does not have yet -- var/yok attach to a whole noun phrase
-  (typically possessor + possessed + locative), not to one stem the way
-  every generator here currently inflects. inflect() and every generator
-  built so far assume one lexeme, one surface form out; this needs an
-  exercise that produces and checks a short sentence instead. Needed by
-  the other two items below as well, not specific to this one.
+- **Existence: var / yok** (unit 7, built). Needed a phrase-level
+  mechanism, since var/yok attach to a whole possessed noun phrase, not
+  one stem: see `phrase.py` and `docs/pedagogy-rationale.md`. The current
+  unit covers plain possession only (arabam var); a locative extension
+  (evde kedi var, there's a cat at home) is a natural, low-risk follow-up
+  using the same mechanism, not attempted yet simply for scope.
 - **Postpositions** (ile, için, gibi, kadar -- with, for, like,
-  until/as much as). Requested alongside var/yok. Same phrase-level gap:
-  ile in particular has a bound-suffix contraction (-(y)lA) alongside its
-  free-standing form, which is a real alternation worth teaching, not
-  just vocabulary.
+  until/as much as). Requested alongside var/yok, and phrase.py (built for
+  var/yok) is the right foundation: each is Word(noun) + Literal(postpn),
+  the same shape var/yok already uses. ile specifically also has a
+  bound-suffix contraction (-(y)lA) alongside its free-standing form,
+  which is a real alternation worth teaching, not just vocabulary, and
+  needs its own verification pass before it ships.
 - **The question particle mI** (geliyor musun?, are you coming?).
-  Requested alongside var/yok. Harder than the other two: it is a
-  separate orthographic word that is nonetheless phonologically dependent
-  on whatever precedes it (mı/mi/mu/mü, fourfold harmony same as any
-  suffix), which the phrase-level mechanism above needs to represent
-  correctly, not just glue two words together with a space.
+  Requested alongside var/yok. Harder than the other two even with
+  phrase.py in place: mI is a separate orthographic word that is
+  nonetheless phonologically dependent on whatever precedes it (mı/mi/mu/mü,
+  fourfold harmony same as any suffix), which phrase.py's Literal cannot
+  represent yet (a Literal never inflects, full stop) -- needs a third
+  Part variant, something like a HarmonizingLiteral resolved against the
+  previous part's own surface via Phonology.resolve() directly, the same
+  primitive the engine itself is built on.
 - **The aorist, evidential, passive, causative, reflexive/reciprocal,
   imperative/optative, word order/focus, common derivational suffixes**
   -- all real, all still entirely absent. The aorist specifically needs a

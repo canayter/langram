@@ -491,3 +491,57 @@ class TestVocabRecognition:
         for _ in range(15):
             item = generate(_spec("vocab_recognition"), language, rng)
             assert set(item.payload["options"]) <= reviewed_glosses
+
+
+class TestExistence:
+    """The first generator built on phrase.py rather than a single
+    inflect() call: a possessed noun plus an invariant particle (var/yok),
+    Turkish's stand-in for a verb "to have" that does not exist."""
+
+    def _params(self):
+        return {"lexeme_filter": {"pos": "noun", "possession_only": True}}
+
+    def test_recognition_shows_the_two_word_phrase(self, language):
+        rng = random.Random(1)
+        for _ in range(15):
+            item = generate(_spec("existence", **self._params()), language, rng)
+            assert item.payload["kind"] == "choose_meaning"
+            assert " " in item.payload["form"]
+            assert item.payload["form"].split()[-1] in ("var", "yok")
+            assert item.answer in item.payload["options"]
+
+    def test_production_answer_is_the_turkish_phrase(self, language):
+        rng = random.Random(2)
+        for _ in range(15):
+            item = generate(_spec("existence_production", **self._params()), language, rng)
+            assert item.payload["kind"] == "type"
+            assert item.answer.split()[-1] in ("var", "yok")
+            assert item.accepts(item.answer, normalize)
+
+    def test_only_possession_natural_nouns_are_drawn(self, language):
+        from langram.generators._common import candidate_lexemes
+        pool_lemmas = {lx.lemma for lx in candidate_lexemes(language, self._params())}
+        assert pool_lemmas, "the filter should not empty the pool entirely"
+        rng = random.Random(3)
+        for _ in range(20):
+            item = generate(_spec("existence", **self._params()), language, rng)
+            assert item.lemma in pool_lemmas
+
+    def test_negation_is_yok_never_a_suffix_on_the_noun(self, language):
+        rng = random.Random(4)
+        saw_yok = False
+        for _ in range(20):
+            item = generate(_spec("existence", **self._params()), language, rng)
+            if item.extra["particle"] == "yok":
+                saw_yok = True
+                assert item.payload["form"].endswith(" yok")
+                assert "değil" not in item.payload["form"]
+        assert saw_yok, "20 draws with no yok at all is suspicious, not just unlucky"
+
+    def test_assemble_reproduces_the_item(self, language):
+        rng = random.Random(5)
+        for generator in ("existence", "existence_production"):
+            item = generate(_spec(generator, **self._params()), language, rng)
+            again = assemble(_spec(generator, **self._params()), language, item.spec)
+            assert again.answer == item.answer
+            assert again.payload == item.payload

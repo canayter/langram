@@ -99,6 +99,13 @@ def candidate_lexemes(language, params: dict) -> list[Lexeme]:
         # nouns, against predicate_natural in the lexicon.
         if wanted.get("predicative_only") and lexeme.pos == "noun" and not lexeme.predicate_natural:
             continue
+        # An existence exercise ("I have ___") needs a word someone would
+        # actually say that about. A different naturalness dimension from
+        # predicate_natural: doktor is a natural predicate but not a
+        # natural possession ("doktorum var" reads as a doctor on staff,
+        # not a role held).
+        if wanted.get("possession_only") and lexeme.pos == "noun" and not lexeme.possession_natural:
+            continue
         if wanted.get("ends_in_obstruent") and lexeme.lemma[-1] not in obstruents:
             continue
         if minimum and syllable_count(language, lexeme.lemma) < minimum:

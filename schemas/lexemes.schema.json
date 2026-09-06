@@ -49,6 +49,10 @@
         "type": "boolean",
         "description": "For pos: noun only. True if a learner would plausibly hear this word predicated onto a person (\"biz doktoruz\", we are doctors): a role, profession, kinship term, or the like, not a concrete object (\"biz masayiz\", we are a table). Read by the predicative unit's exercises via lexeme_filter: {predicative_only: true}; adjectives never need this, since almost any adjective is a natural personal predicate."
       },
+      "possession_natural": {
+        "type": "boolean",
+        "description": "For pos: noun only. True if a learner would plausibly hear this said as something someone has (\"arabam var\", I have a car; \"kardeşim var\", I have a sibling): a concrete object, or a close relation. False or absent for a bare person-descriptor that reads oddly as a possession in English or Turkish alike (\"adamım var\" would mean I own a man, not I know one). A different naturalness dimension from predicate_natural, not its inverse: doktor is a natural predicate (\"doktorum\", I am a doctor) but not a natural possession (\"doktorum var\" reads as I have a doctor on staff, not the ordinary meaning). Read by the existence unit's exercises via lexeme_filter: {possession_only: true}."
+      },
       "harmony_class": {
         "enum": [
           "front",

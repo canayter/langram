@@ -102,6 +102,7 @@ def load_language(code: str = "tr", root: Path | None = None) -> Language:
             final_voicing=bool(raw.get("final_voicing", False)),
             vowel_deletion=bool(raw.get("vowel_deletion", False)),
             predicate_natural=bool(raw.get("predicate_natural", False)),
+            possession_natural=bool(raw.get("possession_natural", False)),
             harmony_class=harmony_class,
             review=tuple(raw.get("review", ())),
             etymology=raw.get("etymology"),

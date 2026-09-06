@@ -1,0 +1,66 @@
+id: unit-07-existence
+order: 7
+title: Saying what you have
+rationale: >
+  Turkish has no verb "to have". Possession is existence: the possessed
+  thing carries an ordinary possessive suffix, already taught in unit 3, and
+  var or yok (exists, does not exist) stands in for the verb English needs.
+  Negation of existence is always yok, never değil, the negative copula
+  used everywhere else; this unit tests that distinction directly, since it
+  is the one place a learner who has just learned değil is tempted to
+  overgeneralize it.
+
+  This is also the first unit built on more than a single inflected word: an
+  answer here is two words, a possessed noun and an invariant particle, not
+  one stem with a suffix chain.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-03-possession
+
+concepts:
+  - id: existence
+    name: Saying what you have with var and yok
+    type: grammatical_feature
+    why_hard: >
+      English has a verb for this, so a learner reaches for one: some form
+      of "to have", or Turkish's olmak, to become, neither of which belongs
+      here. There is no verb at all. The possessed noun simply carries the
+      possessive suffix it would carry anyway, and var or yok is added as
+      its own word, meaning exists or does not exist, applied to the thing
+      itself rather than conjugated for the possessor.
+    intro: >
+      Turkish has no word for have. Instead, the thing you have is marked as
+      yours with a possessive suffix, the same one you already know from
+      unit 3, and a separate word says whether it exists: araba, car, plus
+      -m gives arabam, my car; adding var, exists, gives arabam var, I have
+      a car, literally my car exists.
+
+      The negative works the same way, but with a different word entirely,
+      not a suffix added to var: param, my money, plus yok, does not exist,
+      gives param yok, I have no money. This is worth saying plainly
+      because it is the one place a shortcut fails: yok is not var plus a
+      negative you already know, and değil, the word you would use to say a
+      noun is not something, is never used here either. Existence and
+      non-existence are var and yok, full stop.
+
+      Nothing here conjugates for person the way a verb would. Whose it is
+      is entirely carried by the possessive suffix on the noun; var and yok
+      themselves never change.
+    teaches_suffixes: []
+    exercises:
+      - id: what-does-this-mean
+        stage: structured_input
+        generator: existence
+        prompt: "What does this mean?"
+        difficulty: 2
+        params:
+          lexeme_filter: { pos: noun, possession_only: true }
+      - id: say-what-you-have
+        stage: free_output
+        generator: existence_production
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          lexeme_filter: { pos: noun, possession_only: true }

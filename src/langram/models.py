@@ -20,6 +20,13 @@ class Lexeme:
     # any adjective is a natural personal predicate -- so this only matters
     # for pos: noun. See _common.candidate_lexemes's "predicative_only" filter.
     predicate_natural: bool = False
+    # A noun a learner could actually hear said as something someone has:
+    # "arabam var" (I have a car) is something someone would say,
+    # "adamım var" (I have a man) is not, even though a role/profession
+    # noun that is predicate_natural (doktor) is not automatically this
+    # too -- "doktorum var" reads as a doctor on staff, not a role held.
+    # See _common.candidate_lexemes's "possession_only" filter.
+    possession_natural: bool = False
     harmony_class: str | None = None      # "front" | "back" | None (derive it)
     review: tuple[str, ...] = ()
     # Short and well established only: a loan language and root, or "modern

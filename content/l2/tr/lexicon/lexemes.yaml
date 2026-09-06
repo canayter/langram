@@ -25,13 +25,13 @@
 # onto a person. See predicate_natural in schemas/lexemes.schema.json.
 - { id: adam,     lemma: adam,     pos: noun, gloss: man,       predicate_natural: true }
 - { id: kadın,    lemma: kadın,    pos: noun, gloss: woman,     predicate_natural: true }
-- { id: çocuk,    lemma: çocuk,    pos: noun, gloss: child,     final_voicing: true, predicate_natural: true }
+- { id: çocuk,    lemma: çocuk,    pos: noun, gloss: child,     final_voicing: true, predicate_natural: true, possession_natural: true }
 - { id: kız,      lemma: kız,      pos: noun, gloss: girl,      predicate_natural: true }
 - { id: oğlan,    lemma: oğlan,    pos: noun, gloss: boy,       predicate_natural: true }
 - { id: anne,     lemma: anne,     pos: noun, gloss: mother,    predicate_natural: true }
 - { id: baba,     lemma: baba,     pos: noun, gloss: father,    predicate_natural: true }
-- { id: kardeş,   lemma: kardeş,   pos: noun, gloss: sibling,   predicate_natural: true }
-- { id: arkadaş,  lemma: arkadaş,  pos: noun, gloss: friend,    predicate_natural: true }
+- { id: kardeş,   lemma: kardeş,   pos: noun, gloss: sibling,   predicate_natural: true, possession_natural: true }
+- { id: arkadaş,  lemma: arkadaş,  pos: noun, gloss: friend,    predicate_natural: true, possession_natural: true }
 - { id: öğrenci,  lemma: öğrenci,  pos: noun, gloss: student,   predicate_natural: true }
 - { id: öğretmen, lemma: öğretmen, pos: noun, gloss: teacher, predicate_natural: true, etymology: "A 20th century Turkish coinage: öğret-, to teach, plus -men, a person who does it. Created during a period of deliberate language reform to replace the Arabic-derived muallim." }
 - { id: doktor,   lemma: doktor,   pos: noun, gloss: doctor,    predicate_natural: true }
@@ -39,7 +39,7 @@
 - { id: komşu,    lemma: komşu,    pos: noun, gloss: neighbour, predicate_natural: true }
 - { id: müdür,    lemma: müdür,    pos: noun, gloss: manager,   predicate_natural: true }
 - { id: asker,    lemma: asker,    pos: noun, gloss: soldier,   predicate_natural: true }
-- { id: oğul,     lemma: oğul,     pos: noun, gloss: son, vowel_deletion: true, predicate_natural: true }
+- { id: oğul,     lemma: oğul,     pos: noun, gloss: son, vowel_deletion: true, predicate_natural: true, possession_natural: true }
 # Widened 2026-09-04: the predicative pool above (17 nouns) was small enough
 # that a short session visibly repeated the same one or two words, reported
 # directly by a learner. Kept to old, fully nativised Perso-Arabic loans (the
@@ -76,47 +76,47 @@
 - { id: saç,      lemma: saç,      pos: noun, gloss: hair,     final_voicing: false }
 
 # ── Home and objects ─────────────────────────────────────────────────────────
-- { id: ev,       lemma: ev,       pos: noun, gloss: house }
-- { id: oda,      lemma: oda,      pos: noun, gloss: room }
+- { id: ev,       lemma: ev,       pos: noun, gloss: house, possession_natural: true }
+- { id: oda,      lemma: oda,      pos: noun, gloss: room, possession_natural: true }
 - { id: kapı,     lemma: kapı,     pos: noun, gloss: door }
 - { id: pencere,  lemma: pencere,  pos: noun, gloss: window }
-- { id: masa,     lemma: masa,     pos: noun, gloss: table }
-- { id: sandalye, lemma: sandalye, pos: noun, gloss: chair }
-- { id: yatak,    lemma: yatak,    pos: noun, gloss: bed,      final_voicing: true }
-- { id: dolap,    lemma: dolap,    pos: noun, gloss: cupboard, final_voicing: true }
-- { id: kitap,    lemma: kitap,    pos: noun, gloss: book,     final_voicing: true, etymology: "From Arabic kitab, book, from the root k-t-b, to write." }
-- { id: kalem,    lemma: kalem,    pos: noun, gloss: pen, etymology: "From Arabic qalam, pen, which reached Arabic from Greek kalamos, reed." }
+- { id: masa,     lemma: masa,     pos: noun, gloss: table, possession_natural: true }
+- { id: sandalye, lemma: sandalye, pos: noun, gloss: chair, possession_natural: true }
+- { id: yatak,    lemma: yatak,    pos: noun, gloss: bed,      final_voicing: true, possession_natural: true }
+- { id: dolap,    lemma: dolap,    pos: noun, gloss: cupboard, final_voicing: true, possession_natural: true }
+- { id: kitap,    lemma: kitap,    pos: noun, gloss: book,     final_voicing: true, etymology: "From Arabic kitab, book, from the root k-t-b, to write.", possession_natural: true }
+- { id: kalem,    lemma: kalem,    pos: noun, gloss: pen, etymology: "From Arabic qalam, pen, which reached Arabic from Greek kalamos, reed.", possession_natural: true }
 - { id: kâğıt,    lemma: kâğıt,    pos: noun, gloss: paper,    final_voicing: true, harmony_class: back, review: [circumflex_spelling, harmony_class] }
-- { id: çanta,    lemma: çanta,    pos: noun, gloss: bag }
-- { id: anahtar,  lemma: anahtar,  pos: noun, gloss: key }
-- { id: araba,    lemma: araba,    pos: noun, gloss: car }
-- { id: telefon,  lemma: telefon,  pos: noun, gloss: telephone, etymology: "From French telephone, built from Greek roots meaning far and sound." }
-- { id: bilgisayar, lemma: bilgisayar, pos: noun, gloss: computer, etymology: "A 20th century Turkish coinage: bilgi, information, plus sayar, one that counts, from saymak, to count. Created during a period of deliberate language reform to replace the earlier foreign loanword." }
-- { id: kutu,     lemma: kutu,     pos: noun, gloss: box }
-- { id: bardak,   lemma: bardak,   pos: noun, gloss: drinking glass, final_voicing: true }
-- { id: tabak,    lemma: tabak,    pos: noun, gloss: plate,    final_voicing: true }
-- { id: bıçak,    lemma: bıçak,    pos: noun, gloss: knife,    final_voicing: true }
-- { id: sepet,    lemma: sepet,    pos: noun, gloss: basket,   final_voicing: false }
-- { id: perde,    lemma: perde,    pos: noun, gloss: curtain }
+- { id: çanta,    lemma: çanta,    pos: noun, gloss: bag, possession_natural: true }
+- { id: anahtar,  lemma: anahtar,  pos: noun, gloss: key, possession_natural: true }
+- { id: araba,    lemma: araba,    pos: noun, gloss: car, possession_natural: true }
+- { id: telefon,  lemma: telefon,  pos: noun, gloss: telephone, etymology: "From French telephone, built from Greek roots meaning far and sound.", possession_natural: true }
+- { id: bilgisayar, lemma: bilgisayar, pos: noun, gloss: computer, etymology: "A 20th century Turkish coinage: bilgi, information, plus sayar, one that counts, from saymak, to count. Created during a period of deliberate language reform to replace the earlier foreign loanword.", possession_natural: true }
+- { id: kutu,     lemma: kutu,     pos: noun, gloss: box, possession_natural: true }
+- { id: bardak,   lemma: bardak,   pos: noun, gloss: drinking glass, final_voicing: true, possession_natural: true }
+- { id: tabak,    lemma: tabak,    pos: noun, gloss: plate,    final_voicing: true, possession_natural: true }
+- { id: bıçak,    lemma: bıçak,    pos: noun, gloss: knife,    final_voicing: true, possession_natural: true }
+- { id: sepet,    lemma: sepet,    pos: noun, gloss: basket,   final_voicing: false, possession_natural: true }
+- { id: perde,    lemma: perde,    pos: noun, gloss: curtain, possession_natural: true }
 - { id: ütü,      lemma: ütü,      pos: noun, gloss: "iron (appliance)" }
 - { id: ocak,     lemma: ocak,     pos: noun, gloss: stove,    final_voicing: true }
 - { id: kap,      lemma: kap,      pos: noun, gloss: container, final_voicing: true }
 
 # ── Food and drink ───────────────────────────────────────────────────────────
-- { id: ekmek,    lemma: ekmek,    pos: noun, gloss: bread,    final_voicing: true }
-- { id: su,       lemma: su,       pos: noun, gloss: water,    review: [irregular_genitive_suyun] }
-- { id: süt,      lemma: süt,      pos: noun, gloss: milk,     final_voicing: false }
-- { id: çay,      lemma: çay,      pos: noun, gloss: tea }
-- { id: kahve,    lemma: kahve,    pos: noun, gloss: coffee, etymology: "From Arabic qahwa by way of Ottoman Turkish. The same word travelled on into Italian and then English as coffee." }
-- { id: yemek,    lemma: yemek,    pos: noun, gloss: food,     final_voicing: true }
-- { id: et,       lemma: et,       pos: noun, gloss: meat,     final_voicing: false }
-- { id: balık,    lemma: balık,    pos: noun, gloss: fish,     final_voicing: true }
-- { id: elma,     lemma: elma,     pos: noun, gloss: apple }
-- { id: portakal, lemma: portakal, pos: noun, gloss: orange }
-- { id: armut,    lemma: armut,    pos: noun, gloss: pear,     final_voicing: true }
-- { id: şeker,    lemma: şeker,    pos: noun, gloss: sugar, etymology: "From Persian shekar, itself from Sanskrit. A different branch of the same root reached English as sugar." }
-- { id: tuz,      lemma: tuz,      pos: noun, gloss: salt }
-- { id: peynir,   lemma: peynir,   pos: noun, gloss: cheese }
+- { id: ekmek,    lemma: ekmek,    pos: noun, gloss: bread,    final_voicing: true, possession_natural: true }
+- { id: su,       lemma: su,       pos: noun, gloss: water,    review: [irregular_genitive_suyun], possession_natural: true }
+- { id: süt,      lemma: süt,      pos: noun, gloss: milk,     final_voicing: false, possession_natural: true }
+- { id: çay,      lemma: çay,      pos: noun, gloss: tea, possession_natural: true }
+- { id: kahve,    lemma: kahve,    pos: noun, gloss: coffee, etymology: "From Arabic qahwa by way of Ottoman Turkish. The same word travelled on into Italian and then English as coffee.", possession_natural: true }
+- { id: yemek,    lemma: yemek,    pos: noun, gloss: food,     final_voicing: true, possession_natural: true }
+- { id: et,       lemma: et,       pos: noun, gloss: meat,     final_voicing: false, possession_natural: true }
+- { id: balık,    lemma: balık,    pos: noun, gloss: fish,     final_voicing: true, possession_natural: true }
+- { id: elma,     lemma: elma,     pos: noun, gloss: apple, possession_natural: true }
+- { id: portakal, lemma: portakal, pos: noun, gloss: orange, possession_natural: true }
+- { id: armut,    lemma: armut,    pos: noun, gloss: pear,     final_voicing: true, possession_natural: true }
+- { id: şeker,    lemma: şeker,    pos: noun, gloss: sugar, etymology: "From Persian shekar, itself from Sanskrit. A different branch of the same root reached English as sugar.", possession_natural: true }
+- { id: tuz,      lemma: tuz,      pos: noun, gloss: salt, possession_natural: true }
+- { id: peynir,   lemma: peynir,   pos: noun, gloss: cheese, possession_natural: true }
 - { id: tat,      lemma: tat,      pos: noun, gloss: taste,    final_voicing: true }
 
 # ── Places ───────────────────────────────────────────────────────────────────
@@ -125,7 +125,7 @@
 - { id: köy,      lemma: köy,      pos: noun, gloss: village }
 - { id: sokak,    lemma: sokak,    pos: noun, gloss: street,   final_voicing: true }
 - { id: yol,      lemma: yol,      pos: noun, gloss: road }
-- { id: bahçe,    lemma: bahçe,    pos: noun, gloss: garden }
+- { id: bahçe,    lemma: bahçe,    pos: noun, gloss: garden, possession_natural: true }
 - { id: deniz,    lemma: deniz,    pos: noun, gloss: sea }
 - { id: dağ,      lemma: dağ,      pos: noun, gloss: mountain }
 - { id: orman,    lemma: orman,    pos: noun, gloss: forest }
@@ -151,31 +151,31 @@
 - { id: akşam,    lemma: akşam,    pos: noun, gloss: evening }
 - { id: hafta,    lemma: hafta,    pos: noun, gloss: week, etymology: "From Persian hafte, week, built on haft, seven." }
 - { id: yıl,      lemma: yıl,      pos: noun, gloss: year }
-- { id: saat,     lemma: saat,     pos: noun, gloss: "hour, clock", final_voicing: false, harmony_class: front, review: [harmony_class] }
-- { id: vakit,    lemma: vakit,    pos: noun, gloss: time,     final_voicing: false, vowel_deletion: true, harmony_class: front, review: [harmony_class] }
+- { id: saat,     lemma: saat,     pos: noun, gloss: "hour, clock", final_voicing: false, harmony_class: front, review: [harmony_class], possession_natural: true }
+- { id: vakit,    lemma: vakit,    pos: noun, gloss: time,     final_voicing: false, vowel_deletion: true, harmony_class: front, review: [harmony_class], possession_natural: true }
 - { id: kuş,      lemma: kuş,      pos: noun, gloss: bird }
-- { id: köpek,    lemma: köpek,    pos: noun, gloss: dog,      final_voicing: true }
-- { id: kedi,     lemma: kedi,     pos: noun, gloss: cat }
-- { id: at,       lemma: at,       pos: noun, gloss: horse,    final_voicing: false }
+- { id: köpek,    lemma: köpek,    pos: noun, gloss: dog,      final_voicing: true, possession_natural: true }
+- { id: kedi,     lemma: kedi,     pos: noun, gloss: cat, possession_natural: true }
+- { id: at,       lemma: at,       pos: noun, gloss: horse,    final_voicing: false, possession_natural: true }
 - { id: kanat,    lemma: kanat,    pos: noun, gloss: wing,     final_voicing: true }
 
 # ── Abstract ─────────────────────────────────────────────────────────────────
-- { id: iş,       lemma: iş,       pos: noun, gloss: work }
+- { id: iş,       lemma: iş,       pos: noun, gloss: work, possession_natural: true }
 - { id: söz,      lemma: söz,      pos: noun, gloss: "word, promise" }
 - { id: dil,      lemma: dil,      pos: noun, gloss: "language, tongue" }
 - { id: ses,      lemma: ses,      pos: noun, gloss: "sound, voice" }
 - { id: ad,       lemma: ad,       pos: noun, gloss: name }
 - { id: yer,      lemma: yer,      pos: noun, gloss: place }
 - { id: şey,      lemma: şey,      pos: noun, gloss: thing }
-- { id: para,     lemma: para,     pos: noun, gloss: money, etymology: "From Persian pare, piece." }
+- { id: para,     lemma: para,     pos: noun, gloss: money, etymology: "From Persian pare, piece.", possession_natural: true }
 - { id: hayat,    lemma: hayat,    pos: noun, gloss: life,     final_voicing: false }
 - { id: dünya,    lemma: dünya,    pos: noun, gloss: world, etymology: "From Arabic dunya, this world, as distinct from the next." }
 - { id: sevgi,    lemma: sevgi,    pos: noun, gloss: love }
-- { id: umut,     lemma: umut,     pos: noun, gloss: hope,     final_voicing: true }
+- { id: umut,     lemma: umut,     pos: noun, gloss: hope,     final_voicing: true, possession_natural: true }
 - { id: dilek,    lemma: dilek,    pos: noun, gloss: wish,     final_voicing: true }
 - { id: gerçek,   lemma: gerçek,   pos: noun, gloss: truth,    final_voicing: true }
 - { id: amaç,     lemma: amaç,     pos: noun, gloss: aim,      final_voicing: true }
-- { id: cevap,    lemma: cevap,    pos: noun, gloss: answer,   final_voicing: true }
+- { id: cevap,    lemma: cevap,    pos: noun, gloss: answer,   final_voicing: true, possession_natural: true }
 - { id: sebep,    lemma: sebep,    pos: noun, gloss: reason,   final_voicing: true }
 - { id: hesap,    lemma: hesap,    pos: noun, gloss: "account, calculation", final_voicing: true, etymology: "From Arabic hisab, calculation or account." }
 - { id: cep,      lemma: cep,      pos: noun, gloss: pocket,   final_voicing: true }
@@ -188,7 +188,7 @@
 - { id: borç,     lemma: borç,     pos: noun, gloss: debt,     final_voicing: true }
 - { id: ilaç,     lemma: ilaç,     pos: noun, gloss: medicine, final_voicing: true }
 - { id: kayıp,    lemma: kayıp,    pos: noun, gloss: loss,     final_voicing: true, vowel_deletion: true }
-- { id: fikir,    lemma: fikir,    pos: noun, gloss: idea,     vowel_deletion: true }
+- { id: fikir,    lemma: fikir,    pos: noun, gloss: idea,     vowel_deletion: true, possession_natural: true }
 - { id: isim,     lemma: isim,     pos: noun, gloss: name,     vowel_deletion: true }
 - { id: resim,    lemma: resim,    pos: noun, gloss: picture,  vowel_deletion: true }
 - { id: akıl,     lemma: akıl,     pos: noun, gloss: mind,     vowel_deletion: true }

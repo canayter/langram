@@ -82,6 +82,20 @@ REGISTRY: dict[str, Generator] = {
             "drawn from the reviewed lexicon rather than any one concept's stems.",
             implemented=True,
         ),
+        Generator(
+            "existence",
+            "structured_input",
+            "Existential var/yok: a possessed noun plus an invariant particle, built "
+            "on phrase.py rather than a single inflect() call.",
+            implemented=True,
+        ),
+        Generator(
+            "existence_production",
+            "free_output",
+            "Existential var/yok, produced from an English prompt rather than "
+            "recognised. Thin wrapper around existence.py, mirroring cued_recall.",
+            implemented=True,
+        ),
     ]
 }
 
@@ -148,9 +162,9 @@ class GenerationError(RuntimeError):
 
 def _modules() -> dict:
     from . import (
-        cloze_suffix_choice, cued_recall, form_meaning_match,
-        grammaticality_judgement, minimal_pair_identification, suffix_builder,
-        type_the_form, vocab_recognition,
+        cloze_suffix_choice, cued_recall, existence, existence_production,
+        form_meaning_match, grammaticality_judgement, minimal_pair_identification,
+        suffix_builder, type_the_form, vocab_recognition,
     )
     return {
         "suffix_builder": suffix_builder,
@@ -161,6 +175,8 @@ def _modules() -> dict:
         "type_the_form": type_the_form,
         "cued_recall": cued_recall,
         "vocab_recognition": vocab_recognition,
+        "existence": existence,
+        "existence_production": existence_production,
     }
 
 

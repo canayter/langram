@@ -57,6 +57,7 @@ def seed(session: Session, content_root: Path | None = None) -> dict[str, int]:
                 "final_voicing": lexeme.final_voicing,
                 "vowel_deletion": lexeme.vowel_deletion,
                 "predicate_natural": lexeme.predicate_natural,
+                "possession_natural": lexeme.possession_natural,
                 "harmony_class": lexeme.harmony_class,
                 "etymology": lexeme.etymology,
                 "review": list(lexeme.review),

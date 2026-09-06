@@ -197,6 +197,44 @@ processability theory (pienemann-processability), the same reasons already
 cited for unit 5, for the same reason: person marking is reused rather than
 re-taught, so nothing here is acquired before a learner can process it.
 
+## Existence is the first unit built on more than one word
+
+Every generator before unit 7 assumes one lexeme, one inflect() call, one
+surface form out. Var and yok cannot be taught that way: Turkish has no verb
+"to have", so "I have a car" is literally "my car exists" (arabam var), two
+words, only one of which inflects. Rather than bend inflect() itself to
+produce more than one word, or fake a phrase by string-concatenating two
+generators' outputs by hand in curriculum content, a new module (phrase.py)
+composes a short, ordered sequence of parts -- inflected words and fixed
+particles -- calling the exact same Language.inflect() every existing
+generator already calls for each inflected part. Nothing about engine.py
+changed; a phrase is several ordinary single-word results joined, not a new
+kind of derivation.
+
+Negation of existence gets its own exercise deliberately: yok is a
+different word from var, not var plus a negative a learner already knows,
+and değil (the negative copula from unit 2) is never used here either.
+Both are real, specific facts worth testing directly, since a learner who
+has just learned değil is the one most likely to overgeneralize it here.
+
+## Possession needs its own naturalness curation, distinct from predication
+
+predicate_natural (unit 2's fix for "tabaksin", you are a plate) answers
+"would a person be called this". Existence asks a different question, "would
+a person be said to have this", and the two do not coincide: doktor is a
+natural predicate (doktorum, I am a doctor) but an unnatural possession
+(doktorum var reads as a doctor on staff, not a role held), while araba is
+the reverse in spirit -- a natural possession nobody would use as a
+predicate. Generating a batch before shipping (the same discipline that
+caught three separate bugs earlier this session) surfaced this immediately:
+the default noun pool produced "I have man" and "you do not have girl",
+exactly the shape of the original tabaksin bug, from a different cause.
+Fixed the same way: a new possession_natural flag, curated by hand (48
+nouns: kinship terms a person would plausibly say they have -- kardeşim var,
+not adamım var -- plus concrete objects, food and drink, and a handful of
+natural abstracts like vaktim var and fikrim var), read via
+lexeme_filter: {possession_only: true}.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is
