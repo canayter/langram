@@ -22,16 +22,16 @@ export function SessionSummary({ stats, onContinue }: { stats: SessionStats; onC
 
   return (
     <div>
-      <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+      <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
         Session complete
       </p>
-      <h1 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
+      <h1 className="font-display mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
         {stats.answered} exercises{accuracy !== null && `, ${accuracy} percent right`}
       </h1>
 
       <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div>
-          <dt className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Marks earned
           </dt>
           <dd className="mt-1 text-lg font-semibold text-amber-600 dark:text-amber-400">
@@ -39,7 +39,7 @@ export function SessionSummary({ stats, onContinue }: { stats: SessionStats; onC
           </dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Day chain
           </dt>
           <dd className="mt-1 text-lg font-semibold text-orange-600 dark:text-orange-400">
@@ -47,7 +47,7 @@ export function SessionSummary({ stats, onContinue }: { stats: SessionStats; onC
           </dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Concepts practiced
           </dt>
           <dd className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
@@ -64,7 +64,7 @@ export function SessionSummary({ stats, onContinue }: { stats: SessionStats; onC
 
       {mistakes.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <h2 className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Worth a second look
           </h2>
           <ul className="mt-3 space-y-1 text-sm text-slate-600 dark:text-slate-300">

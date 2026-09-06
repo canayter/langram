@@ -40,7 +40,7 @@ export function ProgressScreen({ onBack }: { onBack: () => void }) {
 
         {report && (
           <>
-            <h1 className="text-xl font-semibold">{report.headline}</h1>
+            <h1 className="font-display text-xl font-semibold">{report.headline}</h1>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
               {report.answered} answered
               {report.accuracy !== null && `, ${Math.round(report.accuracy * 100)} percent right`}
@@ -48,7 +48,7 @@ export function ProgressScreen({ onBack }: { onBack: () => void }) {
 
             {report.skills.length > 0 && (
               <section className="mt-8">
-                <h2 className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <h2 className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   By rule
                 </h2>
                 <ul className="mt-3 space-y-4">
@@ -80,7 +80,7 @@ export function ProgressScreen({ onBack }: { onBack: () => void }) {
             )}
 
             <section className="mt-10">
-              <h2 className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <h2 className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 By concept
               </h2>
               <ul className="mt-3 space-y-5">

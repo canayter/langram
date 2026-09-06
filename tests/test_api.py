@@ -183,6 +183,22 @@ class TestCurriculum:
             "buffer-segments", "stem-alternation", "verb-person-marking",
         }
 
+    def test_bibliography_is_public_and_matches_what_units_cite(self, client):
+        """WhyPanel used to be able to show only the bare key from
+        research_refs, never the author or the actual claim, because nothing
+        exposed content/bibliography.yaml at all. Every ref a unit names has
+        to resolve to a real entry here, or the resolution silently drops it."""
+        units = client.get("/api/units").json()
+        bibliography = client.get("/api/bibliography").json()
+        assert bibliography
+        keys = {entry["key"] for entry in bibliography}
+        for unit in units:
+            for ref in unit["research_refs"]:
+                assert ref in keys, ref
+        first = bibliography[0]
+        assert first["claim"]
+        assert first["status"] in ("verified", "needs_citation")
+
 
 class TestServedWordInfo:
     """A word-info panel is meant to support an item, not answer it. Two

@@ -18,7 +18,7 @@ export function ReferenceScreen({ onBack }: { onBack: () => void }) {
           </button>
         </div>
 
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Vowels</h1>
+        <h1 className="font-display text-lg font-semibold text-slate-900 dark:text-slate-50">Vowels</h1>
         <VowelChart />
       </div>
     </div>

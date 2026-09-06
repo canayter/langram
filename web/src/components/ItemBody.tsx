@@ -14,7 +14,7 @@ type Props = {
 
 const optionBase =
   'rounded-lg border px-4 py-2.5 font-mono text-lg transition-colors ' +
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 '
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 '
 
 function optionClass(state: 'idle' | 'correct' | 'wrong', disabled: boolean) {
   if (state === 'correct') {
@@ -25,7 +25,7 @@ function optionClass(state: 'idle' | 'correct' | 'wrong', disabled: boolean) {
     return optionBase + 'border-red-400 bg-red-50 text-red-900 dark:bg-red-900/30 dark:text-red-100'
   }
   return optionBase + 'border-slate-300 text-slate-800 dark:border-slate-600 dark:text-slate-100 ' +
-    (disabled ? 'opacity-50 ' : 'hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 ')
+    (disabled ? 'opacity-50 ' : 'hover:border-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 ')
 }
 
 function Options({ values, labels, chosen, correct, settled, onAnswer, label }: {
@@ -66,7 +66,7 @@ function StemAndSuffix({ stem, suffix, gloss }: { stem: string; suffix?: Suffix;
       {suffix && (
         <>
           <span className="font-mono text-2xl text-slate-400">+</span>
-          <span className="font-mono text-2xl text-indigo-600 dark:text-indigo-400">
+          <span className="font-mono text-2xl text-rose-600 dark:text-rose-400">
             {suffix.notation}
           </span>
         </>
@@ -120,7 +120,7 @@ function TypeAnswer({ cue, settled, onAnswer }: {
       <button
         type="submit"
         disabled={settled || !value.trim()}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-500 disabled:opacity-50"
       >
         Check
       </button>

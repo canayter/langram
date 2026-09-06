@@ -27,16 +27,16 @@ const SESSION_LENGTH = 10
 function FocusBanner({ conceptName, onExit }: { conceptName: string; onExit: () => void }) {
   return (
     <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border
-                     border-indigo-200 bg-indigo-50 px-3 py-2 text-sm dark:border-indigo-900
-                     dark:bg-indigo-950/40">
-      <span className="text-indigo-900 dark:text-indigo-200">
+                     border-rose-200 bg-rose-50 px-3 py-2 text-sm dark:border-rose-900
+                     dark:bg-rose-950/40">
+      <span className="text-rose-900 dark:text-rose-200">
         Practicing <span className="font-medium">{conceptName}</span> on purpose &mdash;
         skipping the usual order.
       </span>
       <button
         onClick={onExit}
-        className="shrink-0 font-medium text-indigo-700 hover:text-indigo-900
-                   dark:text-indigo-300 dark:hover:text-indigo-100"
+        className="shrink-0 font-medium text-rose-700 hover:text-rose-900
+                   dark:text-rose-300 dark:hover:text-rose-100"
       >
         Back to normal practice
       </button>
@@ -52,12 +52,14 @@ const EMPTY_STATS: SessionStats = {
   mistakes: {},
 }
 
-function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUnits }: {
+function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUnits,
+                onShowSources }: {
   children: React.ReactNode
   onSignOut: () => void
   onShowProgress: () => void
   onShowReference: () => void
   onShowUnits: () => void
+  onShowSources: () => void
 }) {
   const { xp, streak } = useStats()
   return (
@@ -92,6 +94,12 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUni
               Progress
             </button>
             <button
+              onClick={onShowSources}
+              className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            >
+              Sources
+            </button>
+            <button
               onClick={onSignOut}
               className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
             >
@@ -106,11 +114,12 @@ function Shell({ children, onSignOut, onShowProgress, onShowReference, onShowUni
 }
 
 export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onShowUnits,
-                                focusConcept, onExitFocus }: {
+                                onShowSources, focusConcept, onExitFocus }: {
   onSignOut: () => void
   onShowProgress: () => void
   onShowReference: () => void
   onShowUnits: () => void
+  onShowSources: () => void
   focusConcept: string | null
   onExitFocus: () => void
 }) {
@@ -230,7 +239,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
 
   if (error) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -241,7 +250,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
 
   if (!item) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         <p className="text-slate-500">Loading.</p>
       </Shell>
     )
@@ -249,7 +258,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
 
   if (showSummary) {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         <SessionSummary stats={stats} onContinue={keepPracticing} />
       </Shell>
     )
@@ -259,12 +268,12 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
   // exercise. Not answered, so it never touches submit() or api.answer.
   if (item.payload.kind === 'intro') {
     return (
-      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+      <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
         {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
-        <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {item.unit_title}
         </p>
-        <h1 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
+        <h1 className="font-display mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
           {item.concept_name}
         </h1>
         <p className="mt-6 max-w-prose leading-relaxed text-slate-700 dark:text-slate-300">
@@ -279,14 +288,14 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
   }
 
   return (
-    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits}>
+    <Shell onSignOut={onSignOut} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources}>
       {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
       <div className="flex items-baseline justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
             {item.unit_title}
           </p>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+          <h1 className="font-display text-lg font-semibold text-slate-900 dark:text-slate-50">
             {item.concept_name}
           </h1>
         </div>
@@ -353,7 +362,7 @@ export function SessionScreen({ onSignOut, onShowProgress, onShowReference, onSh
           )}
 
           {!result.correct && result.tags.length > 0 && (
-            <p className="mt-2 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <p className="mt-2 font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {result.tags.map((t) => TAG_LABELS[t] ?? t).join(', ')}
             </p>
           )}

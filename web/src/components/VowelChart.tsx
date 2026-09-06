@@ -57,14 +57,14 @@ export function VowelChart() {
 
       <div className="mt-4 grid grid-cols-[auto_1fr_1fr] gap-2 text-sm">
         <div />
-        <div className="text-center text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Front
         </div>
-        <div className="text-center text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Back
         </div>
 
-        <div className="flex items-center text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="flex items-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Unrounded
         </div>
         <div className="grid grid-cols-2 gap-1.5">
@@ -74,7 +74,7 @@ export function VowelChart() {
           {cell(true, false).map((v) => <VowelCell key={v.symbol} vowel={v} />)}
         </div>
 
-        <div className="flex items-center text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="flex items-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Rounded
         </div>
         <div className="grid grid-cols-2 gap-1.5">

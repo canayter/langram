@@ -136,6 +136,22 @@ class VowelOut(BaseModel):
     high: bool
 
 
+class BibliographyEntryOut(BaseModel):
+    """One source the curriculum is allowed to cite, and what it is relied on
+    for. Read straight off content/bibliography.yaml -- the same file the
+    validator checks every unit's research_refs against, so this can never
+    list a source the content itself does not actually use."""
+    key: str
+    status: str
+    claim: str
+    authors: str | None = None
+    year: int | None = None
+    title: str | None = None
+    venue: str | None = None
+    url: str | None = None
+    area: str | None = None
+
+
 class ProgressOut(BaseModel):
     answered: int
     correct: int

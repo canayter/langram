@@ -6,12 +6,14 @@ credibility claim of an app that says it is research grounded.
 """
 from __future__ import annotations
 
+import yaml
 from fastapi import APIRouter
 from sqlalchemy import select
 
 from ...db.models import Unit
+from ...loader import CONTENT_ROOT
 from ..deps import LanguageDep, SessionDep
-from ..schemas import ConceptOut, UnitOut, VowelOut
+from ..schemas import BibliographyEntryOut, ConceptOut, UnitOut, VowelOut
 
 router = APIRouter(prefix="/api", tags=["content"])
 
@@ -32,6 +34,18 @@ def units(session: SessionDep) -> list[UnitOut]:
         )
         for unit in rows
     ]
+
+
+@router.get("/bibliography", response_model=list[BibliographyEntryOut])
+def bibliography() -> list[BibliographyEntryOut]:
+    """Every source a unit's research_refs is allowed to point at, read
+    straight off content/bibliography.yaml. Unexposed until now: WhyPanel
+    could only show a learner the bare keys (research_refs is a list of
+    strings), never the authors or the actual claim a citation makes."""
+    path = CONTENT_ROOT / "bibliography.yaml"
+    with path.open(encoding="utf-8") as fh:
+        entries = yaml.safe_load(fh)
+    return [BibliographyEntryOut(**entry) for entry in entries]
 
 
 @router.get("/language/vowels", response_model=list[VowelOut])

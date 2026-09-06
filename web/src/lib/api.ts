@@ -67,6 +67,12 @@ export type AnswerResult = {
 
 export type Vowel = { symbol: string; back: boolean; rounded: boolean; high: boolean }
 
+export type BibliographyEntry = {
+  key: string; status: string; claim: string
+  authors: string | null; year: number | null; title: string | null
+  venue: string | null; url: string | null; area: string | null
+}
+
 export type Concept = {
   id: string; name: string; type: string; why_hard: string; teaches_suffixes: string[]
   recurs_in: string[]
@@ -153,4 +159,5 @@ export const api = {
   units: () => call<Unit[]>('/api/units'),
   progress: () => call<Progress>('/api/progress'),
   vowels: () => call<Vowel[]>('/api/language/vowels'),
+  bibliography: () => call<BibliographyEntry[]>('/api/bibliography'),
 }

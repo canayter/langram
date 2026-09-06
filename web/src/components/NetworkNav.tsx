@@ -75,7 +75,7 @@ export function NetworkNav() {
         className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200
                    bg-white/80 text-slate-400 shadow-sm backdrop-blur transition
                    hover:text-slate-700 hover:shadow-md focus:outline-none
-                   focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2
+                   focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2
                    dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-500 dark:hover:text-slate-200"
       >
         <span aria-hidden className="text-[0.6rem] tracking-widest">&bull;&bull;&bull;</span>

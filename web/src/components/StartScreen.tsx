@@ -23,18 +23,21 @@ export function StartScreen() {
           morphological grammar, so the rules are applied rather than memorised.
         </p>
 
-        <dl className="mt-6 space-y-3 border-t border-slate-200 pt-6 dark:border-slate-800">
+        <dl className="mt-6 space-y-4 border-t border-slate-200 pt-6 dark:border-slate-800">
           <div>
-            <dt className="text-sm font-medium text-slate-900 dark:text-slate-100">
+            <dt className="font-display text-sm font-medium text-slate-900 dark:text-slate-100">
               You&apos;ll see a rule before you&apos;re asked to use it
             </dt>
             <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
               Every new pattern starts with exercises where you only have to
               recognise it. Producing it yourself comes after.
+              <span className="ml-1.5 font-mono text-xs text-rose-600 dark:text-rose-400">
+                VanPatten
+              </span>
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-slate-900 dark:text-slate-100">
+            <dt className="font-display text-sm font-medium text-slate-900 dark:text-slate-100">
               Topics are mixed, not drilled one at a time
             </dt>
             <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
@@ -43,22 +46,28 @@ export function StartScreen() {
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-slate-900 dark:text-slate-100">
+            <dt className="font-display text-sm font-medium text-slate-900 dark:text-slate-100">
               Review comes back on its own schedule
             </dt>
             <dd className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
               Answers you get right come back at increasing intervals; ones you
               miss come back sooner. Check your progress any time.
+              <span className="ml-1.5 font-mono text-xs text-rose-600 dark:text-rose-400">
+                Cepeda et al.
+              </span>
             </dd>
           </div>
         </dl>
+        <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
+          Full sources, not just names, are one tap away once you&apos;re in &mdash; see Sources.
+        </p>
 
         {!showForm ? (
           <div className="mt-8 space-y-3">
             <button
               onClick={() => void startAsGuest()}
               disabled={busy}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
+              className="w-full rounded-lg font-display bg-rose-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-500 disabled:opacity-60"
             >
               {busy ? 'Starting' : 'Start learning'}
             </button>
@@ -103,7 +112,7 @@ export function StartScreen() {
             <button
               type="submit"
               disabled={busy}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
+              className="w-full rounded-lg font-display bg-rose-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-rose-500 disabled:opacity-60"
             >
               {register ? 'Create account' : 'Sign in'}
             </button>

@@ -40,7 +40,7 @@ export function UnitsScreen({ onBack, onSelectConcept }: {
           </button>
         </div>
 
-        <h1 className="text-xl font-semibold">Units</h1>
+        <h1 className="font-display text-xl font-semibold">Units</h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Jump straight to any concept. Nothing here is locked &mdash; picking one skips ahead
           of whatever the usual order would serve next, and normal practice picks up again
@@ -54,7 +54,7 @@ export function UnitsScreen({ onBack, onSelectConcept }: {
           <div className="mt-8 space-y-8">
             {units.map((unit) => (
               <section key={unit.id}>
-                <h2 className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <h2 className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Unit {unit.order} &middot; {unit.title}
                 </h2>
                 <ul className="mt-3 space-y-1">
@@ -67,7 +67,7 @@ export function UnitsScreen({ onBack, onSelectConcept }: {
                           className="flex w-full items-center justify-between gap-4 rounded-lg
                                      px-3 py-2 text-left hover:bg-slate-100
                                      focus:outline-none focus-visible:ring-2
-                                     focus-visible:ring-indigo-400 focus-visible:ring-offset-2
+                                     focus-visible:ring-rose-400 focus-visible:ring-offset-2
                                      dark:hover:bg-slate-800"
                         >
                           <span className="font-medium">{concept.name}</span>
