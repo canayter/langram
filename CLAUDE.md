@@ -143,7 +143,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, ten units**:
+**Curriculum, eleven units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -202,6 +202,14 @@ before.
     ones -- most visibly geldik's -k for "we", which resembles neither.
     Scoped to the definite, witnessed past only; the reported past
     (-mIş) is a different unit. See `docs/pedagogy-rationale.md`.
+11. Asking about the past. Unit 9's mI rule (the person ending moves onto
+    the particle) does not hold here: -DI's own person paradigm (unit 10)
+    stays on the verb, and mI just follows bare -- geldin mi, never geldi
+    misin. Built on the same phrase.py QuestionParticle as unit 9, but
+    used with no suffix chain, the same shape unit 9's own var mı / yok mu
+    already used for the identical reason (nothing to move). Needed no
+    engine or phrase.py changes at all; verified directly against the
+    engine before anything shipped. See `docs/pedagogy-rationale.md`.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -328,12 +336,6 @@ the type checker and the existing test suite.
   için, no pronouns in the lexicon yet) and kadar entirely (it governs a
   different case depending on which of its two meanings, comparison or
   "until", is meant) -- see `docs/pedagogy-rationale.md`.
-- **Past-tense questions** (geldin mi?, did you come?). The past tense
-  itself is now built (unit 10), but unit 9's mI does not cover it yet,
-  and past-tense mI is a genuinely different rule from every case unit 9
-  already teaches: the person ending stays on the verb and mI follows
-  bare (geldin mi, not geldi misin), the opposite of how mI attaches
-  everywhere else. Now unblocked; a natural next step.
 - **The reported/evidential past, -mIş** (gelmiş, apparently came).
   Deliberately scoped out of unit 10 as a different, real distinction
   from the definite past, not a variant of it.

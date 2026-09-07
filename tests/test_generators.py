@@ -671,3 +671,42 @@ class TestQuestion:
             again = assemble(_spec(generator, **self._params(base, pos)), language, item.spec)
             assert again.answer == item.answer
             assert again.payload == item.payload
+
+
+class TestPastQuestion:
+    """Past-tense mI is the one case that breaks TestQuestion's rule: the
+    person ending stays on the verb and mI follows bare, geldin mi rather
+    than geldi misin."""
+
+    def _params(self):
+        return {"lexeme_filter": {"pos": "verb"}}
+
+    def test_recognition_and_production_agree_on_the_answer(self, language):
+        rng = random.Random(1)
+        for _ in range(10):
+            item = generate(_spec("past_question", **self._params()), language, rng)
+            assert item.payload["kind"] == "choose_meaning"
+            assert item.answer in item.payload["options"]
+
+            prod = generate(_spec("past_question_production", **self._params()), language, rng)
+            assert prod.payload["kind"] == "type"
+            assert prod.accepts(prod.answer, normalize)
+
+    def test_the_person_ending_stays_on_the_verb_not_the_particle(self, language):
+        """The opposite property from TestQuestion: mI itself must be bare,
+        never carrying a person ending, and the verb (first word) must
+        already be the full geldin/okudum/etc shape on its own."""
+        rng = random.Random(2)
+        for _ in range(12):
+            item = generate(_spec("past_question_production", **self._params()), language, rng)
+            words = item.answer.split()
+            assert len(words) == 2, item.answer
+            assert words[1] in ("mı", "mi", "mu", "mü"), item.answer
+
+    def test_assemble_reproduces_the_item(self, language):
+        rng = random.Random(3)
+        for generator in ("past_question", "past_question_production"):
+            item = generate(_spec(generator, **self._params()), language, rng)
+            again = assemble(_spec(generator, **self._params()), language, item.spec)
+            assert again.answer == item.answer
+            assert again.payload == item.payload

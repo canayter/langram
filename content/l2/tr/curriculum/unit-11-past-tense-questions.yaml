@@ -1,0 +1,60 @@
+id: unit-11-past-tense-questions
+order: 11
+title: Asking about the past
+rationale: >
+  Unit 9 taught one rule for mI across every predicate type it covered: the
+  person ending moves off the predicate and onto mI itself (geliyor musun,
+  never geliyorsun mu). The past tense is the one place that rule does not
+  hold. -DI's own person paradigm (unit 10) stays on the verb exactly where
+  a statement puts it, and mI simply follows, bare: geldin mi, never
+  geldi misin. A learner who has just internalized unit 9's rule as
+  universal needs this exception pointed out directly, not left to
+  discover by producing geldi misin and being told it is wrong.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-09-questions
+  - unit-10-past-tense
+
+concepts:
+  - id: question-past
+    name: Asking what happened
+    type: grammatical_feature
+    why_hard: >
+      Every predicate type in unit 9 moved its person ending onto mI. This
+      one does not, and it is the same suffix, mI, behaving differently
+      depending on what precedes it. Geldi misin looks like a small,
+      reasonable extension of a rule that has held every other time and is
+      simply not a Turkish sentence.
+    intro: >
+      Asking about the past does not move anything. Geldin, you came, stays
+      exactly as it is, and mI is added after it as its own word, harmonizing
+      the same four-way choice you already know: geldin mi, did you come.
+
+      Compare this directly to what unit 9 taught: geliyorsun, you are
+      coming, becomes geliyor musun, the person ending moving onto mu. The
+      past tense breaks that pattern on purpose, not by exception to be
+      memorized case by case, but because it uses its own person paradigm
+      (unit 10) rather than the predicative one every other question in
+      this content was built on.
+
+      Oku, read, plus this suffix and -m gives okudum, I read; asking
+      about it gives okudum mu, harmonizing with the rounded u in okudum,
+      did I read.
+    teaches_suffixes: []
+    exercises:
+      - id: recognize-the-past-question
+        stage: structured_input
+        generator: past_question
+        prompt: "What does this ask?"
+        difficulty: 3
+        params:
+          lexeme_filter: { pos: verb }
+      - id: ask-what-happened
+        stage: free_output
+        generator: past_question_production
+        prompt: "Ask this in Turkish."
+        difficulty: 4
+        params:
+          lexeme_filter: { pos: verb }

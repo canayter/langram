@@ -124,6 +124,21 @@ REGISTRY: dict[str, Generator] = {
             "recognised. Thin wrapper around question.py.",
             implemented=True,
         ),
+        Generator(
+            "past_question",
+            "structured_input",
+            "Yes/no questions in the past tense: unlike question.py, the "
+            "person ending stays on the verb and mI follows bare. Built on "
+            "phrase.py's QuestionParticle with no suffix chain.",
+            implemented=True,
+        ),
+        Generator(
+            "past_question_production",
+            "free_output",
+            "Past-tense yes/no questions, produced from an English prompt "
+            "rather than recognised. Thin wrapper around past_question.py.",
+            implemented=True,
+        ),
     ]
 }
 
@@ -192,6 +207,7 @@ def _modules() -> dict:
     from . import (
         cloze_suffix_choice, cued_recall, existence, existence_production,
         form_meaning_match, grammaticality_judgement, minimal_pair_identification,
+        past_question, past_question_production,
         postposition, postposition_production, question, question_production,
         suffix_builder, type_the_form, vocab_recognition,
     )
@@ -210,6 +226,8 @@ def _modules() -> dict:
         "postposition_production": postposition_production,
         "question": question,
         "question_production": question_production,
+        "past_question": past_question,
+        "past_question_production": past_question_production,
     }
 
 

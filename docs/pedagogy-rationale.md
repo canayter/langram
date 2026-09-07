@@ -344,6 +344,44 @@ Scoped to the definite, witnessed past only. The reported/evidential past
 left for its own unit rather than taught alongside this one as an
 afterthought.
 
+## Past-tense mI is the exception to the rule unit 9 just taught as universal
+
+Unit 9 taught one behavior across three predicate types (nominal, present
+progressive, ability) and reused it a fourth time for existence: mI
+harmonizes fourfold against whatever precedes it, always. The one place it
+does not generalize is the past tense. There, the person ending -- unit
+10's own paradigm, not the predicative one every unit 9 exercise was built
+on -- stays on the verb exactly where a statement puts it, and mI simply
+follows, bare: geldin mi, never geldi misin. Göksel and Kerslake describe
+the past and the conditional (not taught here) as the two tenses where the
+personal ending is retained on the verb itself rather than moving onto mI,
+which is the mechanism this unit's why_hard text points at directly rather
+than letting a learner discover it by producing geldi misin and being told
+it is wrong.
+
+This did not need a new phrase.py part, or even new logic inside the
+existing one: `QuestionParticle` already supported a bare, no-suffix-chain
+mode, because unit 9's own var mı / yok mu needed exactly that (var and yok
+never carry a person suffix to begin with, so mI never has anything to
+take from them). Past-tense mI is architecturally identical to that case,
+not to question.py's nominal/progressive/ability shape where the particle
+takes a further suffix chain: the verb (stem + DI + person) is inflected
+in full first, exactly like any other Word, and QuestionParticle() with no
+suffixes follows it as a second, invariant word. The one meaningful
+difference from existence's case is the first word's own shape (a fully
+inflected verb rather than a Literal like var/yok), which needed no change
+to phrase.py at all -- render() already treats every Word the same way
+regardless of what suffixes it carries. Confirmed directly against the
+engine across all four verb-final harmony classes before anything shipped:
+geldin mi, okudum mu, çalıştık mı, içtim mi -- every rounding, backness and
+devoicing combination correct on the first attempt, since nothing here
+asked the engine to do anything it had not already done for unit 9 and
+unit 10 separately.
+
+New content only: `past_question.py` and `past_question_production.py`,
+the same build/assemble-plus-thin-wrapper shape every prior phrase.py
+generator uses, with no other file touched except the registry.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is
