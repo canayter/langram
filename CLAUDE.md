@@ -143,7 +143,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, nine units**:
+**Curriculum, ten units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -192,6 +192,16 @@ before.
    can itself take a further suffix chain": a synthetic Lexeme built from
    mI's own resolved vowel, handed to the exact same engine.inflect()
    every Word already uses. See `docs/pedagogy-rationale.md`.
+10. The simple past tense, -DI (geldi, came), plus its own person
+    endings (PAST1SG/PAST2SG/PAST1PL/PAST2PL: -m/-n/-k/-nIz). -DI needed
+    no engine work at all: it attaches directly to any stem with no
+    buffer and no vowel deletion, and D/I are archiphonemes engine.py
+    already handled in full generality. The real discovery was that its
+    person endings are a genuinely distinct third paradigm, reusing
+    neither unit 2/5/6's predicative endings nor unit 3's possessive
+    ones -- most visibly geldik's -k for "we", which resembles neither.
+    Scoped to the definite, witnessed past only; the reported past
+    (-mIş) is a different unit. See `docs/pedagogy-rationale.md`.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -318,13 +328,16 @@ the type checker and the existing test suite.
   için, no pronouns in the lexicon yet) and kadar entirely (it governs a
   different case depending on which of its two meanings, comparison or
   "until", is meant) -- see `docs/pedagogy-rationale.md`.
-- **Past-tense questions** (geldin mi?, did you come?). Unit 9's mI
-  covers every predicate type this app currently has, but the past tense
-  itself is not one of them yet, and past-tense mI is a genuinely
-  different rule once it exists: the person ending stays on the verb and
-  mI follows bare, the opposite of every case unit 9 teaches. Revisit once
-  the past tense is built, not before.
-- **The aorist, evidential, passive, causative, reflexive/reciprocal,
+- **Past-tense questions** (geldin mi?, did you come?). The past tense
+  itself is now built (unit 10), but unit 9's mI does not cover it yet,
+  and past-tense mI is a genuinely different rule from every case unit 9
+  already teaches: the person ending stays on the verb and mI follows
+  bare (geldin mi, not geldi misin), the opposite of how mI attaches
+  everywhere else. Now unblocked; a natural next step.
+- **The reported/evidential past, -mIş** (gelmiş, apparently came).
+  Deliberately scoped out of unit 10 as a different, real distinction
+  from the definite past, not a variant of it.
+- **The aorist, passive, causative, reflexive/reciprocal,
   imperative/optative, word order/focus, common derivational suffixes**
   -- all real, all still entirely absent. The aorist specifically needs a
   trustworthy per-verb high/low-vowel wordlist before it can be built

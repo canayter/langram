@@ -235,6 +235,41 @@ ABILITY = [
     ("yap", ["ABIL", "ABILTENSE", "PRED3SG"], "yapabilirdir"),
 ]
 
+# ── Simple past: -DI, and a third, non-reused person paradigm ───────────────
+# No buffer and no vowel-deletion at all, unlike every other tense suffix
+# taught so far (compare -(y)Iyor's Ø-deletion and -(y)Abil's buffer y):
+# DI attaches directly to a vowel-final stem with nothing inserted. D
+# devoices exactly like final_voicing would, but for a different reason --
+# the suffix's own consonant reading the stem's voicing, not the stem
+# itself alternating -- confirmed by git giving gitti, not gidti (D reads
+# git's own final t as voiceless; final_voicing never triggers here at
+# all, since that rule only ever fires before a vowel-initial suffix, and D
+# is not one). The person endings here (PAST1SG -m, PAST2SG -n, PAST1PL -k,
+# PAST2PL -nIz) are their own paradigm, not a reuse of the predicative
+# endings (unit 2, reused again in units 5 and 6) or the possessive ones
+# (unit 3); -k for "we" in particular matches neither.
+PAST_TENSE = [
+    ("gel", ["DI"], "geldi"),               # consonant-final, voiced: d
+    ("git", ["DI"], "gitti"),               # own final t is voiceless: t, not gidti
+    ("yap", ["DI"], "yaptı"),               # voiceless p: t
+    ("oku", ["DI"], "okudu"),               # vowel-final: no buffer at all
+    ("bekle", ["DI"], "bekledi"),
+    ("iç", ["DI"], "içti"),                 # voiceless ç: t
+    ("çalış", ["DI"], "çalıştı"),           # voiceless ş: t
+    ("otur", ["DI"], "oturdu"),
+    ("iste", ["DI"], "istedi"),
+    ("konuş", ["DI"], "konuştu"),           # voiceless ş: t
+    ("gel", ["DI", "PAST1SG"], "geldim"),
+    ("gel", ["DI", "PAST2SG"], "geldin"),
+    ("gel", ["DI", "PAST1PL"], "geldik"),   # -k, unlike any other paradigm
+    ("gel", ["DI", "PAST2PL"], "geldiniz"),
+    ("gel", ["DI", "PL"], "geldiler"),      # 3pl reuses PL directly
+    ("yap", ["DI", "PAST1SG"], "yaptım"),
+    ("yap", ["DI", "PAST1PL"], "yaptık"),
+    ("oku", ["DI", "PAST1SG"], "okudum"),
+    ("oku", ["DI", "PAST2PL"], "okudunuz"),
+]
+
 ALL = (
     [("plain", *r) for r in PLAIN]
     + [("buffer", *r) for r in BUFFERED]
@@ -246,6 +281,7 @@ ALL = (
     + [("predicative", *r) for r in PREDICATIVE]
     + [("verbal", *r) for r in VERBAL]
     + [("ability", *r) for r in ABILITY]
+    + [("past-tense", *r) for r in PAST_TENSE]
 )
 
 

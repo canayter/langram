@@ -166,7 +166,7 @@ class TestAuth:
 class TestCurriculum:
     def test_units_are_public_and_carry_their_rationale(self, client):
         units = client.get("/api/units").json()
-        assert [u["order"] for u in units] == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        assert [u["order"] for u in units] == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         first = units[0]
         assert first["research_refs"], "a unit with no citations should not exist"
         assert len(first["rationale"]) > 40

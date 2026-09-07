@@ -306,6 +306,44 @@ because the past tense itself is not built yet; negative questions
 should work already through the same mechanism, but were not separately
 curated into this unit's content.
 
+## The past tense needed no engine work, and a genuinely new person paradigm
+
+-DI looked, before it was checked, like it might need something new: every
+other tense suffix taught so far either inserts a buffer after a vowel-final
+stem (-(y)Iyor's y, -(y)Abil's y) or deletes the stem's own final vowel
+first (-(y)Iyor's Ø step). -DI does neither. It attaches directly to
+whatever precedes it, vowel or consonant, with nothing inserted and nothing
+dropped: oku plus this suffix gives okudu, not okuydu or okudu-with-a-buffer.
+D and I are both archiphonemes engine.py already handles in full generality
+(voicing assimilation, fourfold harmony), so nothing in the engine changed
+for this unit -- confirmed directly against it, not assumed, before a
+suffix entry or a test was written: gel -> geldi, git -> gitti (D reads
+git's own final t as voiceless, giving gitti rather than gidti; the
+independent final_voicing rule that would otherwise apply to a stem like
+kitap never fires here at all, since it only triggers before a
+vowel-initial suffix, and D is not one), yap -> yaptı, oku -> okudu.
+
+The person endings after -DI are a different matter. Before writing
+anything, the working assumption (carried over from a much earlier point in
+this project, before it was checked) was that these might reuse either the
+predicative endings (unit 2, already reused twice more in units 5 and 6) or
+the possessive endings (unit 3). Neither is correct. Research confirmed a
+third, distinct paradigm -- traditionally described as the short subject
+markers used only after the definite past -DI and the conditional -sA (not
+built) -- m/n/Ø/k/nIz/lAr, matching neither predicative -(y)Im/-sIn/-DIr/
+-(y)Iz/-sInIz nor possessive -(I)m/-(I)n/-(s)I/-(I)mIz/-(I)nIz. The clearest
+tell is "we": geldik uses -k, which resembles neither -(y)Iz nor -(I)mIz at
+all, so it cannot be reasoned out from a pattern a learner already has and
+has to be taught as its own small, closed set. Third singular stays bare,
+matching every other tense's precedent; third plural reuses -lAr directly,
+the same reuse-over-duplication choice already made for present-tense
+person marking in unit 5.
+
+Scoped to the definite, witnessed past only. The reported/evidential past
+(-mIş) is a real, separate distinction, not a variant of this one, and is
+left for its own unit rather than taught alongside this one as an
+afterthought.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

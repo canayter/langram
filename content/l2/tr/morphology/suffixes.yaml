@@ -201,3 +201,53 @@
   # suffix starts with stem_exposed already false, which is exactly the
   # case harmony_back resetting to None was fixed for earlier this
   # project (see engine.py, and saat+PL+LOC in test_known_forms.py).
+
+- id: DI
+  surface: "-DI"
+  category: tense
+  slot: 6
+  glosses: [past]
+  # No buffer, and no vowel-deletion or final-voicing on the stem either:
+  # DI attaches directly to whatever precedes it, vowel or consonant,
+  # unlike -(y)Iyor's Ø-deletion or the ordinary -(y)I buffer. D and I are
+  # both archiphonemes already fully handled by engine.py (voicing
+  # assimilation, fourfold harmony); nothing new needed there. Confirmed
+  # against multiple independent descriptions and directly against the
+  # engine before this shipped: gel -> geldi, git -> gitti (D devoices
+  # after git's own voiceless t, not gidti -- final_voicing only ever
+  # triggers before a vowel-initial suffix, and D is not one), yap ->
+  # yaptı, oku -> okudu (no buffer at all after a vowel-final stem, unlike
+  # every suffix taught so far).
+
+# ── Past-tense person endings: a third paradigm, not a reuse ────────────────
+# Neither the predicative endings (unit 2, reused for the present tense and
+# ability in units 5 and 6) nor the possessive endings (unit 3) are used
+# here. This is confirmed in the literature as its own set, traditionally
+# used only after the definite past -DI and the conditional -sA (the
+# conditional is not built). Third singular is bare, matching every other
+# tense's precedent; third plural reuses PL (-lAr) exactly, the same
+# reuse-over-duplication decision already made for present-tense person
+# marking in unit 5.
+- id: PAST1SG
+  surface: "-m"
+  category: person
+  slot: 7
+  glosses: ["I (past)"]
+
+- id: PAST2SG
+  surface: "-n"
+  category: person
+  slot: 7
+  glosses: ["you (past, singular)", "you (past)"]
+
+- id: PAST1PL
+  surface: "-k"
+  category: person
+  slot: 7
+  glosses: ["we (past)"]
+
+- id: PAST2PL
+  surface: "-nIz"
+  category: person
+  slot: 7
+  glosses: ["you (past, plural)"]

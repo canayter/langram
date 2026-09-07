@@ -1,0 +1,142 @@
+id: unit-10-past-tense
+order: 10
+title: The simple past tense
+rationale: >
+  Every verbal unit so far describes the present: what is happening, what
+  can happen. Nothing until now lets a learner say what already happened,
+  which is a real gap for anyone trying to hold an actual conversation
+  rather than narrate the current moment. -DI is the definite, witnessed
+  past, the one a learner reaches for by default; the reported past
+  (-mIş) is a different, real distinction left for its own unit rather than
+  taught alongside this one as an afterthought.
+
+  This unit also introduces the third and last person paradigm this content
+  will teach: neither the predicative endings (unit 2, reused for the
+  present tense and ability) nor the possessive endings (unit 3) are used
+  after -DI. A learner who assumes person marking is one thing they already
+  know, applied everywhere, needs this pointed out directly.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-05-present-tense
+
+concepts:
+  - id: simple-past
+    name: What happened, with -DI
+    type: grammatical_feature
+    why_hard: >
+      This suffix attaches directly to the stem with nothing in between,
+      no buffer after a vowel and no vowel drop, unlike every other tense
+      suffix taught so far: okudu, not okuydu or okdu. It also devoices
+      exactly the way a stem's own final consonant does, but for a
+      different reason, the suffix's own first consonant reading the
+      stem's voicing rather than the stem changing itself.
+    intro: >
+      This suffix means something already happened: gel, come, plus this
+      suffix gives geldi, came. Unlike -(y)Iyor, it needs no buffer at all
+      after a vowel-final stem: oku, read, plus this suffix gives okudu
+      directly, nothing inserted between them.
+
+      The consonant at the start of this suffix voices or devoices
+      depending on what comes right before it, the same voicing you have
+      already seen in stems like kitap: after a voiceless sound it
+      surfaces as t, git, go, giving gitti, not gidti; after anything else
+      it surfaces as d, as in geldi and okudu.
+
+      The vowel harmonizes the same four-way choice you already know from
+      fourfold harmony. Everything here is still the third person, is/are
+      doing, which needs no suffix at all, matching every other tense you
+      have met.
+    teaches_suffixes: [DI]
+    exercises:
+      - id: notice-the-past-tense
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffix: DI
+          distractor: wrong_harmony
+          lexeme_filter: { pos: verb }
+      - id: is-this-past-tense-correct
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 2
+        params:
+          suffix: DI
+          lexeme_filter: { pos: verb }
+      - id: build-the-past-tense
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add -DI. Watch the suffix change shape as you attach it."
+        difficulty: 3
+        params:
+          suffix: DI
+          lexeme_filter: { pos: verb }
+          show_derivation: true
+
+  - id: past-tense-person
+    name: Person marking on the past tense
+    type: grammatical_feature
+    why_hard: >
+      These endings look similar to ones already learned and are not the
+      same ones: -m and -n resemble the possessive endings, but -k for we
+      is entirely new, matching neither -(y)Iz (predicative) nor -(I)mIz
+      (possessive). This set exists only after -DI (and the conditional,
+      not taught here), so it cannot be predicted by analogy to anything
+      else in this content; it has to be learned as its own small set.
+    intro: >
+      The past tense uses its own person endings, different from the ones
+      you already know. Compare geldim, I came, to geliyorum, I am coming,
+      and öğrenciyim, I am a student: the ending after -DI is -m, not
+      -(y)Im. gel plus this suffix plus -n gives geldin, you came.
+
+      The most distinct one is we: geldik, we came, uses -k, an ending
+      that appears nowhere else in this content. It does not resemble
+      -(y)Iz or -(I)mIz at all, so it has to be learned on its own rather
+      than reasoned out from a pattern you already have.
+
+      The third person plural reuses the same -lAr you already know from
+      the plural itself: geldiler, they came. The third person singular
+      still needs nothing added: geldi on its own already means he, she or
+      it came.
+    teaches_suffixes: [PAST1SG, PAST2SG, PAST1PL, PAST2PL]
+    exercises:
+      - id: who-arrived
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "Who is this sentence about?"
+        difficulty: 2
+        params:
+          cue: person_suffix_only
+          persons: [PAST1SG, PAST2SG, PAST1PL, PAST2PL]
+          base_suffixes: [DI]
+          lexeme_filter: { pos: verb }
+      - id: say-what-happened
+        stage: guided_output
+        generator: cloze_suffix_choice
+        prompt: "Complete the sentence."
+        difficulty: 3
+        params:
+          persons: [PAST1SG, PAST2SG, PAST1PL, PAST2PL]
+          base_suffixes: [DI]
+          lexeme_filter: { pos: verb }
+      - id: past-tense-production
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          persons: [PAST1SG, PAST2SG, PAST1PL, PAST2PL]
+          base_suffixes: [DI]
+          lexeme_filter: { pos: verb }
+      - id: past-tense-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+        params:
+          persons: [PAST1SG, PAST2SG, PAST1PL, PAST2PL]
+          base_suffixes: [DI]
+          lexeme_filter: { pos: verb }
