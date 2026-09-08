@@ -13,6 +13,8 @@
   status: needs_citation
   area: sla
   authors: VanPatten
+  title: "Processing Instruction: Theory, Research, and Commentary"
+  year: 2004
   claim: >
     Learners should process a form in comprehension before being asked to
     produce it. Structured input activities make the target form the only cue
@@ -30,6 +32,8 @@
   status: needs_citation
   area: memory
   authors: Roediger and Karpicke
+  title: "Test-enhanced learning"
+  year: 2006
   claim: >
     Retrieval practice beats restudy for retention, so production and cued
     recall are preferred over recognition once an item is past introduction.
@@ -37,10 +41,16 @@
 - key: cepeda-distributed-practice
   status: needs_citation
   area: memory
-  authors: Cepeda and colleagues
+  authors: Cepeda, Vul, Rohrer, Wixted and Pashler
+  title: "Spacing effects in learning: A temporal ridgeline of optimal retention"
+  year: 2008
   claim: >
     Spacing reviews at expanding intervals improves long term retention.
-    Justifies scheduling with FSRS rather than massed review.
+    Justifies scheduling with FSRS rather than massed review. The optimal
+    gap between reviews is roughly 10-20% of the target retention interval,
+    a parameter this project does not yet expose (see docs/research-spec.md
+    section 1.1) -- worth a target_retention_days setting rather than fixed
+    FSRS constants once that is prioritized.
 
 - key: interleaving-over-blocking
   status: needs_citation
@@ -57,16 +67,27 @@
   claim: >
     Prompts that push a learner to self-correct outperform recasts that hand
     over the correct model. Justifies the escalation ladder from clarification
-    request to explicit correction.
+    request to explicit correction, already implemented in diagnosis.py
+    (attempt 1 = clarification, later attempts = explicit). Status stays
+    needs_citation: docs/research-spec.md (2026-09-07) corroborates the same
+    finding via a closely related paper (Lyster & Saito 2010, Oral feedback
+    in classroom SLA, Studies in Second Language Acquisition 32(2)) but does
+    not supply a matching precise reference for "Lyster and Ranta" itself, so
+    nothing has been added here rather than guessing which Lyster and Ranta
+    paper was originally meant.
 
 - key: pienemann-processability
   status: needs_citation
   area: sla
   authors: Pienemann
+  title: "Language Processing and Second Language Development"
+  year: 1998
   claim: >
     Structures are acquired in a developmental order constrained by what the
     learner can process, not by how simple they look. Justifies placing
-    nominalized subordination late despite its frequency.
+    nominalized subordination late despite its frequency. A concrete Turkish
+    stage sequence derived from this and the L2-Turkish acquisition
+    literature is in docs/research-spec.md section 5.3.
 
 - key: logan-lively-pisoni-hvpt
   status: needs_citation
@@ -80,16 +101,23 @@
 - key: flege-slm
   status: needs_citation
   area: l2-speech
-  authors: Flege
+  authors: Flege and Bohn
+  title: "The revised Speech Learning Model (SLM-r)"
+  year: 2021
   claim: >
     Second language sounds are assimilated to first language categories, and
     how close the assimilation is predicts the difficulty. Used to choose the
-    contrast inventory for perception training.
+    contrast inventory for perception training. docs/research-spec.md
+    section 5.1 applies this directly to Turkish: /ɯ/ (ı) has no stable L1
+    English mapping and is predicted hardest, /y/ and /ø/ (ü, ö) have no
+    English counterpart at all and are novel-category cases.
 
 - key: best-pam
   status: needs_citation
   area: l2-speech
-  authors: Best
+  authors: Best and Tyler
+  title: "Nonnative and second-language speech perception"
+  year: 2007
   claim: >
     Perceptual assimilation patterns predict which non-native contrasts are
     hard to discriminate.

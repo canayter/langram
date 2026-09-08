@@ -111,6 +111,18 @@ subdirectory needs for its own API origin, are in `docs/deploy.md`.
                        reading before adding a new one (see the working
                        agreement above).
     docs/deploy.md     exact Fly.io + ayter.com deployment steps.
+    docs/research-spec.md
+                       a much larger SLA/pronunciation/vocabulary research
+                       brief the project owner compiled (2026-09-07), with
+                       exact citations, effect sizes, and concrete build
+                       implications going well beyond what is scoped or
+                       built yet -- a planning reference, not a description
+                       of current behavior. Cross-check before assuming a
+                       recommendation there isn't already done: e.g. its
+                       corrective-feedback recommendation (prompt on first
+                       error, explicit correction after) already matches
+                       diagnosis.py's existing clarification/explicit
+                       ladder exactly.
 
 ## Rules the tooling enforces for you
 

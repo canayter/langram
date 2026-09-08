@@ -12,27 +12,27 @@ forbidden by the working agreement.
 - `long-focus-on-form` Long  **NEEDS CITATION**
   Grammar is taught inside meaning-primary activity rather than as isolated paradigm drill. Justifies having no screen that is only a table.
 - `lyster-ranta-feedback` Lyster and Ranta  **NEEDS CITATION**
-  Prompts that push a learner to self-correct outperform recasts that hand over the correct model. Justifies the escalation ladder from clarification request to explicit correction.
-- `pienemann-processability` Pienemann  **NEEDS CITATION**
-  Structures are acquired in a developmental order constrained by what the learner can process, not by how simple they look. Justifies placing nominalized subordination late despite its frequency.
-- `vanpatten-input-processing` VanPatten  **NEEDS CITATION**
+  Prompts that push a learner to self-correct outperform recasts that hand over the correct model. Justifies the escalation ladder from clarification request to explicit correction, already implemented in diagnosis.py (attempt 1 = clarification, later attempts = explicit). Status stays needs_citation: docs/research-spec.md (2026-09-07) corroborates the same finding via a closely related paper (Lyster & Saito 2010, Oral feedback in classroom SLA, Studies in Second Language Acquisition 32(2)) but does not supply a matching precise reference for "Lyster and Ranta" itself, so nothing has been added here rather than guessing which Lyster and Ranta paper was originally meant.
+- `pienemann-processability` Pienemann, 1998  **NEEDS CITATION**
+  Structures are acquired in a developmental order constrained by what the learner can process, not by how simple they look. Justifies placing nominalized subordination late despite its frequency. A concrete Turkish stage sequence derived from this and the L2-Turkish acquisition literature is in docs/research-spec.md section 5.3.
+- `vanpatten-input-processing` VanPatten, 2004  **NEEDS CITATION**
   Learners should process a form in comprehension before being asked to produce it. Structured input activities make the target form the only cue to meaning, so it cannot be skipped.
 
 ## Memory and practice
 
-- `cepeda-distributed-practice` Cepeda and colleagues  **NEEDS CITATION**
-  Spacing reviews at expanding intervals improves long term retention. Justifies scheduling with FSRS rather than massed review.
+- `cepeda-distributed-practice` Cepeda, Vul, Rohrer, Wixted and Pashler, 2008  **NEEDS CITATION**
+  Spacing reviews at expanding intervals improves long term retention. Justifies scheduling with FSRS rather than massed review. The optimal gap between reviews is roughly 10-20% of the target retention interval, a parameter this project does not yet expose (see docs/research-spec.md section 1.1) -- worth a target_retention_days setting rather than fixed FSRS constants once that is prioritized.
 - `interleaving-over-blocking`  **NEEDS CITATION**
   Blocked practice produces better in-session performance and worse retention than interleaved practice. Justifies mixing structures within a session even though it feels harder to the learner.
-- `roediger-karpicke-retrieval` Roediger and Karpicke  **NEEDS CITATION**
+- `roediger-karpicke-retrieval` Roediger and Karpicke, 2006  **NEEDS CITATION**
   Retrieval practice beats restudy for retention, so production and cued recall are preferred over recognition once an item is past introduction.
 
 ## L2 speech and perception
 
-- `best-pam` Best  **NEEDS CITATION**
+- `best-pam` Best and Tyler, 2007  **NEEDS CITATION**
   Perceptual assimilation patterns predict which non-native contrasts are hard to discriminate.
-- `flege-slm` Flege  **NEEDS CITATION**
-  Second language sounds are assimilated to first language categories, and how close the assimilation is predicts the difficulty. Used to choose the contrast inventory for perception training.
+- `flege-slm` Flege and Bohn, 2021  **NEEDS CITATION**
+  Second language sounds are assimilated to first language categories, and how close the assimilation is predicts the difficulty. Used to choose the contrast inventory for perception training. docs/research-spec.md section 5.1 applies this directly to Turkish: /ɯ/ (ı) has no stable L1 English mapping and is predicted hardest, /y/ and /ø/ (ü, ö) have no English counterpart at all and are novel-category cases.
 - `lobanov-normalization` Lobanov  **NEEDS CITATION**
   Vowel formants must be speaker-normalized before they are compared across talkers. The default normalization for the production feedback module.
 - `logan-lively-pisoni-hvpt` Logan, Lively and Pisoni, 1991  **NEEDS CITATION**
