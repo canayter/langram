@@ -19,6 +19,18 @@ const STAGE_LABELS: Record<string, string> = {
   review: 'Review',
 }
 
+// VanPatten's input processing: comprehension has to precede production, and
+// mixing the two without a signal to the learner undermines the staging. The
+// two recognition stages get a cool, quiet badge; the two production stages
+// (free recall from a prompt, or scheduled recall with no options shown at
+// all) get the warm accent, so which cognitive task this is reads at a
+// glance rather than only from the label text.
+const RECOGNITION_STAGE_CLASS = 'bg-surface-2 text-ink-dim'
+const PRODUCTION_STAGE_CLASS = 'bg-accent/15 text-accent'
+function stageBadgeClass(stage: string): string {
+  return stage === 'free_output' || stage === 'review' ? PRODUCTION_STAGE_CLASS : RECOGNITION_STAGE_CLASS
+}
+
 // How many exercises make up one block before the summary interrupts the
 // loop. Not a server-side concept: /api/session/next has no notion of a
 // bounded session, it always has another item, so where a block ends is
@@ -27,17 +39,15 @@ const SESSION_LENGTH = 10
 
 function FocusBanner({ conceptName, onExit }: { conceptName: string; onExit: () => void }) {
   return (
-    <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border
-                     border-rose-200 bg-rose-50 px-3 py-2 text-sm dark:border-rose-900
-                     dark:bg-rose-950/40">
-      <span className="text-rose-900 dark:text-rose-200">
+    <div className="mb-6 flex items-center justify-between gap-4 rounded-md border
+                     border-accent/40 bg-accent/10 px-3 py-2 text-sm">
+      <span className="text-ink">
         Practicing <span className="font-medium">{conceptName}</span> on purpose &mdash;
         skipping the usual order.
       </span>
       <button
         onClick={onExit}
-        className="shrink-0 font-medium text-rose-700 hover:text-rose-900
-                   dark:text-rose-300 dark:hover:text-rose-100"
+        className="shrink-0 font-medium text-accent hover:opacity-80"
       >
         Back to normal practice
       </button>
@@ -65,24 +75,23 @@ function Shell({ children, onHome, onShowProgress, onShowReference, onShowUnits,
 }) {
   const { xp, streak } = useStats()
   return (
-    <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-ground text-ink">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <button
             onClick={onHome}
             aria-label="Back to practice"
-            className="flex items-center gap-1.5 rounded-lg font-mono text-sm tracking-tight
-                       text-slate-400 hover:text-slate-700 focus:outline-none
-                       focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2
-                       dark:hover:text-slate-200"
+            className="flex items-center gap-1.5 rounded-md font-display text-sm font-medium tracking-tight
+                       text-ink-dim hover:text-ink focus:outline-none
+                       focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             <Logo size={18} />
             langram
           </button>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
+            <span className="flex items-center gap-3 text-sm font-medium text-ink-dim">
               <span title="Day chain: consecutive days practiced">⛓️ {streak}</span>
-              <span title="Marks earned for correct answers" className="text-amber-600 dark:text-amber-400">{xp} Marks</span>
+              <span title="Marks earned for correct answers" className="text-accent">{xp} Marks</span>
             </span>
             <Menu
               onShowUnits={onShowUnits}
@@ -238,7 +247,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
   if (!item) {
     return (
       <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
-        <p className="text-slate-500">Loading.</p>
+        <p className="text-ink-dim">Loading.</p>
       </Shell>
     )
   }
@@ -257,13 +266,13 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
     return (
       <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress}>
         {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
-        <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <p className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
           {item.unit_title}
         </p>
-        <h1 className="font-display mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
+        <h1 className="font-display mt-1 text-lg font-semibold text-ink">
           {item.concept_name}
         </h1>
-        <p className="mt-6 max-w-prose leading-relaxed text-slate-700 dark:text-slate-300">
+        <p className="mt-6 max-w-prose leading-relaxed text-ink">
           {item.payload.text}
         </p>
         {item.payload.visual_aid === 'vowel_chart' && <VowelChart />}
@@ -279,31 +288,31 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
       {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
       <div className="flex items-baseline justify-between gap-4">
         <div>
-          <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <p className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
             {item.unit_title}
           </p>
-          <h1 className="font-display text-lg font-semibold text-slate-900 dark:text-slate-50">
+          <h1 className="font-display text-lg font-semibold text-ink">
             {item.concept_name}
           </h1>
         </div>
         <div className="flex shrink-0 gap-2">
           {block && (
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-ink-dim">
               {block.count} of 5
             </span>
           )}
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+          <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${stageBadgeClass(item.stage)}`}>
             {STAGE_LABELS[item.stage] ?? item.stage}
           </span>
           {item.source === 'review' && (
-            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+            <span className="rounded-full bg-mark/15 px-2.5 py-1 text-xs font-medium text-mark">
               due
             </span>
           )}
         </div>
       </div>
 
-      <p className="mt-6 text-slate-700 dark:text-slate-300">{item.prompt}</p>
+      <p className="mt-6 text-ink">{item.prompt}</p>
 
       <ItemBody
         payload={item.payload}
@@ -321,7 +330,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
             className={
               result.correct
                 ? 'font-medium text-emerald-700 dark:text-emerald-400'
-                : 'font-medium text-slate-800 dark:text-slate-200'
+                : 'font-medium text-ink'
             }
           >
             {result.message}
@@ -330,12 +339,12 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
           {(result.xp_awarded > 0 || result.streak_extended) && (
             <div key={item.item_token} className="mt-2 flex flex-wrap gap-2 animate-pop-in">
               {result.xp_awarded > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-xs font-semibold text-accent">
                   +{result.xp_awarded} Marks
                 </span>
               )}
               {result.streak_extended && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
+                <span className="inline-flex items-center gap-1 rounded-full bg-mark/15 px-2.5 py-1 text-xs font-semibold text-mark">
                   ⛓️ {result.streak} day chain
                 </span>
               )}
@@ -343,13 +352,13 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
           )}
 
           {result.elicitation && (
-            <p className="mt-2 font-mono text-lg text-slate-700 dark:text-slate-300">
+            <p className="mt-2 font-turkish text-lg text-ink">
               {result.elicitation} = ?
             </p>
           )}
 
           {!result.correct && result.tags.length > 0 && (
-            <p className="mt-2 font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <p className="mt-2 font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
               {result.tags.map((t) => TAG_LABELS[t] ?? t).join(', ')}
             </p>
           )}

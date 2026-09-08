@@ -17,9 +17,9 @@ function tipFor(v: Vowel): string {
 
 function VowelCell({ vowel }: { vowel: Vowel }) {
   return (
-    <div className="rounded-md border border-slate-200 bg-white px-2.5 py-2 dark:border-slate-700 dark:bg-slate-900">
-      <span className="font-mono text-xl text-slate-900 dark:text-slate-50">{vowel.symbol}</span>
-      <p className="mt-0.5 text-xs leading-snug text-slate-500 dark:text-slate-400">{tipFor(vowel)}</p>
+    <div className="rounded-md border border-grid bg-surface px-2.5 py-2">
+      <span className="font-turkish text-2xl text-ink">{vowel.symbol}</span>
+      <p className="mt-0.5 text-xs leading-snug text-ink-dim">{tipFor(vowel)}</p>
     </div>
   )
 }
@@ -37,7 +37,7 @@ export function VowelChart() {
   }, [])
 
   if (error) return null
-  if (!vowels) return <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Loading the vowel chart.</p>
+  if (!vowels) return <p className="mt-4 text-sm text-ink-dim">Loading the vowel chart.</p>
 
   const cell = (back: boolean, rounded: boolean) =>
     vowels
@@ -47,24 +47,24 @@ export function VowelChart() {
       .sort((a, b) => Number(b.high) - Number(a.high))
 
   return (
-    <div className="mt-6 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-      <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+    <div className="bp-grid mt-6 rounded-md border border-grid p-4">
+      <p className="text-sm leading-relaxed text-ink-dim">
         A harmony suffix copies its vowel from the last vowel of the stem: twofold
-        harmony copies whether that vowel is <strong>front</strong> or{' '}
-        <strong>back</strong>; fourfold harmony copies that plus whether it is{' '}
-        <strong>rounded</strong>. Those are exactly the two axes below.
+        harmony copies whether that vowel is <strong className="text-ink">front</strong> or{' '}
+        <strong className="text-ink">back</strong>; fourfold harmony copies that plus whether it is{' '}
+        <strong className="text-ink">rounded</strong>. Those are exactly the two axes below.
       </p>
 
       <div className="mt-4 grid grid-cols-[auto_1fr_1fr] gap-2 text-sm">
         <div />
-        <div className="text-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-center font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
           Front
         </div>
-        <div className="text-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-center font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
           Back
         </div>
 
-        <div className="flex items-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="flex items-center font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
           Unrounded
         </div>
         <div className="grid grid-cols-2 gap-1.5">
@@ -74,7 +74,7 @@ export function VowelChart() {
           {cell(true, false).map((v) => <VowelCell key={v.symbol} vowel={v} />)}
         </div>
 
-        <div className="flex items-center font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="flex items-center font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
           Rounded
         </div>
         <div className="grid grid-cols-2 gap-1.5">

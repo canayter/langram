@@ -1,16 +1,82 @@
 @import "tailwindcss";
 
-/* Same three-family system as the rest of the network: Space Grotesk
-   (font-display) for headings, buttons and labels, Inter (font-sans) for
-   body text, JetBrains Mono (font-mono) for Turkish forms and IPA. */
+/* Langram's own system, distinct from the rest of the network on purpose:
+   this app teaches Turkish orthography and a live morphological derivation,
+   and both benefit from type built for that rather than the network's
+   general-purpose Space Grotesk/Inter/JetBrains Mono set.
+
+   - Archivo (font-display): headings, labels, buttons -- a geometric
+     grotesk with a drafting-table character.
+   - IBM Plex Sans (font-sans): body text and UI chrome.
+   - IBM Plex Mono (font-mono): suffix notation, IPA, unit/suffix codes --
+     anything that is data rather than prose.
+   - Newsreader (font-turkish): the Turkish forms an exercise is actually
+     about. Giving the target language its own typographic voice, distinct
+     from UI chrome, is a direct application of Schmidt's noticing
+     hypothesis: the form a learner needs to notice should look like the
+     one thing on screen that is not interface. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", monospace;
+  --font-turkish: "Newsreader", "IBM Plex Sans", ui-sans-serif, serif;
+
+  /* Tokens below resolve through the plain custom properties defined in
+     :root and its dark-mode override, so bg-ground/text-ink/etc. stay
+     theme-reactive without a dark: variant on every single usage. */
+  --color-ground: var(--lg-ground);
+  --color-surface: var(--lg-surface);
+  --color-surface-2: var(--lg-surface-2);
+  --color-grid: var(--lg-grid);
+  --color-ink: var(--lg-ink);
+  --color-ink-dim: var(--lg-ink-dim);
+  --color-accent: var(--lg-accent);
+  --color-accent-ink: var(--lg-accent-ink);
+  --color-mark: var(--lg-mark);
+  --color-domain-nominal: var(--lg-domain-nominal);
+  --color-domain-verbal: var(--lg-domain-verbal);
+  --color-domain-particle: var(--lg-domain-particle);
+}
+
+/* Blueprint paper: a real, historically accurate light-mode companion to
+   the dark drafting-navy default, not an arbitrary invert -- diazo prints
+   came in exactly this pair, dark ink lines on paper or pale lines on
+   navy. Domain colors are tuned per theme for contrast rather than reused
+   verbatim, same as accent and mark. */
+:root {
+  --lg-ground: #f4f2ea;
+  --lg-surface: #ffffff;
+  --lg-surface-2: #eae6d8;
+  --lg-grid: #d8d2bf;
+  --lg-ink: #182635;
+  --lg-ink-dim: #5c6f80;
+  --lg-accent: #b3671a;
+  --lg-accent-ink: #ffffff;
+  --lg-mark: #1f7a68;
+  --lg-domain-nominal: #1f5fa6;
+  --lg-domain-verbal: #b83b4a;
+  --lg-domain-particle: #1d7a6e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lg-ground: #0f1d2e;
+    --lg-surface: #16283d;
+    --lg-surface-2: #1c3350;
+    --lg-grid: #24455f;
+    --lg-ink: #dce8ee;
+    --lg-ink-dim: #8aa7ba;
+    --lg-accent: #f2b84b;
+    --lg-accent-ink: #241705;
+    --lg-mark: #6fd7c0;
+    --lg-domain-nominal: #5b9bd9;
+    --lg-domain-verbal: #ef6f7c;
+    --lg-domain-particle: #4fb8b0;
+  }
 }
 
 html { color-scheme: light dark; }
-body { margin: 0; }
+body { margin: 0; background: var(--lg-ground); }
 
 /* A one-shot pop for the XP/streak badges: Tailwind's own animate-bounce
    loops forever, which reads as nagging rather than a reward. Remounted via
@@ -21,3 +87,19 @@ body { margin: 0; }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .animate-pop-in { animation: pop-in 0.25s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop-in { animation: none; }
+}
+
+/* The faint drafting grid behind the derivation trace and other "this is
+   the engine's own working" surfaces. A background-image rather than a
+   border pattern so it scales with content instead of repeating awkwardly
+   at fixed tile edges. */
+.bp-grid {
+  background-image:
+    linear-gradient(var(--lg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lg-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-color: var(--lg-surface);
+}

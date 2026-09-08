@@ -6,27 +6,26 @@ import { VowelChart } from './VowelChart'
 
 export function ReferenceScreen({ onBack }: { onBack: () => void }) {
   return (
-    <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-ground text-ink">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <button
             onClick={onBack}
-            className="rounded-lg font-mono text-sm tracking-tight text-slate-400
-                       hover:text-slate-700 focus:outline-none focus-visible:ring-2
-                       focus-visible:ring-rose-400 focus-visible:ring-offset-2
-                       dark:hover:text-slate-200"
+            className="rounded-md font-display text-sm font-medium tracking-tight text-ink-dim
+                       hover:text-ink focus:outline-none focus-visible:ring-2
+                       focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             langram
           </button>
           <button
             onClick={onBack}
-            className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            className="text-sm text-ink-dim hover:text-ink"
           >
             Back to practice
           </button>
         </div>
 
-        <h1 className="font-display text-lg font-semibold text-slate-900 dark:text-slate-50">Vowels</h1>
+        <h1 className="font-display text-lg font-semibold text-ink">Vowels</h1>
         <VowelChart />
       </div>
     </div>

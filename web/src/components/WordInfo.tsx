@@ -17,7 +17,7 @@ export function WordInfo({ info }: { info: WordInfoType | null | undefined }) {
   return (
     <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
       <span
-        className="font-mono text-sm text-slate-500 dark:text-slate-400"
+        className="font-mono text-sm text-ink-dim"
         title={info.ipa_caveat}
       >
         {info.ipa}
@@ -27,10 +27,9 @@ export function WordInfo({ info }: { info: WordInfoType | null | undefined }) {
           onClick={() => speak(info.lemma)}
           aria-label={`Hear "${info.lemma}" pronounced`}
           title="Synthesised pronunciation, not a native speaker recording"
-          className="rounded-full border border-slate-300 p-1 text-slate-500 hover:border-rose-400
-                     hover:text-rose-600 focus:outline-none focus-visible:ring-2
-                     focus-visible:ring-rose-400 focus-visible:ring-offset-2 dark:border-slate-600
-                     dark:text-slate-400 dark:hover:border-rose-400 dark:hover:text-rose-400"
+          className="rounded-full border border-grid p-1 text-ink-dim hover:border-accent
+                     hover:text-accent focus:outline-none focus-visible:ring-2
+                     focus-visible:ring-accent focus-visible:ring-offset-2"
         >
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
             <path d="M4 9v6h4l5 5V4L8 9H4z" />
@@ -41,13 +40,12 @@ export function WordInfo({ info }: { info: WordInfoType | null | undefined }) {
           </svg>
         </button>
       )}
-      <span className="text-sm text-slate-500 dark:text-slate-400">{info.gloss}</span>
+      <span className="text-sm text-ink-dim">{info.gloss}</span>
       {sounds.length > 0 && (
         <button
           onClick={() => setShowSounds(!showSounds)}
           aria-expanded={showSounds}
-          className="text-xs text-slate-400 underline underline-offset-4 hover:text-slate-700
-                     dark:text-slate-500 dark:hover:text-slate-300"
+          className="text-xs text-ink-dim underline underline-offset-4 hover:text-ink"
         >
           {showSounds ? 'Hide sounds' : 'How to say this'}
         </button>
@@ -56,25 +54,24 @@ export function WordInfo({ info }: { info: WordInfoType | null | undefined }) {
         <button
           onClick={() => setShowOrigin(!showOrigin)}
           aria-expanded={showOrigin}
-          className="text-xs text-slate-400 underline underline-offset-4 hover:text-slate-700
-                     dark:text-slate-500 dark:hover:text-slate-300"
+          className="text-xs text-ink-dim underline underline-offset-4 hover:text-ink"
         >
           {showOrigin ? 'Hide word origin' : 'Word origin'}
         </button>
       )}
       {showSounds && (
-        <ul className="mt-1 w-full space-y-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+        <ul className="mt-1 w-full space-y-1 text-xs leading-relaxed text-ink-dim">
           {sounds.map((s, i) => (
             <li key={i}>
-              <span className="font-mono text-slate-700 dark:text-slate-300">[{s.symbol}]</span>
+              <span className="font-mono text-ink">[{s.symbol}]</span>
               {' '}&mdash; {s.term}
-              {s.note && <span className="text-slate-400 dark:text-slate-500">, {s.note}</span>}
+              {s.note && <span className="text-ink-dim opacity-75">, {s.note}</span>}
             </li>
           ))}
         </ul>
       )}
       {showOrigin && info.etymology && (
-        <p className="mt-1 w-full text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+        <p className="mt-1 w-full text-xs leading-relaxed text-ink-dim">
           {info.etymology}
         </p>
       )}

@@ -30,42 +30,41 @@ export function WhyPanel({ unitId, conceptId }: { unitId: string; conceptId: str
       <button
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        className="text-sm text-slate-500 underline underline-offset-4 hover:text-slate-800
-                   dark:text-slate-400 dark:hover:text-slate-200"
+        className="text-sm text-ink-dim underline underline-offset-4 hover:text-ink"
       >
         Why this exercise
       </button>
       {open && (
-        <div className="mt-3 space-y-4 rounded-lg border border-slate-200 p-4 text-sm
-                        text-slate-600 dark:border-slate-700 dark:text-slate-300">
+        <div className="mt-3 space-y-4 rounded-md border border-grid p-4 text-sm
+                        text-ink-dim">
           {!units && <p>Loading.</p>}
           {concept && (
-            <p><span className="font-medium text-slate-900 dark:text-slate-100">
+            <p><span className="font-medium text-ink">
               What is hard here.</span> {concept.why_hard}</p>
           )}
           {unit && (
-            <p><span className="font-medium text-slate-900 dark:text-slate-100">
+            <p><span className="font-medium text-ink">
               Why this unit is here.</span> {unit.rationale}</p>
           )}
           {refs && refs.length > 0 && (
-            <ul className="space-y-2 border-t border-slate-200 pt-3 dark:border-slate-800">
+            <ul className="space-y-2 border-t border-grid pt-3">
               {refs.map((ref) => (
                 <li key={ref.key}>
                   <p>
-                    <span className="font-display font-medium text-slate-800 dark:text-slate-200">
+                    <span className="font-display font-medium text-ink">
                       {citationLabel(ref)}
                     </span>
-                    {ref.year && <span className="font-mono text-xs text-slate-400"> &middot; {ref.year}</span>}
+                    {ref.year && <span className="font-mono text-xs text-ink-dim"> &middot; {ref.year}</span>}
                     {ref.status === 'needs_citation' && (
                       <span
                         title={CITATION_PENDING_TITLE}
-                        className="ml-1 text-xs text-slate-400 dark:text-slate-500"
+                        className="ml-1 text-xs text-ink-dim opacity-75"
                       >
                         &middot; {CITATION_PENDING_LABEL}
                       </span>
                     )}
                   </p>
-                  <span className="block text-slate-500 dark:text-slate-400">{ref.claim}</span>
+                  <span className="block text-ink-dim">{ref.claim}</span>
                 </li>
               ))}
             </ul>

@@ -13,8 +13,8 @@ type Props = {
 }
 
 const optionBase =
-  'rounded-lg border px-4 py-2.5 font-mono text-lg transition-colors ' +
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 '
+  'rounded-md border px-4 py-2.5 font-mono text-lg transition-colors ' +
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 '
 
 function optionClass(state: 'idle' | 'correct' | 'wrong', disabled: boolean) {
   if (state === 'correct') {
@@ -24,8 +24,8 @@ function optionClass(state: 'idle' | 'correct' | 'wrong', disabled: boolean) {
   if (state === 'wrong') {
     return optionBase + 'border-red-400 bg-red-50 text-red-900 dark:bg-red-900/30 dark:text-red-100'
   }
-  return optionBase + 'border-slate-300 text-slate-800 dark:border-slate-600 dark:text-slate-100 ' +
-    (disabled ? 'opacity-50 ' : 'hover:border-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 ')
+  return optionBase + 'border-grid text-ink ' +
+    (disabled ? 'opacity-50 ' : 'hover:border-accent hover:bg-surface-2 ')
 }
 
 function Options({ values, labels, chosen, correct, settled, onAnswer, label }: {
@@ -59,20 +59,26 @@ function Options({ values, labels, chosen, correct, settled, onAnswer, label }: 
   )
 }
 
+// The stem is set in font-turkish: this is the form an exercise is actually
+// about, and giving it its own typographic voice (a serif among an
+// otherwise all-grotesk-and-mono interface) is what makes it the one thing
+// on screen that reads as language rather than chrome. The suffix notation
+// stays in font-mono deliberately -- it is the rule, not the word, the
+// same distinction the derivation trace draws between a form and a step.
 function StemAndSuffix({ stem, suffix, gloss }: { stem: string; suffix?: Suffix; gloss?: string }) {
   return (
     <div className="mt-4 flex flex-wrap items-baseline gap-2">
-      <span className="font-mono text-3xl text-slate-900 dark:text-slate-50">{stem}</span>
+      <span className="font-turkish text-4xl text-ink">{stem}</span>
       {suffix && (
         <>
-          <span className="font-mono text-2xl text-slate-400">+</span>
-          <span className="font-mono text-2xl text-rose-600 dark:text-rose-400">
+          <span className="font-mono text-2xl text-ink-dim">+</span>
+          <span className="font-mono text-2xl text-accent">
             {suffix.notation}
           </span>
         </>
       )}
       {gloss && (
-        <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">
+        <span className="ml-2 text-sm text-ink-dim">
           {gloss}{suffix?.glosses?.[0] ? `, ${suffix.glosses[0]}` : ''}
         </span>
       )}
@@ -83,8 +89,8 @@ function StemAndSuffix({ stem, suffix, gloss }: { stem: string; suffix?: Suffix;
 function BigForm({ form, gloss }: { form: string; gloss?: string }) {
   return (
     <div className="mt-4 flex flex-wrap items-baseline gap-3">
-      <span className="font-mono text-3xl text-slate-900 dark:text-slate-50">{form}</span>
-      {gloss && <span className="text-sm text-slate-500 dark:text-slate-400">{gloss}</span>}
+      <span className="font-turkish text-4xl text-ink">{form}</span>
+      {gloss && <span className="text-sm text-ink-dim">{gloss}</span>}
     </div>
   )
 }
@@ -115,12 +121,12 @@ function TypeAnswer({ cue, settled, onAnswer }: {
         autoCapitalize="off"
         spellCheck={false}
         aria-label={`Turkish for ${cue}`}
-        className="rounded-lg border border-slate-300 px-3 py-2 font-mono text-lg text-slate-900 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+        className="rounded-md border border-grid bg-surface px-3 py-2 font-turkish text-lg text-ink disabled:opacity-50"
       />
       <button
         type="submit"
         disabled={settled || !value.trim()}
-        className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-500 disabled:opacity-50"
+        className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-ink hover:opacity-90 disabled:opacity-50"
       >
         Check
       </button>
@@ -145,16 +151,16 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
             labels={(value) => {
               const info = payload.word_info?.[value]
               const form = payload.option_prefix ? (
-                <>
+                <span className="font-turkish">
                   {payload.option_prefix}
                   <span className="font-semibold">{value}</span>
-                </>
-              ) : value
+                </span>
+              ) : <span className="font-turkish">{value}</span>
               if (!info) return form
               return (
                 <span className="flex flex-col items-start">
                   {form}
-                  <span className="mt-0.5 flex gap-1.5 font-sans text-xs font-normal text-slate-500 dark:text-slate-400">
+                  <span className="mt-0.5 flex gap-1.5 font-sans text-xs font-normal text-ink-dim">
                     <span title={payload.word_info_caveat}>{info.ipa}</span>
                     <span>{info.gloss}</span>
                   </span>
@@ -198,11 +204,11 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
       return (
         <>
           <div className="mt-4 flex flex-wrap items-baseline gap-2">
-            <span className="font-mono text-3xl text-slate-900 dark:text-slate-50">
+            <span className="font-turkish text-4xl text-ink">
               {payload.stem}
             </span>
-            <span className="font-mono text-3xl text-slate-300 dark:text-slate-600">___</span>
-            <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">
+            <span className="font-mono text-3xl text-ink-dim opacity-50">___</span>
+            <span className="ml-2 text-sm text-ink-dim">
               {payload.gloss}, {payload.meaning}
             </span>
           </div>
@@ -215,7 +221,7 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
               return (
                 <span className="flex flex-col items-start">
                   <span>{option?.notation}</span>
-                  <span className="font-sans text-xs text-slate-500 dark:text-slate-400">
+                  <span className="font-sans text-xs text-ink-dim">
                     {option?.gloss}
                   </span>
                 </span>
@@ -228,7 +234,7 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
     case 'type':
       return (
         <>
-          <p className="mt-4 text-xl text-slate-900 dark:text-slate-50">{payload.cue}</p>
+          <p className="mt-4 text-xl text-ink">{payload.cue}</p>
           <TypeAnswer cue={payload.cue} settled={settled} onAnswer={onAnswer} />
         </>
       )

@@ -18,31 +18,31 @@ export function Derivation({ steps, result }: { steps: DerivationStep[]; result?
 
   return (
     <div
-      className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/40"
+      className="bp-grid mt-4 rounded-md border border-grid p-4"
       aria-label="How this form is built"
     >
       {start && (
-        <p className="font-mono text-sm text-slate-500 dark:text-slate-400">{start}</p>
+        <p className="font-mono text-xs uppercase tracking-wider text-ink-dim">{start}</p>
       )}
 
       <ol className="mt-2 space-y-2.5">
         {rules.map((step, index) => (
           <li key={`${step.rule}-${index}`} className="flex gap-3 text-sm">
-            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 font-mono text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-accent font-mono text-xs text-accent">
               {index + 1}
             </span>
-            <span className="text-slate-600 dark:text-slate-300">
+            <span className="text-ink-dim">
               {step.condition}
-              <span className="mt-0.5 block text-slate-900 dark:text-slate-100">{step.result}</span>
+              <span className="mt-0.5 block font-turkish text-lg text-ink">{step.result}</span>
             </span>
           </li>
         ))}
       </ol>
 
       {answer && (
-        <p className="mt-3 flex gap-3 border-t border-slate-200 pt-3 dark:border-slate-700">
-          <span className="w-5 shrink-0 text-center font-mono text-slate-400">=</span>
-          <span className="font-mono text-base font-semibold text-slate-900 dark:text-slate-50">
+        <p className="mt-3 flex items-baseline gap-3 border-t border-dashed border-grid pt-3">
+          <span className="w-5 shrink-0 text-center font-mono text-ink-dim">=</span>
+          <span className="font-turkish text-xl font-semibold text-accent">
             {answer}
           </span>
         </p>

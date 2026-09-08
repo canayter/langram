@@ -72,11 +72,10 @@ export function NetworkNav() {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="Other projects in the network"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200
-                   bg-white/80 text-slate-400 shadow-sm backdrop-blur transition
-                   hover:text-slate-700 hover:shadow-md focus:outline-none
-                   focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2
-                   dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-500 dark:hover:text-slate-200"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-grid
+                   bg-surface/80 text-ink-dim shadow-sm backdrop-blur transition
+                   hover:text-ink hover:shadow-md focus:outline-none
+                   focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
       >
         <span aria-hidden className="text-[0.6rem] tracking-widest">&bull;&bull;&bull;</span>
       </button>
@@ -84,13 +83,13 @@ export function NetworkNav() {
       <div
         role="menu"
         aria-hidden={!open}
-        className={`absolute bottom-11 right-0 w-72 origin-bottom-right rounded-xl border
-                    border-slate-200 bg-white/95 p-3 shadow-xl backdrop-blur transition
-                    duration-150 dark:border-slate-700 dark:bg-slate-900/95
+        className={`absolute bottom-11 right-0 w-72 origin-bottom-right rounded-lg border
+                    border-grid bg-surface/95 p-3 shadow-xl backdrop-blur transition
+                    duration-150
                     ${open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'}`}
       >
         <p className="px-1 pb-2 text-[0.65rem] font-semibold uppercase tracking-widest
-                       text-slate-400 dark:text-slate-500">
+                       text-ink-dim">
           The Network
         </p>
         <ul className="max-h-80 space-y-0.5 overflow-y-auto">
@@ -102,8 +101,7 @@ export function NetworkNav() {
                 rel="noopener noreferrer"
                 role="menuitem"
                 tabIndex={open ? 0 : -1}
-                className="flex items-start gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100
-                           dark:hover:bg-slate-800"
+                className="flex items-start gap-2 rounded-md px-2 py-1.5 hover:bg-surface-2"
               >
                 <span
                   aria-hidden
@@ -111,10 +109,10 @@ export function NetworkNav() {
                   style={{ backgroundColor: p.accent }}
                 />
                 <span>
-                  <span className="block text-sm font-medium text-slate-800 dark:text-slate-100">
+                  <span className="block text-sm font-medium text-ink">
                     {p.name}
                   </span>
-                  <span className="block text-xs text-slate-500 dark:text-slate-400">{p.desc}</span>
+                  <span className="block text-xs text-ink-dim">{p.desc}</span>
                 </span>
               </a>
             </li>

@@ -18,15 +18,15 @@ export function Logo({ size = 28 }: { size?: number }) {
     >
       <defs>
         <linearGradient id={gradientId} x1="3" y1="3" x2="29" y2="29" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#fb7185" />
-          <stop offset="0.5" stopColor="#f43f5e" />
-          <stop offset="1" stopColor="#be123c" />
+          <stop offset="0" stopColor="#f2b84b" />
+          <stop offset="0.55" stopColor="#e0a72e" />
+          <stop offset="1" stopColor="#6fd7c0" />
         </linearGradient>
       </defs>
-      <rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#1a0e12" stroke={`url(#${gradientId})`} strokeWidth="2.2" />
+      <rect x="1.6" y="1.6" width="28.8" height="28.8" rx="6" fill="#0f1d2e" stroke={`url(#${gradientId})`} strokeWidth="2.2" />
       <text
         x="16" y="23" textAnchor="middle"
-        fontFamily="Verdana, Geneva, sans-serif" fontSize="21" fontWeight="700"
+        fontFamily="Newsreader, Georgia, serif" fontSize="21" fontWeight="600"
         fill={`url(#${gradientId})`}
       >
         ı

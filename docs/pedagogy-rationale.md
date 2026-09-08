@@ -382,6 +382,46 @@ New content only: `past_question.py` and `past_question_production.py`,
 the same build/assemble-plus-thin-wrapper shape every prior phrase.py
 generator uses, with no other file touched except the registry.
 
+## The 2026-09 theme is held to the same standard as the curriculum, not exempt from it
+
+The visual redesign replaced generic Tailwind slate/rose with Langram's own
+tokens (`web/src/index.css`), and three of its choices are pedagogical
+decisions, not aesthetic ones, so they get the same accountability as any
+content change.
+
+**The Turkish form gets its own typeface.** Every exercise's stem, answer
+and derivation result now render in Newsreader (`font-turkish`) rather than
+the interface's own Archivo/IBM Plex faces. This is Schmidt's noticing
+hypothesis applied directly: a form has to be consciously noticed before it
+can be acquired, and giving the target-language text a typographic voice
+distinct from every button, label and English gloss around it is what makes
+it the one thing on screen that reads as language rather than chrome.
+Deliberately not applied to every option button (`choose_meaning`'s English
+choices, `choose_suffix`'s bare notation) -- only where the text actually is
+Turkish, since applying it uniformly would dilute the distinction rather
+than sharpen it.
+
+**Structured input and free/scheduled output are two different colors, not
+just two different words.** VanPatten's input processing says comprehension
+has to precede production and that blurring the two undermines the staging.
+`SessionScreen`'s stage badge (Notice/Build vs. Produce/Review) now carries
+that distinction visually (`stageBadgeClass`), so a learner knows which
+cognitive task they are in before reading the label.
+
+**The unit map is drawn as a route, not a list, so weak-domain resurfacing
+has somewhere to go.** `lib/domains.ts` groups the eleven units into three
+recurring grammatical domains (nominal, verbal/tense, particle/phrase) and
+`UnitsScreen` colors them the way a transit map colors lines. This is
+presentation only today -- it makes no scheduling decision -- but it is the
+visual home the roadmap's still-unbuilt weak-concept resurfacing needs:
+once a learner's accuracy by domain is tracked, this is where it would
+surface, rather than inventing a new screen for it later.
+
+None of this touches content or the engine. The domain grouping in
+`domains.ts` is explicitly commented as presentational, not a linguistic
+claim, so it carries no citation obligation the way a lexicon flag or a
+suffix's `review` tag would.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

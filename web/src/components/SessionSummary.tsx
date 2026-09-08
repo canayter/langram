@@ -22,52 +22,52 @@ export function SessionSummary({ stats, onContinue }: { stats: SessionStats; onC
 
   return (
     <div>
-      <p className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+      <p className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
         Session complete
       </p>
-      <h1 className="font-display mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
+      <h1 className="font-display mt-1 text-lg font-semibold text-ink">
         {stats.answered} exercises{accuracy !== null && `, ${accuracy} percent right`}
       </h1>
 
       <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div>
-          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
             Marks earned
           </dt>
-          <dd className="mt-1 text-lg font-semibold text-amber-600 dark:text-amber-400">
+          <dd className="mt-1 text-lg font-semibold text-accent">
             +{stats.marks}
           </dd>
         </div>
         <div>
-          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
             Day chain
           </dt>
-          <dd className="mt-1 text-lg font-semibold text-orange-600 dark:text-orange-400">
+          <dd className="mt-1 text-lg font-semibold text-mark">
             {streak}
           </dd>
         </div>
         <div>
-          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <dt className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
             Concepts practiced
           </dt>
-          <dd className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-50">
+          <dd className="mt-1 text-lg font-semibold text-ink">
             {stats.concepts.size}
           </dd>
         </div>
       </dl>
 
       {stats.concepts.size > 0 && (
-        <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
+        <p className="mt-4 text-sm text-ink-dim">
           {Array.from(stats.concepts.values()).join(', ')}
         </p>
       )}
 
       {mistakes.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-display font-semibold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <h2 className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
             Worth a second look
           </h2>
-          <ul className="mt-3 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+          <ul className="mt-3 space-y-1 text-sm text-ink-dim">
             {mistakes.map(([tag, count]) => (
               <li key={tag}>
                 {TAG_LABELS[tag] ?? tag} &times; {count}
@@ -80,7 +80,7 @@ export function SessionSummary({ stats, onContinue }: { stats: SessionStats; onC
       <button onClick={onContinue} className={`${primaryButton} mt-8`} autoFocus>
         Keep practicing
       </button>
-      <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-3 text-sm text-ink-dim">
         Or come back tomorrow to keep the chain going &mdash; Progress and Reference are still
         up above.
       </p>

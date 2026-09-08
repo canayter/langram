@@ -27,28 +27,27 @@ export function SourcesScreen({ onBack }: { onBack: () => void }) {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-ground text-ink">
       <div className="mx-auto max-w-2xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <button
             onClick={onBack}
-            className="rounded-lg font-mono text-sm tracking-tight text-slate-400
-                       hover:text-slate-700 focus:outline-none focus-visible:ring-2
-                       focus-visible:ring-rose-400 focus-visible:ring-offset-2
-                       dark:hover:text-slate-200"
+            className="rounded-md font-display text-sm font-medium tracking-tight text-ink-dim
+                       hover:text-ink focus:outline-none focus-visible:ring-2
+                       focus-visible:ring-accent focus-visible:ring-offset-2"
           >
             langram
           </button>
           <button
             onClick={onBack}
-            className="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            className="text-sm text-ink-dim hover:text-ink"
           >
             Back to practice
           </button>
         </div>
 
         <h1 className="font-display text-xl font-semibold">Sources</h1>
-        <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mt-2 max-w-prose text-sm leading-relaxed text-ink-dim">
           Every pedagogical decision here is meant to trace back to a real claim in the
           literature, not a guess dressed up as one. This is the full list a unit is allowed to
           cite. A "reference pending" tag means the idea and the claim are established, but the
@@ -56,16 +55,16 @@ export function SourcesScreen({ onBack }: { onBack: () => void }) {
           question about whether the research itself is legitimate.
         </p>
 
-        {error && <p className="mt-6 text-rose-600 dark:text-rose-400">{error}</p>}
-        {!entries && !error && <p className="mt-6 text-slate-500">Loading.</p>}
+        {error && <p className="mt-6 text-red-600 dark:text-red-400">{error}</p>}
+        {!entries && !error && <p className="mt-6 text-ink-dim">Loading.</p>}
 
         {entries && AREA_ORDER.map((area) => {
           const group = entries.filter((e) => e.area === area)
           if (!group.length) return null
           return (
-            <section key={area} className="mt-10 border-t border-slate-200 pt-6 dark:border-slate-800">
+            <section key={area} className="mt-10 border-t border-grid pt-6">
               <h2 className="font-display font-semibold text-xs uppercase tracking-wider
-                             text-rose-600 dark:text-rose-400">
+                             text-accent">
                 {AREA_LABELS[area] ?? area}
               </h2>
               <ul className="mt-4 space-y-5">
@@ -73,32 +72,31 @@ export function SourcesScreen({ onBack }: { onBack: () => void }) {
                   <li
                     key={entry.key}
                     className="border-l-2 border-transparent pl-3 transition-colors
-                               hover:border-rose-400"
+                               hover:border-accent"
                   >
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                      <span className="font-display font-medium text-slate-900 dark:text-slate-50">
+                      <span className="font-display font-medium text-ink">
                         {citationLabel(entry)}
                       </span>
                       {entry.year && (
-                        <span className="font-mono text-xs text-slate-400">{entry.year}</span>
+                        <span className="font-mono text-xs text-ink-dim">{entry.year}</span>
                       )}
                       {entry.status === 'needs_citation' && (
                         <span
                           title={CITATION_PENDING_TITLE}
-                          className="rounded-full border border-slate-300 px-2 py-0.5
-                                     text-[0.65rem] font-medium text-slate-500
-                                     dark:border-slate-600 dark:text-slate-400"
+                          className="rounded-full border border-grid px-2 py-0.5
+                                     text-[0.65rem] font-medium text-ink-dim"
                         >
                           {CITATION_PENDING_LABEL}
                         </span>
                       )}
                     </div>
                     {entry.title && (
-                      <p className="mt-0.5 text-sm italic text-slate-600 dark:text-slate-300">
+                      <p className="mt-0.5 text-sm italic text-ink-dim">
                         {entry.title}
                       </p>
                     )}
-                    <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                    <p className="mt-1 text-sm leading-relaxed text-ink-dim">
                       {entry.claim}
                     </p>
                   </li>

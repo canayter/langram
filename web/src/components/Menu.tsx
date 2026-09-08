@@ -18,12 +18,12 @@ function MenuItem({ onClick, danger, children }: MenuItemProps) {
     <button
       role="menuitem"
       onClick={onClick}
-      className={`block w-full rounded-lg px-3 py-2 text-left text-sm font-medium
-                  hover:bg-slate-100 focus:outline-none focus-visible:ring-2
-                  focus-visible:ring-rose-400 focus-visible:ring-inset dark:hover:bg-slate-800
+      className={`block w-full rounded-md px-3 py-2 text-left text-sm font-medium
+                  hover:bg-surface-2 focus:outline-none focus-visible:ring-2
+                  focus-visible:ring-accent focus-visible:ring-inset
                   ${danger
                     ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
-                    : 'text-slate-700 dark:text-slate-200'}`}
+                    : 'text-ink'}`}
     >
       {children}
     </button>
@@ -47,15 +47,15 @@ function ConfirmResetDialog({ busy, onCancel, onConfirm }: {
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="reset-progress-title"
-        className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl dark:bg-slate-900"
+        className="w-full max-w-sm rounded-lg bg-surface p-5 shadow-xl"
       >
         <h2
           id="reset-progress-title"
-          className="font-display text-base font-semibold text-slate-900 dark:text-slate-50"
+          className="font-display text-base font-semibold text-ink"
         >
           Reset all progress?
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mt-2 text-sm leading-relaxed text-ink-dim">
           Every answer, review and mastery estimate is gone, along with your marks and day
           chain. There is no account to recover this from &mdash; this cannot be undone.
         </p>
@@ -63,9 +63,8 @@ function ConfirmResetDialog({ busy, onCancel, onConfirm }: {
           <button
             onClick={onCancel}
             disabled={busy}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium
-                       text-slate-700 hover:bg-slate-50 disabled:opacity-50
-                       dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="rounded-md border border-grid px-3 py-1.5 text-sm font-medium
+                       text-ink hover:bg-surface-2 disabled:opacity-50"
           >
             Cancel
           </button>
@@ -73,7 +72,7 @@ function ConfirmResetDialog({ busy, onCancel, onConfirm }: {
             onClick={onConfirm}
             disabled={busy}
             autoFocus
-            className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white
+            className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white
                        hover:bg-red-500 disabled:opacity-50"
           >
             {busy ? 'Resetting' : 'Reset progress'}
@@ -125,10 +124,9 @@ export function Menu({ onShowUnits, onShowProgress, onShowReference, onShowSourc
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Menu"
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500
-                   hover:bg-slate-100 hover:text-slate-800 focus:outline-none
-                   focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2
-                   dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-ink-dim
+                   hover:bg-surface-2 hover:text-ink focus:outline-none
+                   focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
       >
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
              strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -142,14 +140,14 @@ export function Menu({ onShowUnits, onShowProgress, onShowReference, onShowSourc
         <div
           role="menu"
           aria-label="Langram"
-          className="absolute right-0 top-10 z-40 w-52 rounded-xl border border-slate-200
-                     bg-white p-1.5 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+          className="absolute right-0 top-10 z-40 w-52 rounded-lg border border-grid
+                     bg-surface p-1.5 shadow-lg"
         >
           <MenuItem onClick={() => pick(onShowUnits)}>Units</MenuItem>
           <MenuItem onClick={() => pick(onShowProgress)}>Progress</MenuItem>
           <MenuItem onClick={() => pick(onShowReference)}>Reference</MenuItem>
           <MenuItem onClick={() => pick(onShowSources)}>Sources</MenuItem>
-          <div className="my-1.5 border-t border-slate-200 dark:border-slate-800" />
+          <div className="my-1.5 border-t border-grid" />
           <MenuItem danger onClick={() => { setOpen(false); setConfirming(true) }}>
             Reset progress
           </MenuItem>
