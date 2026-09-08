@@ -139,6 +139,35 @@ REGISTRY: dict[str, Generator] = {
             "rather than recognised. Thin wrapper around past_question.py.",
             implemented=True,
         ),
+        Generator(
+            "accusative",
+            "structured_input",
+            "The accusative marks specificity, not objecthood: kitap "
+            "istiyorum vs kitabı istiyorum. Built on phrase.py.",
+            implemented=True,
+        ),
+        Generator(
+            "accusative_production",
+            "free_output",
+            "Accusative specificity, produced from an English prompt rather "
+            "than recognised. Thin wrapper around accusative.py.",
+            implemented=True,
+        ),
+        Generator(
+            "izafet",
+            "structured_input",
+            "The genitive-possessive construction (öğrencinin kitabı, the "
+            "student's book): genitive on the possessor, POSS3SG on the "
+            "possessed. Built on phrase.py.",
+            implemented=True,
+        ),
+        Generator(
+            "izafet_production",
+            "free_output",
+            "Izafet, produced from an English prompt rather than "
+            "recognised. Thin wrapper around izafet.py.",
+            implemented=True,
+        ),
     ]
 }
 
@@ -205,8 +234,10 @@ class GenerationError(RuntimeError):
 
 def _modules() -> dict:
     from . import (
+        accusative, accusative_production,
         cloze_suffix_choice, cued_recall, existence, existence_production,
-        form_meaning_match, grammaticality_judgement, minimal_pair_identification,
+        form_meaning_match, grammaticality_judgement, izafet, izafet_production,
+        minimal_pair_identification,
         past_question, past_question_production,
         postposition, postposition_production, question, question_production,
         suffix_builder, type_the_form, vocab_recognition,
@@ -228,6 +259,10 @@ def _modules() -> dict:
         "question_production": question_production,
         "past_question": past_question,
         "past_question_production": past_question_production,
+        "accusative": accusative,
+        "accusative_production": accusative_production,
+        "izafet": izafet,
+        "izafet_production": izafet_production,
     }
 
 

@@ -1,0 +1,259 @@
+id: unit-12-cases
+order: 12
+title: The rest of the case system
+rationale: >
+  Unit 3 taught possession and, in passing, the buffer-consonant and
+  voicing mechanics every case suffix shares, but only one case suffix
+  (the accusative's own cousin, the genitive, was left untouched entirely).
+  This unit finishes the case system properly: the accusative, whose real
+  difficulty is not its shape but that it marks specificity rather than
+  objecthood; the three spatial cases (dative, locative, ablative) taught
+  together as the single to/at/from paradigm Turkish itself treats them
+  as; and the genitive, taught the only way it is actually used, as half
+  of izafet, the construction that names a possessor explicitly rather
+  than assuming one already in the conversation the way unit 3's
+  possessive suffixes do.
+
+  The accusative concept here is a direct, deliberate application of a
+  structured-input design already used elsewhere in this content
+  (VanPatten's processing instruction, cited in units 5 and 9): a learner
+  who already knows kitap istiyorum, I want a book, is given kitabı
+  istiyorum, I want the book, and the suffix has to carry the entire
+  distinction, since nothing else in the sentence changes. Do not gate
+  progression on accusative accuracy specifically: variability in how
+  learners apply Turkish differential object marking is normal and
+  persists even at high proficiency (Papadopoulou et al. 2011), so this
+  is recycled like anything else a learner is still working on, never
+  used to block what comes next.
+research_refs:
+  - vanpatten-input-processing
+  - pienemann-processability
+prerequisites:
+  - unit-01-vowel-harmony
+  - unit-03-possession
+  - unit-05-present-tense
+
+concepts:
+  - id: accusative
+    name: Marking a specific object with -(y)I
+    type: grammatical_feature
+    why_hard: >
+      Nothing else in this content has prepared a learner for a suffix
+      that depends on definiteness rather than grammatical role. Every
+      case so far marks a fixed relationship (to, at, from, whose); this
+      one depends on whether the speaker means a specific thing or not,
+      a distinction English marks with an article, a and the, that
+      Turkish does not have at all.
+    intro: >
+      This suffix marks a direct object as specific, a particular one
+      the speaker has in mind, not any object in general. Kitap
+      istiyorum means I want a book, any book; kitabı istiyorum means I
+      want the book, one specific book already in mind.
+
+      The shape is exactly the fourfold harmony and buffer-y you already
+      know from every other suffix that starts with a vowel: araba, car,
+      gives arabayı, a buffer y after the vowel; ev, house, gives evi,
+      no buffer needed. A stem that voices before a vowel does so here
+      too: kitap gives kitabı, not kitapı.
+
+      A general or indefinite object, on the other hand, takes nothing
+      at all: kitap istiyorum is already complete on its own.
+    teaches_suffixes: [ACC]
+    exercises:
+      - id: notice-the-accusative
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffix: ACC
+          distractor: wrong_harmony
+          lexeme_filter: { pos: noun }
+      - id: is-this-accusative-correct
+        stage: structured_input
+        generator: grammaticality_judgement
+        prompt: "Is this a possible Turkish word?"
+        difficulty: 2
+        params:
+          suffix: ACC
+          lexeme_filter: { pos: noun }
+      - id: build-the-accusative
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add -(y)I. Watch the suffix change shape as you attach it."
+        difficulty: 3
+        params:
+          suffix: ACC
+          lexeme_filter: { pos: noun }
+          show_derivation: true
+
+  - id: accusative-specificity
+    name: A specific thing, or any thing at all
+    type: grammatical_feature
+    why_hard: >
+      This is the accusative's real difficulty, not its shape: the
+      suffix is the only signal that distinguishes I want a book from I
+      want the book, and an English speaker's habit is to listen for an
+      article that Turkish simply does not have. Skipping the suffix
+      here does not produce an odd sentence, it produces a different,
+      equally grammatical one that means something else.
+    intro: >
+      Compare these two directly: kitap istiyorum, I want a book, any
+      book, versus kitabı istiyorum, I want the book, a specific one
+      already in mind. The only difference between them is this suffix.
+      Nothing about word order, nothing about the verb, changes.
+
+      This is why the suffix cannot be skipped or guessed at from
+      context the way a learner might get away with elsewhere: it is
+      not decoration on top of a sentence that already made sense, it is
+      the one thing separating two different sentences.
+    teaches_suffixes: [ACC]
+    exercises:
+      - id: recognize-which-one-is-meant
+        stage: structured_input
+        generator: accusative
+        prompt: "What does this mean?"
+        difficulty: 3
+        params:
+          # possession_natural rather than a bare pos:noun filter: this
+          # exercise puts the noun into "I want ___," which needs the same
+          # class of concrete, ownable things "I have ___" needs. It also
+          # happens to rule out a real coincidence found by generating a
+          # batch: ok (arrow) + accusative gives oku, identical in spelling
+          # to the unrelated reading verb oku, which read as confusing in
+          # "oku istiyorum" even though it is grammatically correct.
+          lexeme_filter: { pos: noun, possession_only: true }
+      - id: say-the-specific-or-general-version
+        stage: free_output
+        generator: accusative_production
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          lexeme_filter: { pos: noun, possession_only: true }
+
+  - id: spatial-cases
+    name: To, at, and from
+    type: grammatical_feature
+    why_hard: >
+      Turkish treats to, at, and from as one small paradigm, three
+      suffixes that share the same slot and the same shape logic, and
+      the temptation is to memorize them as three unrelated vocabulary
+      items instead of one system. The genuine trap is voicing: dative
+      begins with a vowel and triggers a stem's own final devoicing
+      alternation the way any vowel-initial suffix does (kitap gives
+      kitaba, not kitapa), but locative and ablative both begin with the
+      D archiphoneme, a consonant, and do not trigger it at all (kitap
+      gives kitapta and kitaptan, not kitapda or kitapdan) -- the exact
+      same distinction unit 10 already taught for -DI, now showing up a
+      second time in a completely different suffix.
+    intro: >
+      Three suffixes for three directions. Dative, -(y)A, means to or
+      toward: ev, house, gives eve, to the house. Locative, -DA, means
+      at or in: evde, at the house. Ablative, -DAn, means from: evden,
+      from the house.
+
+      Dative starts with a vowel, so a stem that devoices before a
+      vowel does so here: kitap, book, gives kitaba, to the book.
+      Locative and ablative both start with D, a consonant, so that
+      same devoicing never happens for them: kitap gives kitapta and
+      kitaptan, keeping its own voiceless p reflected as t, not d. You
+      have already seen exactly this contrast with -DI, the past tense:
+      the same rule, a different suffix.
+
+      All three harmonize the ordinary twofold way you already know:
+      front or back only, not fourfold.
+    teaches_suffixes: [DAT, LOC, ABL]
+    exercises:
+      - id: notice-the-spatial-case
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffixes: [DAT, LOC, ABL]
+          distractor: wrong_harmony
+          lexeme_filter: { pos: noun }
+      - id: which-direction-is-this
+        stage: structured_input
+        generator: form_meaning_match
+        prompt: "What does this mean?"
+        difficulty: 3
+        params:
+          suffixes: [DAT, LOC, ABL]
+          lexeme_filter: { pos: noun }
+      - id: build-the-spatial-case
+        stage: guided_output
+        generator: suffix_builder
+        prompt: "Add the suffix. Watch it change shape as you attach it."
+        difficulty: 3
+        params:
+          suffixes: [DAT, LOC, ABL]
+          lexeme_filter: { pos: noun }
+          show_derivation: true
+      - id: say-the-direction
+        stage: free_output
+        generator: type_the_form
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          suffixes: [DAT, LOC, ABL]
+          lexeme_filter: { pos: noun }
+      - id: spatial-case-recall
+        stage: review
+        generator: cued_recall
+        difficulty: 3
+        params:
+          suffixes: [DAT, LOC, ABL]
+          lexeme_filter: { pos: noun }
+
+  - id: genitive-izafet
+    name: Naming the possessor, öğrencinin kitabı
+    type: grammatical_feature
+    why_hard: >
+      Unit 3's possessive suffixes already presuppose a possessor the
+      conversation already knows: kitabım only works because I is
+      already established. Naming the possessor outright needs a second
+      suffix, on a second word, working together with the first: the
+      possessor takes the genitive, and the possessed noun still takes
+      the same third-person possessive suffix from unit 3, never any
+      other person, since the possessor here is a full noun phrase, not
+      a pronoun standing in for the speaker or listener.
+    intro: >
+      To say whose something is by name, two suffixes work together on
+      two different words. Öğrenci, student, takes the genitive, -(n)In,
+      giving öğrencinin; kitap, book, takes the same third-person
+      possessive suffix from unit 3, -(s)I, giving kitabı. Put together:
+      öğrencinin kitabı, the student's book.
+
+      The possessed noun always takes third-person possessive here,
+      never first or second: the possessor is the noun phrase itself,
+      öğrencinin, not I or you, so nothing else would make sense in that
+      slot. Çocuğun arabası, the child's car, follows exactly the same
+      pattern: çocuk plus genitive, araba plus third-person possessive.
+    teaches_suffixes: [GEN]
+    exercises:
+      - id: notice-the-genitive
+        stage: structured_input
+        generator: minimal_pair_identification
+        prompt: "Only one of these is possible Turkish. Which one?"
+        difficulty: 2
+        params:
+          suffix: GEN
+          distractor: wrong_harmony
+          lexeme_filter: { pos: noun, predicative_only: true }
+      - id: whose-is-it
+        stage: structured_input
+        generator: izafet
+        prompt: "What does this mean?"
+        difficulty: 3
+        params:
+          possessor_filter: { pos: noun, predicative_only: true }
+          possessed_filter: { pos: noun, possession_only: true }
+      - id: say-whose-it-is
+        stage: free_output
+        generator: izafet_production
+        prompt: "Say this in Turkish."
+        difficulty: 4
+        params:
+          possessor_filter: { pos: noun, predicative_only: true }
+          possessed_filter: { pos: noun, possession_only: true }

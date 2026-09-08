@@ -739,4 +739,87 @@ class TestPastQuestion:
             item = generate(_spec(generator, **self._params()), language, rng)
             again = assemble(_spec(generator, **self._params()), language, item.spec)
             assert again.answer == item.answer
+
+
+class TestAccusative:
+    """The accusative marks specificity, not objecthood: kitap istiyorum (a
+    book, any) vs kitabı istiyorum (the book, a specific one). Both readings
+    must actually be reachable and distinguishable, not just grammatical."""
+
+    def _params(self):
+        return {"lexeme_filter": {"pos": "noun", "possession_only": True}}
+
+    def test_both_readings_are_reachable_and_distinct(self, language):
+        rng = random.Random(1)
+        seen = set()
+        for _ in range(20):
+            item = generate(_spec("accusative", **self._params()), language, rng)
+            seen.add(item.extra["specific"])
+            assert item.payload["kind"] == "choose_meaning"
+            assert item.answer in item.payload["options"]
+            assert len(item.payload["options"]) == 2
+        assert seen == {True, False}, "only one reading appeared in 20 draws"
+
+    def test_specific_reading_actually_carries_the_suffix(self, language):
+        rng = random.Random(2)
+        for _ in range(15):
+            item = generate(_spec("accusative_production", **self._params()), language, rng)
+            words = item.answer.split()
+            assert len(words) == 2 and words[1] == "istiyorum", item.answer
+            if item.extra["specific"]:
+                assert words[0] != item.lemma, "specific reading must not be the bare stem"
+            else:
+                assert words[0] == item.lemma, "general reading must be the bare stem"
+
+    def test_assemble_reproduces_the_item(self, language):
+        rng = random.Random(3)
+        for generator in ("accusative", "accusative_production"):
+            item = generate(_spec(generator, **self._params()), language, rng)
+            again = assemble(_spec(generator, **self._params()), language, item.spec)
+            assert again.answer == item.answer
+
+
+class TestIzafet:
+    """öğrencinin kitabı, the student's book: genitive on the possessor,
+    POSS3SG (already taught in unit 3) on the possessed, never any other
+    person, since the possessor is a full noun phrase, not a pronoun."""
+
+    def _params(self):
+        return {
+            "possessor_filter": {"pos": "noun", "predicative_only": True},
+            "possessed_filter": {"pos": "noun", "possession_only": True},
+        }
+
+    def test_two_different_nouns_each_carry_their_own_suffix(self, language):
+        rng = random.Random(1)
+        for _ in range(15):
+            item = generate(_spec("izafet_production", **self._params()), language, rng)
+            words = item.answer.split()
+            assert len(words) == 2, item.answer
+            possessor, possessed = item.lemma, item.extra["possessed"]
+            assert possessor != possessed
+
+    def test_the_distractor_swaps_which_noun_owns_which(self, language):
+        rng = random.Random(2)
+        item = generate(_spec("izafet", **self._params()), language, rng)
+        assert item.payload["kind"] == "choose_meaning"
+        options = item.payload["options"]
+        assert len(options) == 2
+        assert item.answer in options
+        # The two options are the same two nouns and the same "'s", only
+        # which noun is the possessor and which is possessed is reversed --
+        # exactly the confusion an English speaker would make.
+        possessor, possessed = item.lemma, item.extra["possessed"]
+        p_gloss = language.lexeme(possessor).gloss
+        d_gloss = language.lexeme(possessed).gloss
+        assert {options[0], options[1]} == {
+            f"the {p_gloss}'s {d_gloss}", f"the {d_gloss}'s {p_gloss}",
+        }
+
+    def test_assemble_reproduces_the_item(self, language):
+        rng = random.Random(3)
+        for generator in ("izafet", "izafet_production"):
+            item = generate(_spec(generator, **self._params()), language, rng)
+            again = assemble(_spec(generator, **self._params()), language, item.spec)
+            assert again.answer == item.answer
             assert again.payload == item.payload

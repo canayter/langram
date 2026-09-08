@@ -155,7 +155,7 @@ See the Deployment section above for the exact commands and the two gotchas
 (`MSYS_NO_PATHCONV`, Postgres cold start) that have each broken a deploy
 before.
 
-**Curriculum, eleven units**:
+**Curriculum, twelve units**:
 1. Vowel harmony (twofold and fourfold), the plural
 2. Predication without a verb (Turkish has no "to be" in the present),
    possessive-style person endings, third person unmarked
@@ -222,6 +222,19 @@ before.
     already used for the identical reason (nothing to move). Needed no
     engine or phrase.py changes at all; verified directly against the
     engine before anything shipped. See `docs/pedagogy-rationale.md`.
+12. The rest of the case system: accusative (-(y)I, marking specificity,
+    not objecthood -- kitap istiyorum vs kitabı istiyorum), the three
+    spatial cases dative/locative/ablative taught as one to/at/from
+    paradigm, and genitive taught only as izafet (öğrencinin kitabı, the
+    student's book), pairing it with unit 3's POSS3SG rather than as a
+    fourth bare-shape concept. All five suffixes already existed, fully
+    correct, in suffixes.yaml and were never surfaced to a learner --
+    the same shape unit 8's ile was in. Two new phrase.py generators
+    (accusative.py, izafet.py); izafet.py was the first generator with
+    two independently-drawn lexemes in one item, which is what surfaced
+    a real bug (its spec dict used "possessor"/"possessed" instead of
+    the "lemma" key every generator's spec needs for review scheduling),
+    caught by the full test suite. See `docs/pedagogy-rationale.md`.
 
 Three exercises are deliberately not served, and say so when asked to build:
 two person contrasts that need audio (readable on paper, but the whole point
@@ -328,6 +341,29 @@ the type checker and the existing test suite. And worth reading the
 English side of an item too, not just checking the Turkish answer is
 correct -- `english_cue()`'s bug produced a perfectly correct Turkish
 answer every time; the prompt asking for it was what was broken.
+
+- `izafet.py` (unit 12) was the first generator whose item is built from two
+  independently-drawn lexemes rather than one, and its spec dict used
+  `"possessor"`/`"possessed"` as key names instead of `"lemma"`. Every
+  other generator's spec carries a `"lemma"` key `tutor.py`'s `card_ref()`
+  depends on to identify a review card; this one didn't, and the full test
+  suite caught it as a `KeyError`, not a batch generation (the batch looked
+  completely correct -- the bug was in review-scheduling plumbing, never in
+  a Turkish form). The generalizable lesson: a new generator shape (here,
+  two lexemes instead of one) can break an assumption nothing about the
+  generator's own output would ever reveal, which is what running the full
+  suite before calling anything done is actually for.
+
+- The accusative concept building a two-word phrase to teach specificity
+  (kitap istiyorum vs kitabı istiyorum) surfaced a coincidental collision
+  a batch caught, not the engine: `ok` (arrow) plus the accusative gives
+  `oku`, identical in spelling to the unrelated verb `oku` (read), reading
+  as confusing in context even though grammatically correct. Not a rule
+  bug -- both words are independently right -- fixed by narrowing the
+  concept's noun pool with `possession_only`, which is worth remembering as
+  its own category: a batch can surface a real problem that is neither a
+  wrong form nor a broken sentence, just an unlucky coincidence between two
+  otherwise-correct pieces of content.
 
 ## Not built yet, roughly in the order it would make sense to tackle
 

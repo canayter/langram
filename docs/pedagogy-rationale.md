@@ -422,6 +422,102 @@ None of this touches content or the engine. The domain grouping in
 claim, so it carries no citation obligation the way a lexicon flag or a
 suffix's `review` tag would.
 
+## The case system was finished, not started, and finished around meaning
+
+Unit 3 already taught the buffer-consonant and voicing mechanics every case
+suffix shares, but only ever applied them to the possessive suffixes. Five
+real case suffixes (`ACC`, `DAT`, `LOC`, `ABL`, `GEN`) already existed,
+fully correct, in `suffixes.yaml` and were already exhaustively checked in
+`test_known_forms.py`'s known-forms oracle, and had simply never been
+surfaced to a learner -- the same shape unit 8's `ile` was in before it
+shipped. This unit closes that gap in one pass rather than one suffix at a
+time, prompted directly by `docs/research-spec.md` naming the accusative as
+its own worked example (section 3.4) and Stage 3 of its proposed Turkish
+acquisition sequence (section 5.3).
+
+Three design decisions, each traceable to a real source:
+
+**The accusative gets two concepts, not one, because its difficulty is not
+its shape.** Every other case suffix shipped so far is difficult the way a
+new allomorph is difficult: harmony, a buffer, an alternation. The
+accusative's real difficulty is that it marks specificity, not objecthood --
+kitap istiyorum (a book, any) versus kitabı istiyorum (the book, a specific
+one) -- a distinction English marks with an article and Turkish does not
+mark at all outside this suffix. Splitting "notice the shape" from "notice
+what it means" mirrors VanPatten's own point (already cited for units 5 and
+9): a learner who has only drilled the shape has not been given anything
+that forces the meaning to matter, so a second concept exists specifically
+to put the same suffix's two readings in direct contrast, one word's
+absence or presence of `-(y)I` and nothing else deciding which sentence is
+meant. `docs/research-spec.md` section 3.4 asks for exactly this shape of
+exercise (its own worked example is Turkish accusative marking); its
+"picture" detail was adapted away since this app has no image assets, using
+a fixed, universally-compatible verb (istemek, want) instead of a
+picture as the second half of the minimal pair.
+
+**Dative, locative and ablative are one concept, not three.** Turkish
+treats to/at/from as a single paradigm sharing one slot and one harmony
+pattern, and teaching them as three unrelated vocabulary items would hide
+that. The one genuine trap when they are taught together, and the reason
+this concept's own explanatory text leans on it directly: dative is
+vowel-initial and triggers a stem's own final-consonant devoicing
+alternation (kitap -> kitaba), while locative and ablative both begin with
+the D archiphoneme, a consonant, and never trigger it (kitap -> kitapta,
+kitaptan, not kitapda/kitapdan) -- the identical distinction unit 10 already
+taught for -DI, confirmed to recur here by checking the engine directly
+rather than assumed to generalize.
+
+**Genitive is taught only as izafet, because that is the only way it is
+actually used.** Rather than a fourth bare-shape concept, genitive is
+introduced already doing its real job: naming a possessor explicitly
+(öğrencinin kitabı, the student's book), pairing the new suffix with
+POSS3SG, which unit 3 already taught. This is the first generator
+(`izafet.py`) with two independently-drawn lexemes in a single item, which
+is exactly what surfaced this unit's one real bug: its spec dictionary used
+`"possessor"`/`"possessed"` keys instead of the `"lemma"` key `tutor.py`'s
+`card_ref()` depends on for every other generator's review-card identity,
+caught by the full test suite, not by generating a batch (the batch itself
+looked completely correct; the bug was in review scheduling plumbing, not
+in any Turkish form). Fixed by renaming the key rather than special-casing
+`card_ref()` -- every generator should look the same from tutor.py's side,
+one lexeme irregularity is not worth a second code path.
+
+Generating a batch caught a second, smaller issue the way it always does:
+`ok` (arrow) plus the accusative gives `oku`, identical in spelling to the
+unrelated reading verb `oku`, which read as confusing in "oku istiyorum"
+even though the sentence is grammatically correct. Fixed by restricting the
+accusative-specificity concept's noun pool to `possession_only`, which
+excludes `ok` as a side effect of asking for nouns someone would plausibly
+say "I want ___" about in the first place, not by hand-excluding one word.
+
+## Scheduling exposes desired_retention; the acquisition/retention split it did not have was already free
+
+`docs/research-spec.md` section 3.6 (Suzuki & DeKeyser 2017) names a real
+tension: the spacing that best builds automatization is short and dense,
+the spacing that best builds durable retention expands over time, and a
+scheduler needs both. Checked against `scheduling.py` before building
+anything: FSRS, already in use, already has this. A card starts in
+`State.Learning` and moves through fixed, short `learning_steps` (the
+acquisition phase) before FSRS ever hands it to the expanding-interval
+algorithm that governs `State.Review` (the retention phase). Nothing needed
+building here; `tests/test_scheduling.py` (a new file -- none existed
+before) confirms the split directly, by showing a brand new card's first
+review is unaffected by `desired_retention` at all.
+
+What genuinely was missing, per section 1.1 (Cepeda et al. 2008): FSRS's
+own `desired_retention` parameter, its native "how aggressively should
+intervals expand" control, was hardcoded to the library default (0.9) with
+no way to change it. Exposed as a real parameter on `review()`, defaulting
+to the same 0.9 so no existing behavior changes, and proven to have a real
+effect (a lower target genuinely produces a longer next-review gap, not
+just an accepted-and-ignored argument) rather than trusted to work.
+Deliberately not wired to a per-user `target_retention_days` setting yet:
+no onboarding flow asks a learner what their retention goal is, and adding
+an unused database column and API surface for a preference nothing can set
+would be exactly the over-engineering the research spec itself warns
+against in the same section. This is the hook that setting would plug into
+once one exists, not the setting itself.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is
