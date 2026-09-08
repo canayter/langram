@@ -245,14 +245,55 @@ def one_broken_form(language, lexeme: Lexeme, suffix_ids: Sequence[str],
     return tag, variants[tag]
 
 
-def english_cue(language, lexeme: Lexeme, suffix_ids: Sequence[str]) -> str:
-    """An English prompt built from the glosses in content.
+# Plain subject pronouns for cue composition, distinct from each suffix's
+# own stored glosses. Those glosses exist to disambiguate option-list
+# entries -- PRED2SG's own comment in suffixes.yaml says exactly this:
+# "'(singular)' disambiguates from PRED2PL: English 'you' does not mark
+# number, and an option list built from these glosses needs to" -- and
+# gluing an option-list label straight into a sentence is what produced
+# "do, made can and I am", reported directly by a learner as unreadable.
+# Two small tables, matched to the two person paradigms this content
+# teaches (predicative, reused for nominal/present/ability; past, its own
+# paradigm per unit 10), the same "write it out, don't derive it" stance
+# existence.py's _SUBJECT_VERB already takes for the identical reason.
+_PREDICATIVE_SUBJECT = {
+    "PRED1SG": "I", "PRED2SG": "you", "PRED1PL": "we", "PRED2PL": "you all",
+}
+_PAST_SUBJECT = {
+    "PAST1SG": "I", "PAST2SG": "you", "PAST1PL": "we", "PAST2PL": "you all",
+}
+_SUBJECT = {**_PREDICATIVE_SUBJECT, **_PAST_SUBJECT}
 
-    Deliberately plain. Composing idiomatic English from glosses would mean
-    inventing English morphology the content does not have.
+
+def english_cue(language, lexeme: Lexeme, suffix_ids: Sequence[str]) -> str:
+    """A plain English prompt for producing this form.
+
+    Deliberately not a fully idiomatic sentence: correct English verb
+    conjugation needs an irregular past tense and gerund spelling per verb
+    (go/went, come/coming vs. write/writing), neither of which exists in
+    this content, so building one would mean inventing English morphology
+    the same way question.py's own comment already refuses to invent
+    English question-inversion grammar. A tense or ability suffix is named
+    as a parenthetical quality after the subject and the lexeme's own
+    gloss instead of welded into a verb form -- "I: do (can)" rather than
+    the broken "do, made can and I am" a modal produced under the old
+    template, which tried to treat "can" as a thing a verb gets "made"
+    into the way "past" or "progressive" at least resembles one.
+
+    Bare predication (no tense suffix at all, unit 2/9's nominal case) is
+    the one place a fully natural sentence is safe to build: am/is/are is
+    a small, closed, already-known set, not open-ended conjugation.
     """
-    parts = [language.suffix(s).glosses[0] for s in suffix_ids
-             if language.suffix(s).glosses]
-    if not parts:
-        return lexeme.gloss
-    return f"{lexeme.gloss}, made {' and '.join(parts)}"
+    person_ids = [s for s in suffix_ids if s in _SUBJECT]
+    other_ids = [s for s in suffix_ids if s not in _SUBJECT]
+    subject = _SUBJECT[person_ids[-1]] if person_ids else None
+    qualities = [language.suffix(s).glosses[0] for s in other_ids if language.suffix(s).glosses]
+
+    if subject and not qualities:
+        copula = "am" if subject == "I" else "are" if subject in ("we", "you", "you all") else "is"
+        return f"{subject} {copula} {lexeme.gloss}"
+    if subject:
+        return f"{subject}: {lexeme.gloss} ({', '.join(qualities)})"
+    if qualities:
+        return f"{lexeme.gloss} ({', '.join(qualities)})"
+    return lexeme.gloss

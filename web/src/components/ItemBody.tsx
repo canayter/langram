@@ -203,11 +203,18 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
     case 'choose_suffix':
       return (
         <>
-          <div className="mt-4 flex flex-wrap items-baseline gap-2">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
             <span className="font-turkish text-4xl text-ink">
               {payload.stem}
             </span>
-            <span className="font-mono text-3xl text-ink-dim opacity-50">___</span>
+            {/* A single length-invariant blank, not literal underscore
+                characters: those read as a letter count (three slots for a
+                three-letter answer), which is actively wrong once the
+                correct suffix is longer than that, like -sInIz. */}
+            <span
+              aria-hidden
+              className="mb-1.5 h-[3px] w-10 shrink-0 self-end rounded-full bg-ink-dim/40"
+            />
             <span className="ml-2 text-sm text-ink-dim">
               {payload.gloss}, {payload.meaning}
             </span>

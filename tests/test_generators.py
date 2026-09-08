@@ -212,6 +212,36 @@ class TestSuffixChaining:
         assert item.answer in ("I am", "you are (singular)", "you are")
 
 
+class TestEnglishCue:
+    """A learner reported the exact failure this guards: ability's cue read
+    "do, made can and I am", because the old template glued every suffix's
+    option-list gloss into one sentence regardless of whether the result
+    was English. "can" is a modal, not a "made X" quality the way "past"
+    or "progressive" at least resemble one, so ability was where it broke
+    worst, but the same template produced "student, made I am" for plain
+    nominal predication too."""
+
+    def test_ability_reads_as_a_modal_not_a_broken_sentence(self, language):
+        from langram.generators._common import english_cue
+        lexeme = language.lexeme("yap")
+        cue = english_cue(language, lexeme, ["ABIL", "ABILTENSE", "PRED1SG"])
+        assert "made can" not in cue
+        assert "can" in cue and "I" in cue
+
+    def test_bare_predication_is_a_natural_sentence(self, language):
+        from langram.generators._common import english_cue
+        lexeme = language.lexeme("öğrenci")
+        assert english_cue(language, lexeme, ["PRED1SG"]) == f"I am {lexeme.gloss}"
+        assert english_cue(language, lexeme, ["PRED2PL"]) == f"you all are {lexeme.gloss}"
+
+    def test_past_person_uses_a_plain_pronoun_not_the_option_list_label(self, language):
+        from langram.generators._common import english_cue
+        lexeme = language.lexeme("git")
+        cue = english_cue(language, lexeme, ["DI", "PAST2SG"])
+        assert cue == f"you: {lexeme.gloss} (past)"
+        assert "(past, singular)" not in cue
+
+
 class TestSuffixBuilder:
     def test_options_are_the_real_allomorphs(self, language):
         rng = random.Random(1)

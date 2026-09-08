@@ -18,7 +18,7 @@ export function Derivation({ steps, result }: { steps: DerivationStep[]; result?
 
   return (
     <div
-      className="bp-grid mt-4 rounded-md border border-grid p-4"
+      className="mt-4 rounded-md border border-grid bg-surface p-4"
       aria-label="How this form is built"
     >
       {start && (

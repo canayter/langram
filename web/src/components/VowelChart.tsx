@@ -47,7 +47,7 @@ export function VowelChart() {
       .sort((a, b) => Number(b.high) - Number(a.high))
 
   return (
-    <div className="bp-grid mt-6 rounded-md border border-grid p-4">
+    <div className="mt-6 rounded-md border border-grid bg-surface p-4">
       <p className="text-sm leading-relaxed text-ink-dim">
         A harmony suffix copies its vowel from the last vowel of the stem: twofold
         harmony copies whether that vowel is <strong className="text-ink">front</strong> or{' '}

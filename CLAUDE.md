@@ -294,9 +294,28 @@ silently does the wrong thing for a case nobody tried yet.
   `docs/pedagogy-rationale.md` for why this is a real Turkish irregularity
   and not a general harmony change.
 
+- `english_cue()` (`generators/_common.py`) reused each suffix's own
+  disambiguated option-list gloss ("you are (singular)", "I (past)") inside
+  a one-size sentence template ("{gloss}, made {parts joined by and}"),
+  which happened to read as tolerable prose for tense glosses ("come, made
+  past and I am") and was flatly ungrammatical the moment a modal reached
+  it: "do, made can and I am" for ability, reported directly by a learner
+  as confusing. Affected every unit that calls it -- 2, 5, 6, 9, 10, 11 --
+  not just ability; nominal predication alone already read "student, made
+  I am". Fixed by pulling the subject out as a plain pronoun (a small
+  written-out table, the same stance `existence.py`'s `_SUBJECT_VERB`
+  already takes) and naming everything else as a parenthetical quality
+  after the verb instead of welding it into one, e.g. "I: do (can)". This
+  class of bug is invisible to `test_known_forms.py`'s known-forms oracle
+  entirely, since it never touches a Turkish surface form -- only actually
+  reading the generated English prompt caught it.
+
 Worth actually generating a batch of items after any change to a suffix,
 the lexicon's `pos`/flag fields, or `candidate_lexemes()`, not just running
-the type checker and the existing test suite.
+the type checker and the existing test suite. And worth reading the
+English side of an item too, not just checking the Turkish answer is
+correct -- `english_cue()`'s bug produced a perfectly correct Turkish
+answer every time; the prompt asking for it was what was broken.
 
 ## Not built yet, roughly in the order it would make sense to tackle
 

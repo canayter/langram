@@ -91,15 +91,3 @@ body { margin: 0; background: var(--lg-ground); }
 @media (prefers-reduced-motion: reduce) {
   .animate-pop-in { animation: none; }
 }
-
-/* The faint drafting grid behind the derivation trace and other "this is
-   the engine's own working" surfaces. A background-image rather than a
-   border pattern so it scales with content instead of repeating awkwardly
-   at fixed tile edges. */
-.bp-grid {
-  background-image:
-    linear-gradient(var(--lg-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--lg-grid) 1px, transparent 1px);
-  background-size: 22px 22px;
-  background-color: var(--lg-surface);
-}
