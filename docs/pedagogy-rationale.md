@@ -580,6 +580,29 @@ are "shown in archiphoneme notation, so choosing does not leak the shape,"
 a stated design goal the gloss field was quietly working against the whole
 time.
 
+## A second progress signal that only ever counts up
+
+Reported directly: interleaving across concepts, working as intended, still
+"doesn't feel like progress." The per-concept "N of 5" badge resets to 1
+every time the topic changes, which is correct once blocks actually work
+(see the fix above) -- a new block genuinely did start -- but across a
+session interleaving several concepts, a learner watching only that number
+sees it reset repeatedly rather than climb. `docs/research-spec.md` section
+6.1 (Sailer & Homner 2020) names the general shape of the fix: gamification
+effects are real but modest, and what actually moves the needle is
+"meaningful progress feedback," not just points -- concretely here, a
+number that reflects real, monotonic progress rather than one that
+legitimately resets by design.
+
+`SessionScreen`'s `stats.answered` was already exactly that number --
+tracked, incremented once per settled item regardless of which concept it
+belonged to, already driving the session summary -- just never shown
+during the session itself. Surfaced as a slim bar under the header,
+answered out of `SESSION_LENGTH` (10), alongside the per-concept badge
+rather than replacing it: the two answer different questions ("how is this
+topic going" vs. "how is this sitting going") and reset on different
+schedules on purpose, not by oversight.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is
