@@ -22,7 +22,7 @@ from langram.db.models import (
 )
 from langram.db.seed import seed
 from langram.generators import assemble
-from langram.tutor import ExerciseSpec
+from langram.tutor import BLOCK_SIZE, ExerciseSpec
 
 
 @pytest.fixture(scope="module")
@@ -307,17 +307,36 @@ class TestTheLoop:
         # The spec is stored so the same item can come back on review.
         assert all(c.item_spec.get("lemma") for c in cards)
 
-    def test_interleaving_avoids_the_concept_just_seen(self, learner, factory):
-        """`after` reflects a settled item, the way the frontend sends it: only
-        once a response has actually been recorded, which is also what takes a
-        concept out of "just introduced, must be practiced next" priority.
-        Passing `after` for an item nobody has actually answered is not a
-        scenario the real app produces."""
+    def test_a_concept_repeats_within_its_own_block(self, learner, factory):
+        """`after` used to exclude the concept just answered on every single
+        call, which is a stronger rule than the block system was ever meant
+        to enforce and left BLOCK_SIZE (5) unreachable: a learner
+        reported this directly as the "N of 5" counter stuck at 1 forever.
+        `after` should only start excluding a concept once its own streak
+        has actually used up its block; before that, the same concept
+        should keep coming back, exactly what "N of 5" in the UI claims is
+        happening."""
         first = _first_item(learner)
         seen = first["concept_id"]
-        assert _answer(learner, first, _right(factory, first))["correct"]
-        following = learner.get(f"/api/session/next?after={seen}").json()
-        assert following["concept_id"] != seen
+        item = first
+        for _ in range(BLOCK_SIZE - 1):
+            assert _answer(learner, item, _right(factory, item))["correct"]
+            item = learner.get(f"/api/session/next?after={seen}").json()
+            assert item["concept_id"] == seen, (
+                f"block broke early: expected {seen!r} to repeat, got {item['concept_id']!r}"
+            )
+
+    def test_a_concept_yields_once_its_block_is_full(self, learner, factory):
+        """The other half of the same fix: BLOCK_SIZE has to still mean
+        something, or "repeat within the block" alone would just be the
+        opposite bug -- a concept stuck forever instead of never repeating."""
+        first = _first_item(learner)
+        seen = first["concept_id"]
+        item = first
+        for _ in range(BLOCK_SIZE):
+            assert _answer(learner, item, _right(factory, item))["correct"]
+            item = learner.get(f"/api/session/next?after={seen}").json()
+        assert item["concept_id"] != seen
 
 
 class TestExplicitNavigation:

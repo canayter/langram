@@ -4,7 +4,12 @@ export type Suffix = { id: string; notation: string; glosses: string[] }
 
 // The payload is generator specific and discriminated by `kind`, which is what
 // lets a new exercise type reach the UI without changing the envelope.
-export type SuffixOption = { id: string; notation: string; gloss: string }
+//
+// No gloss on a SuffixOption, deliberately: the cloze's own cue states the
+// meaning ("teacher, I am"), and the correct option's gloss is drawn from
+// that identical suffix, so showing it here would let a learner match the
+// cue text against a label verbatim without knowing a single suffix.
+export type SuffixOption = { id: string; notation: string }
 
 export type Payload =
   | { kind: 'choose_form'; options: string[]; stem?: string; gloss?: string

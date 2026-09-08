@@ -237,6 +237,17 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
         row.concept_id: int((row.state or {}).get("opportunities", 0)) for row in mastery_rows
     }
 
+    def stage_rank(exercise: Exercise, concept: Concept) -> int:
+        # Once a concept has had a few opportunities, its own later stages
+        # are promoted to compete on equal footing with anything else's
+        # structured_input, rather than staying tier-locked behind it.
+        # Comprehension-before-production is a rule about one concept's own
+        # sequence, not about ordering across different concepts, so this
+        # does not weaken it.
+        if opportunities.get(concept.id, 0) >= STAGE_PROMOTION_THRESHOLD:
+            return 0
+        return STAGE_ORDER.get(exercise.stage, 9)
+
     rows = session.execute(
         select(Exercise, Concept, Unit)
         .join(Concept, Exercise.concept_id == Concept.id)
@@ -277,6 +288,28 @@ def next_item(session: Session, user_id: int, language, rng: random.Random | Non
             key=lambda row: (row[2].order, STAGE_ORDER.get(row[0].stage, 9)),
         )
         for exercise, concept, unit in priority:
+            try:
+                item = generate(ExerciseSpec.of(exercise, concept), language, rng)
+            except (GenerationError, NotImplementedError):
+                continue
+            return Served(item, "new", unit.id, unit.title, concept.name)
+
+    # avoid_concept exists so a concept's block cap (BLOCK_SIZE, below) is
+    # followed by a real switch to something else, not so that every single
+    # turn switches concepts regardless of the cap. Checking that here,
+    # before candidates below ever excludes avoid_concept unconditionally,
+    # is what makes "N of 5" in the UI real: without this check, the
+    # concept just answered was excluded on literally every turn -- stronger
+    # than BLOCK_SIZE ever asked for -- and the block counter could never
+    # pass 1, reported directly as "Notice stuck at 1 of 5." The exclusion
+    # further down still runs once this concept's own streak reaches
+    # BLOCK_SIZE, which is what actually hands a turn to something else.
+    if avoid_concept is not None and _current_streak(session, user_id, avoid_concept) < BLOCK_SIZE:
+        continuing = sorted(
+            (row for row in candidates if row[1].id == avoid_concept),
+            key=lambda row: stage_rank(row[0], row[1]),
+        )
+        for exercise, concept, unit in continuing:
             try:
                 item = generate(ExerciseSpec.of(exercise, concept), language, rng)
             except (GenerationError, NotImplementedError):

@@ -51,9 +51,15 @@ def assemble(exercise, language, spec: dict) -> GeneratedItem:
         if len(suffix_ids) > 1 else lexeme.lemma
     )
 
+    # No gloss per option: the cue already states the meaning ("teacher, I
+    # am"), and the correct option's own gloss is drawn from that identical
+    # suffix, so showing it here would let a learner match the cue text
+    # against an option's label verbatim without knowing a single suffix --
+    # reported directly by a learner who noticed "I am" answers itself.
+    # Notation only, so the choice actually tests recall of which shape
+    # carries which meaning, not string matching.
     options = [
-        {"id": sid, "notation": language.suffix(sid).surface,
-         "gloss": (language.suffix(sid).glosses or (sid,))[0]}
+        {"id": sid, "notation": language.suffix(sid).surface}
         for sid in spec["options"]
     ]
     random.Random(f"cloze|{lemma}").shuffle(options)

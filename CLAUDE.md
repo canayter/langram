@@ -365,6 +365,35 @@ answer every time; the prompt asking for it was what was broken.
   wrong form nor a broken sentence, just an unlucky coincidence between two
   otherwise-correct pieces of content.
 
+- `next_item()`'s `avoid_concept` (documented: "the concept just answered,
+  so it is not repeated") excluded that concept from candidates
+  unconditionally, every single call, which is stronger than `BLOCK_SIZE`
+  (5) ever asked for. `_current_streak()` and the block cap were both
+  correctly implemented and never mattered, since nothing could ever
+  accumulate a streak past 1 in the first place. Reported directly, twice,
+  as "N of 5 stuck at 1" -- the first report's fix
+  (`STAGE_PROMOTION_THRESHOLD`) addressed a real but different cause and
+  left this one standing. Fixed by making the exclusion conditional on the
+  concept's own streak already having reached `BLOCK_SIZE`; see
+  `docs/pedagogy-rationale.md`. The existing interleaving test in
+  `test_api.py` had asserted the broken behavior as correct and had to be
+  rewritten, not just re-passed -- worth remembering that a passing test
+  can be proof a bug was accepted as intended, not proof nothing is wrong.
+
+- `cloze_suffix_choice.py` computed a cloze item's cue meaning and each
+  option's displayed gloss from the identical source (a suffix's own
+  `glosses[0]`), so the correct option was always labelled with the exact
+  same words already sitting in the prompt -- reported directly by a
+  learner who noticed "I am" answering itself. Invisible to every batch
+  this session ever generated, since the Turkish answer was always
+  correct; only reading the English cue against the English option labels,
+  together, the way a learner actually sees them, caught it. Fixed by
+  dropping the gloss from options entirely (`SuffixOption` is now
+  `{id, notation}`); see `docs/pedagogy-rationale.md`. Worth remembering as
+  its own category next to "read the English, not just the Turkish"
+  (`english_cue()`, above): a leak can live in the relationship between two
+  correct pieces of text, neither one wrong on its own.
+
 ## Not built yet, roughly in the order it would make sense to tackle
 
 - **Third-person-plural verb agreement** (geliyorlar). The morpheme is

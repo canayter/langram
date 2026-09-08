@@ -518,6 +518,68 @@ would be exactly the over-engineering the research spec itself warns
 against in the same section. This is the hook that setting would plug into
 once one exists, not the setting itself.
 
+## Blocks were never actually happening, and the block counter said so honestly
+
+Reported directly, a second time: "1 of 5, Notice stuck at 1." The first
+report was fixed with `STAGE_PROMOTION_THRESHOLD` (see the entry above on
+verb person marking), which addressed one real cause -- two concepts
+sharing a tier alternating forever -- but not the deeper one. `next_item()`
+takes an `avoid_concept` parameter, documented as "the concept just
+answered, so it is not repeated," and it excluded that concept from
+candidates on *every single call*, unconditionally. `BLOCK_SIZE` (5) and
+`_current_streak()` existed and were correctly implemented, but nothing
+ever gave a concept the chance to accumulate a streak past 1 in the first
+place, since the very next turn always excluded it (short of it being the
+only candidate left, an edge case, not the normal multi-concept case this
+curriculum has had since unit 1). The UI's "N of 5" was not lying about a
+broken counter; it was accurately reporting that no block was ever
+happening: the exclusion this app calls interleaving was total, applied
+before a block could exist to be interleaved between.
+
+Fixed by making the exclusion conditional: `avoid_concept` is only excluded
+once its own streak has actually reached `BLOCK_SIZE`. Before that, the
+concept just answered is looked up and served again directly, using the
+same `stage_rank()` (comprehension-first, promoted after
+`STAGE_PROMOTION_THRESHOLD`) that already governed which of its exercises
+to pick. This is a real behavior change, not a tuning tweak: sessions will
+now visibly repeat a concept several times before moving on, which is
+BLOCK_SIZE's documented intent and what "N of 5" was always supposed to
+mean, both true only in name until this fix. No test file existed for
+`tutor.next_item` before this. `tests/test_api.py`'s existing interleaving
+test asserted the old (broken) behavior directly -- `after` always
+produces a different concept -- and had to be corrected, not just left
+passing, since it was itself proof the bug had been accepted as intended
+behavior at some point.
+
+## cloze_suffix_choice gave its own answer away, reported directly by a learner
+
+The exact report: a "Complete the sentence" item cued "teacher, I am,"
+offering four suffix options, one of them labelled "I am." `assemble()`
+computed the cue's `meaning` field and each option's own `gloss` field from
+the identical source -- `(suffix.glosses or (suffix.id,))[0]` -- so for the
+correct option specifically, the two strings were always exactly equal.
+Nothing about Turkish had to be known to solve it: find the option whose
+label matches words already in the prompt. This was not narrow to one
+concept; every unit built on `cloze_suffix_choice` (predication, present
+tense, ability, past tense, and their production/review variants) shipped
+the same leak, undetected because generating a batch and reading the
+Turkish answer, this session's usual discipline, never surfaces it -- the
+Turkish form was always correct. Only reading the English side, cue against
+options together, the way a learner actually experiences the item, caught
+it.
+
+Fixed by dropping `gloss` from each option entirely: a `SuffixOption` is
+now `{id, notation}` only, so choosing has to mean recognizing which
+notation carries the meaning the cue already states, not matching a label
+against the prompt's own words. This narrows what the exercise can test
+(the archiphoneme notation `-(y)Im` no longer carries a redundant label
+that happened to double as the answer key) without narrowing what it is
+supposed to test in the first place -- the payload never needed the gloss
+at all, since `cloze_suffix_choice.py`'s own docstring already says options
+are "shown in archiphoneme notation, so choosing does not leak the shape,"
+a stated design goal the gloss field was quietly working against the whole
+time.
+
 ## Nothing is asserted that a native speaker has not confirmed
 
 Content carries review flags rather than confident guesses. A learner who is

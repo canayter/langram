@@ -223,17 +223,7 @@ export function ItemBody({ payload, chosen, correct, settled, onAnswer }: Props)
             {...shared}
             label="Suffixes"
             values={payload.options.map((o) => o.id)}
-            labels={(value) => {
-              const option = payload.options.find((o) => o.id === value)
-              return (
-                <span className="flex flex-col items-start">
-                  <span>{option?.notation}</span>
-                  <span className="font-sans text-xs text-ink-dim">
-                    {option?.gloss}
-                  </span>
-                </span>
-              )
-            }}
+            labels={(value) => payload.options.find((o) => o.id === value)?.notation}
           />
         </>
       )
