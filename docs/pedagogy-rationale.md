@@ -580,28 +580,43 @@ are "shown in archiphoneme notation, so choosing does not leak the shape,"
 a stated design goal the gloss field was quietly working against the whole
 time.
 
-## A second progress signal that only ever counts up
+## A curriculum-wide track that only ever reflects real, standing mastery
 
-Reported directly: interleaving across concepts, working as intended, still
-"doesn't feel like progress." The per-concept "N of 5" badge resets to 1
-every time the topic changes, which is correct once blocks actually work
-(see the fix above) -- a new block genuinely did start -- but across a
-session interleaving several concepts, a learner watching only that number
-sees it reset repeatedly rather than climb. `docs/research-spec.md` section
-6.1 (Sailer & Homner 2020) names the general shape of the fix: gamification
-effects are real but modest, and what actually moves the needle is
-"meaningful progress feedback," not just points -- concretely here, a
-number that reflects real, monotonic progress rather than one that
-legitimately resets by design.
+The first attempt at a fixed progress signal (a 10-item session bar) was
+rejected directly as still not what was wanted: "a vertical or horizontal
+line that moves and progresses with each and every answer given... shows
+where the units change." A 10-item bar resets every block and says nothing
+about position in the curriculum; what was asked for is closer to a map.
 
-`SessionScreen`'s `stats.answered` was already exactly that number --
-tracked, incremented once per settled item regardless of which concept it
-belonged to, already driving the session summary -- just never shown
-during the session itself. Surfaced as a slim bar under the header,
-answered out of `SESSION_LENGTH` (10), alongside the per-concept badge
-rather than replacing it: the two answer different questions ("how is this
-topic going" vs. "how is this sitting going") and reset on different
-schedules on purpose, not by oversight.
+One horizontal line, one segment per unit, equal width regardless of how
+many concepts a unit holds -- deliberately not proportional to concept
+count, since the point is that unit boundaries stay legible and
+predictable at a glance, not that segment width itself carries meaning.
+Each segment's own fill is that unit's average concept mastery (the same
+`ability_estimate` `ProgressScreen` already reports per concept, sourced
+from `/api/progress`, never a raw answered-item count), and the current
+unit is outlined. `docs/research-spec.md` section 6.1 (Sailer & Homner
+2020) is the reason this is mastery-based and not attempt-count-based:
+gamification effects are real but modest, and what moves the needle is
+progress tied to real capability, not activity for its own sake.
+
+"Moves with every answer" is satisfied without any extra network traffic:
+`AnswerOut` already returns the fresh `ability_estimate` for exactly the
+one concept just answered on every response (`mastery`, already used to
+sync XP). `SessionScreen` fetches `/api/progress` once per mount for the
+starting values, then applies each answer's `mastery` to a small local
+override map (`masteryOverrides`, keyed by concept id) layered on top --
+no re-fetch needed for the bar to move, since the one concept touched by
+an answer is exactly the one segment's average that needs to change.
+`summarizeUnits()` (`CurriculumTrack.tsx`) does the grouping and averaging
+and is pure, no component state, checked directly against sample data
+before shipping.
+
+Superseded the 10-item session bar entirely rather than keeping both: the
+two were answering closely overlapping questions ("how is this session
+going" vs. "how is the curriculum going"), and showing both risked being
+more confusing than either alone, given the concept-level badge already
+covers the tightest-scope "how is this topic going" question.
 
 ## Nothing is asserted that a native speaker has not confirmed
 

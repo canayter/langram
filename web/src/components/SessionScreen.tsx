@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { api, type AnswerResult, type Item } from '../lib/api'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { api, type AnswerResult, type Item, type Progress } from '../lib/api'
 import { TAG_LABELS } from '../lib/labels'
 import { useStats } from '../lib/store'
 import { primaryButton, secondaryButton } from '../lib/ui'
+import { CurriculumTrack, summarizeUnits } from './CurriculumTrack'
 import { Derivation } from './Derivation'
 import { ItemBody } from './ItemBody'
 import { Logo } from './Logo'
@@ -37,31 +38,6 @@ function stageBadgeClass(stage: string): string {
 // entirely a client-side pacing decision.
 const SESSION_LENGTH = 10
 
-// A second, steadier progress signal alongside the per-concept "N of 5"
-// badge: that one resets to 1 every time the topic changes, which is
-// correct (a new block really did start) but reads as no progress at all
-// across a session that interleaves several concepts, reported directly as
-// "doesn't feel like progress." stats.answered only ever counts up, once
-// per item, regardless of which concept it belonged to, so it is the one
-// number in this screen guaranteed to move every single turn.
-function SessionProgress({ answered, total }: { answered: number; total: number }) {
-  const clamped = Math.min(answered, total)
-  const pct = Math.round((clamped / total) * 100)
-  return (
-    <div className="mb-6" aria-label={`Session progress: ${clamped} of ${total}`}>
-      <div className="flex items-baseline justify-between text-xs font-medium text-ink-dim">
-        <span>This session</span>
-        <span className="font-mono">{clamped} / {total}</span>
-      </div>
-      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
-        <div
-          className="h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  )
-}
 
 function FocusBanner({ conceptName, onExit }: { conceptName: string; onExit: () => void }) {
   return (
@@ -90,7 +66,7 @@ const EMPTY_STATS: SessionStats = {
 }
 
 function Shell({ children, onHome, onShowProgress, onShowReference, onShowUnits, onShowSources,
-                onResetProgress, answered }: {
+                onResetProgress, trackUnits, currentUnitId }: {
   children: React.ReactNode
   onHome: () => void
   onShowProgress: () => void
@@ -98,7 +74,8 @@ function Shell({ children, onHome, onShowProgress, onShowReference, onShowUnits,
   onShowUnits: () => void
   onShowSources: () => void
   onResetProgress: () => Promise<void>
-  answered?: number
+  trackUnits?: ReturnType<typeof summarizeUnits>
+  currentUnitId?: string | null
 }) {
   const { xp, streak } = useStats()
   return (
@@ -129,7 +106,9 @@ function Shell({ children, onHome, onShowProgress, onShowReference, onShowUnits,
             />
           </div>
         </div>
-        {answered !== undefined && <SessionProgress answered={answered} total={SESSION_LENGTH} />}
+        {trackUnits && trackUnits.length > 0 && (
+          <CurriculumTrack units={trackUnits} currentUnitId={currentUnitId} />
+        )}
         {children}
       </div>
     </div>
@@ -159,6 +138,12 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
   const [error, setError] = useState<string | null>(null)
   const [stats, setStats] = useState<SessionStats>(EMPTY_STATS)
   const [showSummary, setShowSummary] = useState(false)
+  // The curriculum-wide track's data: every concept's own standing mastery,
+  // fetched once, then kept current locally rather than re-fetched on every
+  // answer. AnswerOut already returns the one concept's fresh mastery value
+  // on every response, which is all a single segment's fill needs.
+  const [progress, setProgress] = useState<Progress | null>(null)
+  const [masteryOverrides, setMasteryOverrides] = useState<Record<string, number>>({})
   const lastConcept = useRef<string | undefined>(undefined)
   const shownAt = useRef<number>(Date.now())
   // /api/session/next is not idempotent: serving a concept's intro also
@@ -201,6 +186,19 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
     void load()
   }, [load])
 
+  // Fetched once per mount, not once per item: the track reflects standing
+  // mastery across the whole curriculum, which does not need to be
+  // re-fetched every time a new item is served, only nudged by whatever
+  // answer just happened (see masteryOverrides in submit()).
+  useEffect(() => {
+    api.progress().then(setProgress).catch(() => {})
+  }, [])
+
+  const trackUnits = useMemo(
+    () => summarizeUnits(progress?.concepts ?? null, masteryOverrides),
+    [progress, masteryOverrides],
+  )
+
   // Settled means the item is finished with: solved, or given up on after the
   // ladder has run out of prompts.
   const settled = Boolean(result?.correct || result?.kind === 'explicit')
@@ -217,6 +215,12 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
       })
       setResult(answered)
       useStats.getState().sync(answered.xp_total, answered.streak)
+      // The one line that makes the curriculum track move on every single
+      // answer: the fresh ability_estimate for exactly the concept just
+      // answered, applied locally rather than waiting on a re-fetch.
+      if (answered.mastery != null) {
+        setMasteryOverrides((prev) => ({ ...prev, [item.concept_id]: answered.mastery as number }))
+      }
       // Every wrong attempt is its own mistake worth tallying, whether or
       // not the item is eventually solved through the ladder.
       if (!answered.correct && answered.tags.length > 0) {
@@ -263,7 +267,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
 
   if (error) {
     return (
-      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} answered={stats.answered}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} trackUnits={trackUnits} currentUnitId={item?.unit_id}>
         <p className="text-red-600 dark:text-red-400">{error}</p>
         <button onClick={() => void load()} className={secondaryButton}>
           Try again
@@ -274,7 +278,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
 
   if (!item) {
     return (
-      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} answered={stats.answered}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} trackUnits={trackUnits}>
         <p className="text-ink-dim">Loading.</p>
       </Shell>
     )
@@ -282,7 +286,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
 
   if (showSummary) {
     return (
-      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} answered={stats.answered}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} trackUnits={trackUnits} currentUnitId={item?.unit_id}>
         <SessionSummary stats={stats} onContinue={keepPracticing} />
       </Shell>
     )
@@ -292,7 +296,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
   // exercise. Not answered, so it never touches submit() or api.answer.
   if (item.payload.kind === 'intro') {
     return (
-      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} answered={stats.answered}>
+      <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} trackUnits={trackUnits} currentUnitId={item?.unit_id}>
         {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
         <p className="font-display font-semibold text-xs uppercase tracking-wider text-ink-dim">
           {item.unit_title}
@@ -312,7 +316,7 @@ export function SessionScreen({ onHome, onShowProgress, onShowReference, onShowU
   }
 
   return (
-    <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} answered={stats.answered}>
+    <Shell onHome={onHome} onShowProgress={onShowProgress} onShowReference={onShowReference} onShowUnits={onShowUnits} onShowSources={onShowSources} onResetProgress={onResetProgress} trackUnits={trackUnits} currentUnitId={item?.unit_id}>
       {focusConcept && <FocusBanner conceptName={item.concept_name} onExit={onExitFocus} />}
       <div className="flex items-baseline justify-between gap-4">
         <div>
