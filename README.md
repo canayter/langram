@@ -1,5 +1,7 @@
 # Langram
 
+*[Türkçe](README.tr.md)*
+
 A research-grounded Turkish course for English speakers. Two things make it
 different from a flashcard app: it teaches morphophonology by rule rather than by
 paradigm table, and it trains pronunciation against real formant measurements.
